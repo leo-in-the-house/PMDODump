@@ -1331,7 +1331,7 @@ namespace DataGenerator.Data
             return (fileName, tile);
         }
 
-        public const int MAX_TERRAIN = 8;
+        public const int MAX_TERRAIN = 9;
 
         public static void AddTerrainData()
         {
@@ -1423,6 +1423,15 @@ namespace DataGenerator.Data
                 tile.Name = new LocalText("Variable-Texture Foliage");
                 asset = "grass";
                 tile.MinimapColor = Color.Teal;
+                tile.BlockLight = true;
+            }
+            else if (ii == 8)
+            {
+                tile.Name = new LocalText("Variable-Texture Impassable Floor");
+                asset = "floor";
+                tile.BlockType = TerrainData.Mobility.Impassable;
+                tile.MinimapColor = Color.White;
+                tile.BlockDiagonal = true;
                 tile.BlockLight = true;
             }
 

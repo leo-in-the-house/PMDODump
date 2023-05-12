@@ -12677,6 +12677,7 @@ namespace DataGenerator.Data
                                 textureStep.TextureMap["lava"] = secondaryTex;
                                 textureStep.TextureMap["water_poison"] = secondaryTex;
                                 textureStep.TextureMap["pit"] = secondaryTex;
+                                textureStep.TextureMap["unbreakable_floor"] = floorTex;
                             }
                             textureStep.GroundElement = element;
                             textureStep.LayeredGround = true;
