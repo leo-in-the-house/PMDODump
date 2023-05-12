@@ -1428,7 +1428,7 @@ namespace DataGenerator.Data
             else if (ii == 8)
             {
                 tile.Name = new LocalText("Variable-Texture Impassable Floor");
-                asset = "floor";
+                asset = "unbreakable_floor";
                 tile.BlockType = TerrainData.Mobility.Impassable;
                 tile.MinimapColor = Color.White;
                 tile.BlockDiagonal = true;
