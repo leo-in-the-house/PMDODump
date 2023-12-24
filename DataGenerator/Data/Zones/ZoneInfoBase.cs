@@ -2983,7 +2983,8 @@ namespace DataGenerator.Data
                 floorSegment.ZoneSteps.Add(poolSpawn);
 
 
-                RandBag<IGenStep> npcZoneSpawns = new RandBag<IGenStep>(true, new List<IGenStep>());
+                RandBag<IGenStep> npcZoneSpawns = new RandBag<IGenStep>();
+                npcZoneSpawns.RemoveOnRoll = true;
                 //Generic Dialogue
                 {
                     PresetMultiTeamSpawner<ListMapGenContext> multiTeamSpawner = new PresetMultiTeamSpawner<ListMapGenContext>();

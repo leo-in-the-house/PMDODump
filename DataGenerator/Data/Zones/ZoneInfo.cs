@@ -125,7 +125,8 @@ namespace DataGenerator.Data
                     floorSegment.ZoneSteps.Add(poolSpawn);
 
 
-                    RandBag<IGenStep> npcZoneSpawns = new RandBag<IGenStep>(true, new List<IGenStep>());
+                    RandBag<IGenStep> npcZoneSpawns = new RandBag<IGenStep>();
+                    npcZoneSpawns.RemoveOnRoll = true;
                     //Neutral NPCs
                     {
                         PresetMultiTeamSpawner<ListMapGenContext> multiTeamSpawner = new PresetMultiTeamSpawner<ListMapGenContext>();
@@ -407,7 +408,8 @@ namespace DataGenerator.Data
                             new MapItem("apricorn_red"), new MapItem("apricorn_white"), new MapItem("apricorn_yellow"));
 
 
-                        RandBag<IGenStep> npcZoneSpawns = new RandBag<IGenStep>(true, new List<IGenStep>());
+                        RandBag<IGenStep> npcZoneSpawns = new RandBag<IGenStep>();
+                        npcZoneSpawns.RemoveOnRoll = true;
                         //Recruitment System
                         {
                             PresetMultiTeamSpawner<ListMapGenContext> multiTeamSpawner = new PresetMultiTeamSpawner<ListMapGenContext>();
@@ -986,7 +988,8 @@ namespace DataGenerator.Data
                     AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(4, 7), new IntRange(0, max_floors)), new MapItem("apricorn_white"));
 
 
-                    RandBag<IGenStep> npcZoneSpawns = new RandBag<IGenStep>(true, new List<IGenStep>());
+                    RandBag<IGenStep> npcZoneSpawns = new RandBag<IGenStep>();
+                    npcZoneSpawns.RemoveOnRoll = true;
                     //Speed stat and missing
                     {
                         PresetMultiTeamSpawner<ListMapGenContext> multiTeamSpawner = new PresetMultiTeamSpawner<ListMapGenContext>();
