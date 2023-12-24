@@ -1945,7 +1945,7 @@ namespace DataGenerator.Data
                 zone.Name = new LocalText("Champion's Road");
                 zone.Rescues = 2;
                 zone.Level = 50;
-                zone.ExpPercent = 0;
+                zone.NoEXP = true;
                 zone.Rogue = RogueStatus.NoTransfer;
                 {
                     int max_floors = 23;
@@ -2964,7 +2964,7 @@ namespace DataGenerator.Data
                 zone.Name = new LocalText("Snowbound Path");
                 zone.Rescues = 2;
                 zone.Level = 40;
-                zone.ExpPercent = 0;
+                zone.NoEXP = true;
                 zone.Rogue = RogueStatus.NoTransfer;
 
                 {
@@ -4057,114 +4057,111 @@ namespace DataGenerator.Data
                     zone.MoneyRestrict = true;
                     zone.Rogue = RogueStatus.NoTransfer;
 
-                    {
-                        int max_floors = 16;
-                        LayeredSegment floorSegment = new LayeredSegment();
-                        floorSegment.IsRelevant = true;
-                        floorSegment.ZoneSteps.Add(new SaveVarsZoneStep(PR_EXITS_RESCUE));
-                        floorSegment.ZoneSteps.Add(new FloorNameDropZoneStep(PR_FLOOR_DATA, new LocalText("Wayward Wetlands\nB{0}F"), new Priority(-15)));
+                    LayeredSegment floorSegment = new LayeredSegment();
+                    floorSegment.IsRelevant = true;
+                    floorSegment.ZoneSteps.Add(new SaveVarsZoneStep(PR_EXITS_RESCUE));
+                    floorSegment.ZoneSteps.Add(new FloorNameDropZoneStep(PR_FLOOR_DATA, new LocalText("Wayward Wetlands\nB{0}F"), new Priority(-15)));
 
-                        //money
-                        MoneySpawnZoneStep moneySpawnZoneStep = GetMoneySpawn(zone.Level, 10);
-                        moneySpawnZoneStep.ModStates.Add(new FlagType(typeof(CoinModGenState)));
-                        floorSegment.ZoneSteps.Add(moneySpawnZoneStep);
+                    //money
+                    MoneySpawnZoneStep moneySpawnZoneStep = GetMoneySpawn(zone.Level, 10);
+                    moneySpawnZoneStep.ModStates.Add(new FlagType(typeof(CoinModGenState)));
+                    floorSegment.ZoneSteps.Add(moneySpawnZoneStep);
+
+                    //items
+                    ItemSpawnZoneStep itemSpawnZoneStep = new ItemSpawnZoneStep();
+                    itemSpawnZoneStep.Priority = PR_RESPAWN_ITEM;
+                    floorSegment.ZoneSteps.Add(itemSpawnZoneStep);
+
+
+                    //mobs
+                    TeamSpawnZoneStep poolSpawn = new TeamSpawnZoneStep();
+                    poolSpawn.Priority = PR_RESPAWN_MOB;
+
+                    poolSpawn.TeamSizes.Add(1, new IntRange(0, 15), 12);
+                    floorSegment.ZoneSteps.Add(poolSpawn);
+
+                    TileSpawnZoneStep tileSpawn = new TileSpawnZoneStep();
+                    tileSpawn.Priority = PR_RESPAWN_TRAP;
+                    floorSegment.ZoneSteps.Add(tileSpawn);
+
+
+
+                    for (int ii = 0; ii < 15; ii++)
+                    {
+                        GridFloorGen layout = new GridFloorGen();
+
+                        //Floor settings
+                        if (ii < 9)
+                            AddFloorData(layout, "Mystifying Forest.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);//not sure about this one...
+                        else
+                            AddFloorData(layout, "Mystifying Forest.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
+
+                        //Tilesets
+                        if (ii < 5)
+                            AddTextureData(layout, "water_maze_wall", "water_maze_floor", "water_maze_secondary", "poison");
+                        else if (ii < 9)
+                            AddTextureData(layout, "poison_maze_wall", "poison_maze_floor", "poison_maze_secondary", "poison");
+                        else
+                            AddTextureData(layout, "mystifying_forest_wall", "mystifying_forest_floor", "mystifying_forest_secondary", "poison");
+
+                        //traps
+                        AddSingleTrapStep(layout, new RandRange(2, 4), "tile_wonder");//wonder tile
+                        AddTrapsSteps(layout, new RandRange(6, 9));
+
+                        //money - Ballpark 25K
+                        AddMoneyData(layout, new RandRange(2, 4));
+
+                        //enemies! ~ lv 20 to 30
+                        AddRespawnData(layout, 3, 80);
+
+                        //enemies
+                        AddEnemySpawnData(layout, 20, new RandRange(2, 4));
+
 
                         //items
-                        ItemSpawnZoneStep itemSpawnZoneStep = new ItemSpawnZoneStep();
-                        itemSpawnZoneStep.Priority = PR_RESPAWN_ITEM;
-                        floorSegment.ZoneSteps.Add(itemSpawnZoneStep);
+                        AddItemData(layout, new RandRange(3, 6), 25);
 
 
-                        //mobs
-                        TeamSpawnZoneStep poolSpawn = new TeamSpawnZoneStep();
-                        poolSpawn.Priority = PR_RESPAWN_MOB;
-
-                        poolSpawn.TeamSizes.Add(1, new IntRange(0, max_floors), 12);
-                        floorSegment.ZoneSteps.Add(poolSpawn);
-
-                        TileSpawnZoneStep tileSpawn = new TileSpawnZoneStep();
-                        tileSpawn.Priority = PR_RESPAWN_TRAP;
-                        floorSegment.ZoneSteps.Add(tileSpawn);
-
-
-
-                        for (int ii = 0; ii < max_floors; ii++)
+                        //construct paths
                         {
-                            GridFloorGen layout = new GridFloorGen();
+                            AddInitGridStep(layout, 4, 4, 10, 10);
 
-                            //Floor settings
-                            if (ii < 9)
-                                AddFloorData(layout, "Mystifying Forest.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);//not sure about this one...
-                            else
-                                AddFloorData(layout, "Mystifying Forest.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
+                            GridPathBranch<MapGenContext> path = new GridPathBranch<MapGenContext>();
+                            path.RoomComponents.Set(new ConnectivityRoom(ConnectivityRoom.Connectivity.Main));
+                            path.HallComponents.Set(new ConnectivityRoom(ConnectivityRoom.Connectivity.Main));
+                            path.RoomRatio = new RandRange(90);
+                            path.BranchRatio = new RandRange(0, 25);
 
-                            //Tilesets
-                            if (ii < 5)
-                                AddTextureData(layout, "water_maze_wall", "water_maze_floor", "water_maze_secondary", "poison");
-                            else if (ii < 9)
-                                AddTextureData(layout, "poison_maze_wall", "poison_maze_floor", "poison_maze_secondary", "poison");
-                            else
-                                AddTextureData(layout, "mystifying_forest_wall", "mystifying_forest_floor", "mystifying_forest_secondary", "poison");
+                            SpawnList<RoomGen<MapGenContext>> genericRooms = new SpawnList<RoomGen<MapGenContext>>();
+                            //cross
+                            genericRooms.Add(new RoomGenCross<MapGenContext>(new RandRange(4, 11), new RandRange(4, 11), new RandRange(2, 6), new RandRange(2, 6)), 10);
+                            //round
+                            genericRooms.Add(new RoomGenRound<MapGenContext>(new RandRange(5, 9), new RandRange(5, 9)), 10);
+                            path.GenericRooms = genericRooms;
 
-                            //traps
-                            AddSingleTrapStep(layout, new RandRange(2, 4), "tile_wonder");//wonder tile
-                            AddTrapsSteps(layout, new RandRange(6, 9));
+                            SpawnList<PermissiveRoomGen<MapGenContext>> genericHalls = new SpawnList<PermissiveRoomGen<MapGenContext>>();
+                            genericHalls.Add(new RoomGenAngledHall<MapGenContext>(50), 10);
+                            path.GenericHalls = genericHalls;
 
-                            //money - Ballpark 25K
-                            AddMoneyData(layout, new RandRange(2, 4));
+                            layout.GenSteps.Add(PR_GRID_GEN, path);
 
-                            //enemies! ~ lv 20 to 30
-                            AddRespawnData(layout, 3, 80);
+                            layout.GenSteps.Add(PR_GRID_GEN, CreateGenericConnect(75, 50));
 
-                            //enemies
-                            AddEnemySpawnData(layout, 20, new RandRange(2, 4));
-
-
-                            //items
-                            AddItemData(layout, new RandRange(3, 6), 25);
-
-
-                            //construct paths
-                            {
-                                AddInitGridStep(layout, 4, 4, 10, 10);
-
-                                GridPathBranch<MapGenContext> path = new GridPathBranch<MapGenContext>();
-                                path.RoomComponents.Set(new ConnectivityRoom(ConnectivityRoom.Connectivity.Main));
-                                path.HallComponents.Set(new ConnectivityRoom(ConnectivityRoom.Connectivity.Main));
-                                path.RoomRatio = new RandRange(90);
-                                path.BranchRatio = new RandRange(0, 25);
-
-                                SpawnList<RoomGen<MapGenContext>> genericRooms = new SpawnList<RoomGen<MapGenContext>>();
-                                //cross
-                                genericRooms.Add(new RoomGenCross<MapGenContext>(new RandRange(4, 11), new RandRange(4, 11), new RandRange(2, 6), new RandRange(2, 6)), 10);
-                                //round
-                                genericRooms.Add(new RoomGenRound<MapGenContext>(new RandRange(5, 9), new RandRange(5, 9)), 10);
-                                path.GenericRooms = genericRooms;
-
-                                SpawnList<PermissiveRoomGen<MapGenContext>> genericHalls = new SpawnList<PermissiveRoomGen<MapGenContext>>();
-                                genericHalls.Add(new RoomGenAngledHall<MapGenContext>(50), 10);
-                                path.GenericHalls = genericHalls;
-
-                                layout.GenSteps.Add(PR_GRID_GEN, path);
-
-                                layout.GenSteps.Add(PR_GRID_GEN, CreateGenericConnect(75, 50));
-
-                            }
-
-                            AddDrawGridSteps(layout);
-
-                            AddStairStep(layout, false);
-
-                            AddWaterSteps(layout, "water", new RandRange(30));//water
-
-                            layout.GenSteps.Add(PR_DBG_CHECK, new DetectIsolatedStairsStep<MapGenContext, MapGenEntrance, MapGenExit>());
-
-
-                            floorSegment.Floors.Add(layout);
                         }
 
-                        zone.Segments.Add(floorSegment);
+                        AddDrawGridSteps(layout);
+
+                        AddStairStep(layout, false);
+
+                        AddWaterSteps(layout, "water", new RandRange(30));//water
+
+                        layout.GenSteps.Add(PR_DBG_CHECK, new DetectIsolatedStairsStep<MapGenContext, MapGenEntrance, MapGenExit>());
+
+
+                        floorSegment.Floors.Add(layout);
                     }
+
+                    zone.Segments.Add(floorSegment);
                 }
                 #endregion
             }
@@ -5688,7 +5685,7 @@ namespace DataGenerator.Data
                     zone.Rogue = RogueStatus.NoTransfer;
 
                     {
-                        int max_floors = 30;
+                        int max_floors = 3;
                         LayeredSegment floorSegment = new LayeredSegment();
                         floorSegment.IsRelevant = true;
                         floorSegment.ZoneSteps.Add(new SaveVarsZoneStep(PR_EXITS_RESCUE));
@@ -5802,7 +5799,7 @@ namespace DataGenerator.Data
                     zone.Rogue = RogueStatus.NoTransfer;
 
                     {
-                        int max_floors = 10;
+                        int max_floors = 3;
                         LayeredSegment floorSegment = new LayeredSegment();
                         floorSegment.IsRelevant = true;
                         floorSegment.ZoneSteps.Add(new SaveVarsZoneStep(PR_EXITS_RESCUE));
@@ -5914,7 +5911,7 @@ namespace DataGenerator.Data
                     zone.Rogue = RogueStatus.NoTransfer;
 
                     {
-                        int max_floors = 10;
+                        int max_floors = 3;
                         LayeredSegment floorSegment = new LayeredSegment();
                         floorSegment.IsRelevant = true;
                         floorSegment.ZoneSteps.Add(new SaveVarsZoneStep(PR_EXITS_RESCUE));
@@ -6081,7 +6078,7 @@ namespace DataGenerator.Data
                     zone.Rogue = RogueStatus.NoTransfer;
 
                     {
-                        int max_floors = 12;
+                        int max_floors = 3;
                         LayeredSegment floorSegment = new LayeredSegment();
                         floorSegment.IsRelevant = true;
                         floorSegment.ZoneSteps.Add(new SaveVarsZoneStep(PR_EXITS_RESCUE));
