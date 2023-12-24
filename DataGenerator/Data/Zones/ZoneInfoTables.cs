@@ -1313,11 +1313,10 @@ namespace DataGenerator.Data
             Bottom = 4,
             Starter = 8,
             Natural = 15,
-            ShopOnly = 16,
-            All = 31
+            ShopOnly = 16
         }
 
-        public static IEnumerable<string> IterateTMs(TMClass tmClass)
+        static IEnumerable<string> IterateTMs(TMClass tmClass)
         {
             if ((tmClass & TMClass.Top) != TMClass.None)
             {
