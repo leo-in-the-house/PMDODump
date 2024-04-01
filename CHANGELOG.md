@@ -1,4 +1,10 @@
-# 0.7.24 Changes #
+# 0.8 Changes #
 
-* Magic Coat deflects all status moves, as does mirror orb.
-* Snatch Duration 3->10 turns
+* Monster Orb is now obtainable in vanilla
+* Effects that destroy items such as bug bite and incinerate now only affect one stack instead of all
+* Fixed an issue where partial trapping moves damaged the player more times than the enemy
+* Fixed the effect of Neutralizing Gas
+* X Items and Full Heal Range 3 -> 5
+* RC: End-of-adventure inventory menu fixed to support inv extensions
+* Dev: Report error when generating with type mismatch
+* Dev: Fixed a constructor for GroundObject not taking passable parameter

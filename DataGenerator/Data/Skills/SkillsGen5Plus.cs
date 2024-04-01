@@ -3139,7 +3139,7 @@ namespace DataGenerator.Data
                 skill.Desc = new LocalText("The target is infested and trapped for three turns.");
                 skill.BaseCharges = 20;
                 skill.Data.Element = "bug";
-                skill.Data.Category = BattleData.SkillCategory.Status;
+                skill.Data.Category = BattleData.SkillCategory.Magical;
                 skill.Data.HitRate = 100;
                 skill.Data.SkillStates.Set(new BasePowerState(30));
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
@@ -5551,17 +5551,26 @@ namespace DataGenerator.Data
             }
             else if (ii == 752)
             {
-                skill.Name = new LocalText("**Teatime");
+                skill.Name = new LocalText("=Teatime");
                 skill.Desc = new LocalText("The user has teatime with all the Pokémon in the battle. Each Pokémon eats its held Berry.");
                 skill.BaseCharges = 10;
                 skill.Data.Element = "normal";
                 skill.Data.Category = BattleData.SkillCategory.Status;
                 skill.Data.HitRate = -1;
                 skill.Strikes = 1;
-                skill.HitboxAction = new AttackAction();
-                ((AttackAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(05);//Attack
-                skill.HitboxAction.TargetAlignments = Alignment.Foe;
-                skill.Explosion.TargetAlignments = Alignment.Foe;
+                skill.HitboxAction = new AreaAction();
+                ((AreaAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(38);//RearUp
+                ((AreaAction)skill.HitboxAction).Range = 2;
+                ((AreaAction)skill.HitboxAction).Speed = 6;
+                SingleEmitter emitter = new SingleEmitter(new AnimData("Beat_Up", 3));
+                emitter.LocHeight = 24;
+                BattleFX preFX = new BattleFX();
+                preFX.Emitter = emitter;
+                preFX.Sound = "DUN_Rollcall_Orb";
+                preFX.Delay = 20;
+                skill.HitboxAction.PreActions.Add(preFX);
+                skill.HitboxAction.TargetAlignments = Alignment.Self | Alignment.Friend | Alignment.Foe;
+                skill.Explosion.TargetAlignments = Alignment.Self | Alignment.Friend | Alignment.Foe;
             }
             else if (ii == 753)
             {
@@ -7786,8 +7795,8 @@ namespace DataGenerator.Data
             }
             else if (ii == 888)
             {
-                skill.Name = new LocalText("**Twin Beam");
-                skill.Desc = new LocalText("");
+                skill.Name = new LocalText("Twin Beam");
+                skill.Desc = new LocalText("The user shoots mystical beams from its eyes to inflict damage. The target is hit twice in a row.");
                 skill.BaseCharges = 10;
                 skill.Data.Element = "psychic";
                 skill.Data.Category = BattleData.SkillCategory.Magical;
@@ -7795,10 +7804,21 @@ namespace DataGenerator.Data
                 skill.Data.SkillStates.Set(new BasePowerState(40));
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
                 skill.Strikes = 1;
-                skill.HitboxAction = new AttackAction();
-                ((AttackAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(05);//Attack
+                skill.HitboxAction = new ProjectileAction();
+                ((ProjectileAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(07);//Shoot
+                ((ProjectileAction)skill.HitboxAction).Range = 8;
+                ((ProjectileAction)skill.HitboxAction).Speed = 12;
+                ((ProjectileAction)skill.HitboxAction).StopAtWall = true;
+                ((ProjectileAction)skill.HitboxAction).StopAtHit = true;
+                ((ProjectileAction)skill.HitboxAction).HitTiles = true;
+                StreamEmitter shotAnim = new StreamEmitter(new AnimData("Aurora_Beam_Custom", 3));
+                shotAnim.StartDistance = 16;
+                shotAnim.Shots = 12;
+                shotAnim.BurstTime = 3;
+                ((ProjectileAction)skill.HitboxAction).StreamEmitter = shotAnim;
                 skill.HitboxAction.TargetAlignments = Alignment.Foe;
                 skill.Explosion.TargetAlignments = Alignment.Foe;
+                skill.HitboxAction.ActionFX.Sound = "DUN_Psybeam";
             }
             else if (ii == 889)
             {

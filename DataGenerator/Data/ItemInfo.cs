@@ -289,7 +289,7 @@ namespace DataGenerator.Data
             else if (ii == 36)
             {
                 item.Name = new LocalText("Roseli Berry");
-                item.Desc = new LocalText("A mysterious berry. It changes the Pokémon to the Fairy-type.");
+                item.Desc = new LocalText("The slight bitterness that cuts through the rich sweetness makes this Berry perfect for adding an accent.  It changes the Pokémon to the Fairy-type.");
                 item.Sprite = "Berry_Roseli";
                 item.UseEvent.OnHits.Add(0, new ChangeToElementEvent("fairy"));
             }
@@ -423,128 +423,128 @@ namespace DataGenerator.Data
             else if (ii == 76)
             {
                 item.Name = new LocalText("Blue Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Water-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Maximum HP, and Water-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Blue";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("water"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("water", true, Stat.HP));
             }
             else if (ii == 77)
             {
                 item.Name = new LocalText("Black Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Dark-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Maximum HP, and Dark-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Black";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("dark"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("dark", true, Stat.HP));
             }
             else if (ii == 78)
             {
                 item.Name = new LocalText("Clear Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Ice-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Special Defense, and Ice-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Clear";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("ice"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("ice", true, Stat.MDef));
             }
             else if (ii == 79)
             {
                 item.Name = new LocalText("Grass Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Grass-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Special Defense, and Grass-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Grass";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("grass"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("grass", true, Stat.MDef));
             }
             else if (ii == 80)
             {
                 item.Name = new LocalText("Green Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Bug-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Speed, and Bug-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Green";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("bug"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("bug", true, Stat.Speed));
             }
             else if (ii == 81)
             {
                 item.Name = new LocalText("Brown Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Ground-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Attack, and Ground-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Brown";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("ground"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("ground", true, Stat.Attack));
             }
             else if (ii == 82)
             {
                 item.Name = new LocalText("Orange Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Fighting-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Attack, and Fighting-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Orange";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("fighting"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("fighting", true, Stat.Attack));
             }
             else if (ii == 83)
             {
                 item.Name = new LocalText("Gold Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Psychic-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Special Attack, and Psychic-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Gold";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("psychic"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("psychic", true, Stat.MAtk));
             }
             else if (ii == 84)
             {
                 item.Name = new LocalText("Pink Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Poison-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Defense, and Poison-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Pink";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("poison"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("poison", true, Stat.Defense));
             }
             else if (ii == 85)
             {
                 item.Name = new LocalText("Purple Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Ghost-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Special Attack, and Ghost-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Purple";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("ghost"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("ghost", true, Stat.MAtk));
             }
             else if (ii == 86)
             {
                 item.Name = new LocalText("Red Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Fire-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Special Attack, and Fire-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Red";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("fire"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("fire", true, Stat.MAtk));
             }
             else if (ii == 87)
             {
                 item.Name = new LocalText("Royal Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Dragon-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Attack, and Dragon-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Royal";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("dragon"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("dragon", true, Stat.Attack));
             }
             else if (ii == 88)
             {
                 item.Name = new LocalText("Silver Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Steel-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Defense, and Steel-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Silver";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("steel"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("steel", true, Stat.Defense));
             }
             else if (ii == 89)
             {
                 item.Name = new LocalText("White Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Normal-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Maximum HP, and Normal-type Pokémon like it the most.");
                 item.Sprite = "Gummi_White";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("normal"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("normal", true, Stat.HP));
             }
             else if (ii == 90)
             {
                 item.Name = new LocalText("Yellow Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Electric-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Speed, and Electric-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Yellow";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("electric"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("electric", true, Stat.Speed));
             }
             else if (ii == 91)
             {
                 item.Name = new LocalText("Sky Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Flying-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Speed, and Flying-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Sky";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("flying"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("flying", true, Stat.Speed));
             }
             else if (ii == 92)
             {
                 item.Name = new LocalText("Gray Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Rock-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Defense, and Rock-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Gray";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("rock"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("rock", true, Stat.Defense));
             }
             else if (ii == 93)
             {
                 item.Name = new LocalText("Magenta Gummi");
-                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. Fairy-type Pokémon like it the most.");
+                item.Desc = new LocalText("A food item that somewhat fills the Pokémon's belly, and permanently boosts its stats. It usually boosts Special Defense, and Fairy-type Pokémon like it the most.");
                 item.Sprite = "Gummi_Magenta";
-                item.UseEvent.OnHits.Add(0, new GummiEvent("fairy"));
+                item.UseEvent.OnHits.Add(0, new VitaGummiEvent("fairy", true, Stat.MDef));
             }
             else if (ii == 94)
             {
@@ -910,13 +910,13 @@ namespace DataGenerator.Data
             else if (ii == 173)
             {
                 item.Name = new LocalText("Full Heal");
-                item.Desc = new LocalText("A spray-type medicine that cures status problems. It affects all team members up to 3 tiles away.");
+                item.Desc = new LocalText("A spray-type medicine that cures status problems. It affects all team members up to 5 tiles away.");
                 item.Sprite = "Medicine_Green";
                 item.ItemStates.Set(new CurerState());
                 item.UseEvent.BeforeActions.Add(-1, new AddContextStateEvent(new CureAttack()));
                 item.UseEvent.OnHits.Add(0, new RemoveStateStatusBattleEvent(typeof(BadStatusState), true, new StringKey("MSG_CURE_ALL")));
                 item.UseAction = new AreaAction();
-                ((AreaAction)item.UseAction).Range = 3;
+                ((AreaAction)item.UseAction).Range = 5;
                 ((AreaAction)item.UseAction).Speed = 6;
                 ((AreaAction)item.UseAction).LagBehindTime = 24;
                 CircleSquareReleaseEmitter emitter = new CircleSquareReleaseEmitter(new AnimData("Event_Gather_Sparkle", 5));
@@ -939,11 +939,11 @@ namespace DataGenerator.Data
             else if (ii == 175)
             {
                 item.Name = new LocalText("X Attack");
-                item.Desc = new LocalText("An item that sharply raises Attack. It affects all team members up to 3 tiles away.");
+                item.Desc = new LocalText("An item that sharply raises Attack. It affects all team members up to 5 tiles away.");
                 item.Sprite = "Medicine_Red";
                 item.UseEvent.OnHits.Add(0, new StatusStackBattleEvent("mod_attack", true, false, 2));
                 item.UseAction = new AreaAction();
-                ((AreaAction)item.UseAction).Range = 3;
+                ((AreaAction)item.UseAction).Range = 5;
                 ((AreaAction)item.UseAction).Speed = 6;
                 ((AreaAction)item.UseAction).LagBehindTime = 24;
                 CircleSquareReleaseEmitter emitter = new CircleSquareReleaseEmitter(new AnimData("Event_Gather_Sparkle", 5));
@@ -962,11 +962,11 @@ namespace DataGenerator.Data
             else if (ii == 176)
             {
                 item.Name = new LocalText("X Defense");
-                item.Desc = new LocalText("An item that sharply raises Defense. It affects all team members up to 3 tiles away.");
+                item.Desc = new LocalText("An item that sharply raises Defense. It affects all team members up to 5 tiles away.");
                 item.Sprite = "Medicine_Yellow";
                 item.UseEvent.OnHits.Add(0, new StatusStackBattleEvent("mod_defense", true, false, 2));
                 item.UseAction = new AreaAction();
-                ((AreaAction)item.UseAction).Range = 3;
+                ((AreaAction)item.UseAction).Range = 5;
                 ((AreaAction)item.UseAction).Speed = 6;
                 ((AreaAction)item.UseAction).LagBehindTime = 24;
                 CircleSquareReleaseEmitter emitter = new CircleSquareReleaseEmitter(new AnimData("Event_Gather_Sparkle", 5));
@@ -985,11 +985,11 @@ namespace DataGenerator.Data
             else if (ii == 177)
             {
                 item.Name = new LocalText("X Sp. Atk");
-                item.Desc = new LocalText("An item that sharply raises Special Attack. It affects all team members up to 3 tiles away.");
+                item.Desc = new LocalText("An item that sharply raises Special Attack. It affects all team members up to 5 tiles away.");
                 item.Sprite = "Medicine_Red";
                 item.UseEvent.OnHits.Add(0, new StatusStackBattleEvent("mod_special_attack", true, false, 2));
                 item.UseAction = new AreaAction();
-                ((AreaAction)item.UseAction).Range = 3;
+                ((AreaAction)item.UseAction).Range = 5;
                 ((AreaAction)item.UseAction).Speed = 6;
                 ((AreaAction)item.UseAction).LagBehindTime = 24;
                 CircleSquareReleaseEmitter emitter = new CircleSquareReleaseEmitter(new AnimData("Event_Gather_Sparkle", 5));
@@ -1008,11 +1008,11 @@ namespace DataGenerator.Data
             else if (ii == 178)
             {
                 item.Name = new LocalText("X Sp. Def");
-                item.Desc = new LocalText("An item that sharply raises Special Defense. It affects all team members up to 3 tiles away.");
+                item.Desc = new LocalText("An item that sharply raises Special Defense. It affects all team members up to 5 tiles away.");
                 item.Sprite = "Medicine_Yellow";
                 item.UseEvent.OnHits.Add(0, new StatusStackBattleEvent("mod_special_defense", true, false, 2));
                 item.UseAction = new AreaAction();
-                ((AreaAction)item.UseAction).Range = 3;
+                ((AreaAction)item.UseAction).Range = 5;
                 ((AreaAction)item.UseAction).Speed = 6;
                 ((AreaAction)item.UseAction).LagBehindTime = 24;
                 CircleSquareReleaseEmitter emitter = new CircleSquareReleaseEmitter(new AnimData("Event_Gather_Sparkle", 5));
@@ -1031,11 +1031,11 @@ namespace DataGenerator.Data
             else if (ii == 179)
             {
                 item.Name = new LocalText("X Speed");
-                item.Desc = new LocalText("An item that boosts Movement Speed by 1 stage. It affects all team members up to 3 tiles away.");
+                item.Desc = new LocalText("An item that boosts Movement Speed by 1 stage. It affects all team members up to 5 tiles away.");
                 item.Sprite = "Medicine_Orange";
                 item.UseEvent.OnHits.Add(0, new StatusStackBattleEvent("mod_speed", true, false, 2));
                 item.UseAction = new AreaAction();
-                ((AreaAction)item.UseAction).Range = 3;
+                ((AreaAction)item.UseAction).Range = 5;
                 ((AreaAction)item.UseAction).Speed = 6;
                 ((AreaAction)item.UseAction).LagBehindTime = 24;
                 CircleSquareReleaseEmitter emitter = new CircleSquareReleaseEmitter(new AnimData("Event_Gather_Sparkle", 5));
@@ -1054,11 +1054,11 @@ namespace DataGenerator.Data
             else if (ii == 180)
             {
                 item.Name = new LocalText("X Accuracy");
-                item.Desc = new LocalText("An item that sharply raises Accuracy. It affects all team members up to 3 tiles away.");
+                item.Desc = new LocalText("An item that sharply raises Accuracy. It affects all team members up to 5 tiles away.");
                 item.Sprite = "Medicine_Orange";
                 item.UseEvent.OnHits.Add(0, new StatusStackBattleEvent("mod_accuracy", true, false, 2));
                 item.UseAction = new AreaAction();
-                ((AreaAction)item.UseAction).Range = 3;
+                ((AreaAction)item.UseAction).Range = 5;
                 ((AreaAction)item.UseAction).Speed = 6;
                 ((AreaAction)item.UseAction).LagBehindTime = 24;
                 CircleSquareReleaseEmitter emitter = new CircleSquareReleaseEmitter(new AnimData("Event_Gather_Sparkle", 5));
@@ -1077,11 +1077,11 @@ namespace DataGenerator.Data
             else if (ii == 181)
             {
                 item.Name = new LocalText("Dire Hit");
-                item.Desc = new LocalText("An item that raises critical-hit ratio. It affects all team members up to 3 tiles away.");
+                item.Desc = new LocalText("An item that raises critical-hit ratio. It affects all team members up to 5 tiles away.");
                 item.Sprite = "Medicine_Orange";
                 item.UseEvent.OnHits.Add(0, new StatusBattleEvent("focus_energy", true, false));
                 item.UseAction = new AreaAction();
-                ((AreaAction)item.UseAction).Range = 3;
+                ((AreaAction)item.UseAction).Range = 5;
                 ((AreaAction)item.UseAction).Speed = 6;
                 ((AreaAction)item.UseAction).LagBehindTime = 24;
                 CircleSquareReleaseEmitter emitter = new CircleSquareReleaseEmitter(new AnimData("Event_Gather_Sparkle", 5));
@@ -2182,6 +2182,18 @@ namespace DataGenerator.Data
             }
             else if (ii == 290)
             {
+                item.Name = new LocalText("Monster Orb");
+                item.Desc = new LocalText("An orb that summons a monster house near the user.");
+                item.Sprite = "Orb_Green";
+                item.UseEvent.OnHits.Add(0, new BattlelessEvent(true, new MonsterHouseOwnerEvent(new RogueElements.RandRange(7, 13), 50)));
+                item.UseAction = new SelfAction();
+                item.UseAction.ActionFX.Sound = "DUN_Petrify_Orb";
+                item.UseAction.TargetAlignments |= Alignment.Self;
+                item.Explosion.TargetAlignments |= Alignment.Self;
+            }
+            else if (ii == 291)
+            {
+
             }
             else if (ii == 300)
             {
@@ -2316,7 +2328,7 @@ namespace DataGenerator.Data
                 item.Desc = new LocalText("A magnifying lens that boosts the Pokémon's Attack Range.");
                 item.Sprite = "Specs_LightBlue";
                 item.Price = 200;
-                item.OnActions.Add(-1, new AddRangeEvent(1));
+                item.OnActions.Add(-1, new OnMoveUseEvent(new AddRangeEvent(1)));
             }
             else if (ii == 315)
             {
@@ -3215,9 +3227,29 @@ namespace DataGenerator.Data
             }
             else if (ii == 478)
             {
-                item.Name = new LocalText("**Mystery Part");
-                item.Sprite = "Piece_Yellow";
-                item.Price = 100000;
+                item.Name = new LocalText("Prison Bottle");
+                item.Desc = new LocalText("A bottle believed to have been used to seal away the power of a certain Pokémon long, long ago.");
+                item.Sprite = "Bottle_Purple";
+                item.UsageType = ItemData.UseType.UseOther;
+                item.Price = 800000;
+                item.MaxStack = -1;
+                item.UseEvent.BeforeTryActions.Add(0, new CheckItemActiveEvent());
+                item.UseEvent.BeforeTryActions.Add(1, new FormChoiceEvent("hoopa"));
+                item.UseEvent.OnHits.Add(0, new SwitchFormEvent());
+                item.UseEvent.OnHits.Add(0, new DeactivateItemEvent());
+                item.UseAction = new SelfAction();
+                item.UseAction.TargetAlignments |= Alignment.Self;
+                item.Explosion.TargetAlignments |= Alignment.Self;
+
+                BattleFX itemFX = new BattleFX();
+                itemFX.Sound = "DUN_Wonder_Tile";
+                itemFX.Emitter = new SingleEmitter(new AnimData("Circle_Small_Blue_In", 2));
+                itemFX.Delay = 20;
+                item.UseAction.PreActions.Add(itemFX);
+
+                item.UseEvent.HitFX.Delay = 20;
+                item.UseEvent.HitFX.Sound = "_UNK_EVT_043";
+                item.UseEvent.HitFX.Emitter = new SingleEmitter(new AnimData("Materialize", 2));
             }
             else if (ii == 479)
             {
@@ -3258,6 +3290,10 @@ namespace DataGenerator.Data
             }
             else if (ii == 485)
             {
+                item.Name = new LocalText("Comet Shard");
+                item.Desc = new LocalText("A shard that fell to the ground when a comet passed nearby. It sells for an extremely high price.");
+                item.Sprite = "Crystal_Blue";
+                item.Price = 60000;
             }
             else if (ii == 486)
             {
@@ -3382,7 +3418,8 @@ namespace DataGenerator.Data
                 item.Name = new LocalText("**Mystery Part");
                 item.Desc = new LocalText("A mysterious mechanical part that has lain undisturbed for eons, veiled by legendary mystery. It is said to have an effect on mysterious distortions.");
                 // This will prevent mysterious distortions from occurring, and cause them to flood out when taken away
-                item.Price = 80000;
+                item.Sprite = "Piece_Yellow";
+                item.Price = 40000;
             }
             else if (ii == 545)
             {
@@ -4439,6 +4476,10 @@ namespace DataGenerator.Data
                     fileName = AutoItemInfo.FillExclusiveTestData(item, "", ExclusiveItemEffect.StatusSplash, new object[] { }, translate);
                 else if (ii == 890)
                     fileName = AutoItemInfo.FillExclusiveTestData(item, "", ExclusiveItemEffect.TypeBodyguard, new object[] { "bug" }, translate);
+                else if (ii == 891)
+                    fileName = AutoItemInfo.FillExclusiveTestData(item, "", ExclusiveItemEffect.TypeBecomesCategory, new object[] { "grass", BattleData.SkillCategory.Physical }, translate);
+                else if (ii == 892)
+                    fileName = AutoItemInfo.FillExclusiveTestData(item, "", ExclusiveItemEffect.WeaknessDodge, new object[] { "fire" }, translate);
 
                 if (ii >= 800 && ii < 900)
                     item.Comment = "Test item, do not translate";
@@ -4447,7 +4488,7 @@ namespace DataGenerator.Data
                 item.Sprite = "Box_Yellow";
                 item.Icon = 10;
                 item.Price = 800 * item.Rarity;
-                item.UsageType = ItemData.UseType.None;
+                item.UsageType = ItemData.UseType.Treasure;
                 item.ItemStates.Set(new MaterialState());
                 item.BagEffect = true;
                 item.CannotDrop = ii <= 771;

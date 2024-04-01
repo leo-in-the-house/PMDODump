@@ -270,20 +270,7 @@ namespace DataGenerator.Data
                     chestChanceZoneStep.ModStates.Add(new FlagType(typeof(ChestModGenState)));
                     chestChanceZoneStep.HouseStepSpawns.Add(new ChestStep<ListMapGenContext>(false, GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
 
-                    foreach (string key in IterateGummis())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 4);//gummis
-                    chestChanceZoneStep.Items.Add(new MapItem("apricorn_big"), new IntRange(0, max_floors), 20);//big apricorn
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_elixir"), new IntRange(0, max_floors), 80);//elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_potion"), new IntRange(0, max_floors), 40);//potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_elixir"), new IntRange(0, max_floors), 10);//max elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_potion"), new IntRange(0, max_floors), 10);//max potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_full_heal"), new IntRange(0, max_floors), 20);//full heal
-                    foreach (string key in IterateXItems())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 15);//X-Items
-                    chestChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 20);//nugget
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 20);//amber tear
-
-                    chestChanceZoneStep.ItemThemes.Add(new ItemThemeNone(100, new RandRange(1, 3)), new IntRange(0, max_floors), 30);
+                    PopulateChestItems(chestChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.SidePath, false, max_floors);
 
                     floorSegment.ZoneSteps.Add(chestChanceZoneStep);
                 }
@@ -331,36 +318,7 @@ namespace DataGenerator.Data
                         vaultChanceZoneStep.VaultSteps.Add(new GenPriority<GenStep<ListMapGenContext>>(PR_TILES_GEN_EXTRA, vaultStep));
                     }
 
-                    // item spawnings for the vault
-                    {
-                        SpawnList<IStepSpawner<ListMapGenContext, MapItem>> boxSpawn = new SpawnList<IStepSpawner<ListMapGenContext, MapItem>>();
-
-                        //444      ***    Light Box - 1* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_light", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(1), new RandRange(1))), 30);
-                        }
-
-                        //445      ***    Heavy Box - 2* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_heavy", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(2), new RandRange(1))), 10);
-                        }
-
-                        MultiStepSpawner<ListMapGenContext, MapItem> boxPicker = new MultiStepSpawner<ListMapGenContext, MapItem>(new LoopedRand<IStepSpawner<ListMapGenContext, MapItem>>(boxSpawn, new RandRange(1)));
-
-                        //StepSpawner <- PresetMultiRand
-                        MultiStepSpawner<ListMapGenContext, MapItem> mainSpawner = new MultiStepSpawner<ListMapGenContext, MapItem>();
-                        mainSpawner.Picker = new PresetMultiRand<IStepSpawner<ListMapGenContext, MapItem>>(boxPicker);
-                        vaultChanceZoneStep.ItemSpawners.SetRange(mainSpawner, new IntRange(0, max_floors));
-                    }
-                    vaultChanceZoneStep.ItemAmount.SetRange(new RandRange(0), new IntRange(0, max_floors));
-
-                    // item placements for the vault
-                    {
-                        RandomRoomSpawnStep<ListMapGenContext, MapItem> detourItems = new RandomRoomSpawnStep<ListMapGenContext, MapItem>();
-                        detourItems.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.SwitchVault));
-                        vaultChanceZoneStep.ItemPlacements.SetRange(detourItems, new IntRange(0, max_floors));
-                    }
-
+                    PopulateVaultItems(vaultChanceZoneStep, DungeonStage.Beginner, DungeonAccessibility.Unlockable, max_floors, false);
 
                     floorSegment.ZoneSteps.Add(vaultChanceZoneStep);
                 }
@@ -468,6 +426,14 @@ namespace DataGenerator.Data
                     RandomRoomSpawnStep<MapGenContext, MapItem> specificItemZoneStep = new RandomRoomSpawnStep<MapGenContext, MapItem>(new PickerSpawner<MapGenContext, MapItem>(new PresetMultiRand<MapItem>(specificSpawns)));
                     specificItemZoneStep.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
                     layout.GenSteps.Add(PR_SPAWN_ITEMS, specificItemZoneStep);
+
+
+                    SpawnList<MapItem> wallSpawns = new SpawnList<MapItem>();
+                    PopulateWallItems(wallSpawns, DungeonStage.Rogue, DungeonEnvironment.Rock);
+
+                    TerrainSpawnStep<MapGenContext, MapItem> wallItemZoneStep = new TerrainSpawnStep<MapGenContext, MapItem>(new Tile("wall"));
+                    wallItemZoneStep.Spawn = new PickerSpawner<MapGenContext, MapItem>(new LoopedRand<MapItem>(wallSpawns, new RandRange(6, 10)));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, wallItemZoneStep);
 
 
                     //construct paths
@@ -597,6 +563,7 @@ namespace DataGenerator.Data
                 zone.Rescues = 2;
                 zone.Level = 35;
                 zone.BagRestrict = 0;
+                zone.KeepTreasure = true;
                 zone.Rogue = RogueStatus.ItemTransfer;
                 zone.Persistent = true;
 
@@ -923,35 +890,7 @@ namespace DataGenerator.Data
                         vaultChanceZoneStep.VaultSteps.Add(new GenPriority<GenStep<ListMapGenContext>>(PR_TILES_GEN_EXTRA, vaultStep));
                     }
 
-                    // item spawnings for the vault
-                    {
-                        SpawnList<IStepSpawner<ListMapGenContext, MapItem>> boxSpawn = new SpawnList<IStepSpawner<ListMapGenContext, MapItem>>();
-
-                        //444      ***    Light Box - 1* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_light", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(1), new RandRange(1))), 30);
-                        }
-
-                        //445      ***    Heavy Box - 2* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_heavy", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(2), new RandRange(1))), 10);
-                        }
-
-                        MultiStepSpawner<ListMapGenContext, MapItem> boxPicker = new MultiStepSpawner<ListMapGenContext, MapItem>(new LoopedRand<IStepSpawner<ListMapGenContext, MapItem>>(boxSpawn, new RandRange(1)));
-
-                        //StepSpawner <- PresetMultiRand
-                        MultiStepSpawner<ListMapGenContext, MapItem> mainSpawner = new MultiStepSpawner<ListMapGenContext, MapItem>();
-                        mainSpawner.Picker = new PresetMultiRand<IStepSpawner<ListMapGenContext, MapItem>>(boxPicker);
-                        vaultChanceZoneStep.ItemSpawners.SetRange(mainSpawner, new IntRange(0, max_floors));
-                    }
-                    vaultChanceZoneStep.ItemAmount.SetRange(new RandRange(0), new IntRange(0, max_floors));
-
-                    // item placements for the vault
-                    {
-                        RandomRoomSpawnStep<ListMapGenContext, MapItem> detourItems = new RandomRoomSpawnStep<ListMapGenContext, MapItem>();
-                        detourItems.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.SwitchVault));
-                        vaultChanceZoneStep.ItemPlacements.SetRange(detourItems, new IntRange(0, max_floors));
-                    }
+                    PopulateVaultItems(vaultChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.SidePath, max_floors, false);
 
 
                     floorSegment.ZoneSteps.Add(vaultChanceZoneStep);
@@ -1000,53 +939,10 @@ namespace DataGenerator.Data
 
                     //items for the vault
                     {
-                        foreach (string key in IterateTMs(TMClass.Starter))
-                            vaultChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 5);//TMs
-                        vaultChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 100);//amber tear
-                        vaultChanceZoneStep.Items.Add(new MapItem("seed_reviver"), new IntRange(0, max_floors), 200);//reviver seed
-                        vaultChanceZoneStep.Items.Add(new MapItem("seed_pure"), new IntRange(0, max_floors), 100);//pure seed
-                        vaultChanceZoneStep.Items.Add(new MapItem("machine_recall_box"), new IntRange(0, max_floors), 200);//recall box
+
                     }
 
-                    // item spawnings for the vault
-                    {
-                        //add a PickerSpawner <- PresetMultiRand <- coins
-                        List<MapItem> treasures = new List<MapItem>();
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        PickerSpawner<ListMapGenContext, MapItem> treasurePicker = new PickerSpawner<ListMapGenContext, MapItem>(new PresetMultiRand<MapItem>(treasures));
-
-                        SpawnList<IStepSpawner<ListMapGenContext, MapItem>> boxSpawn = new SpawnList<IStepSpawner<ListMapGenContext, MapItem>>();
-
-                        //444      ***    Light Box - 1* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_light", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(1), new RandRange(1))), 30);
-                        }
-
-                        //445      ***    Heavy Box - 2* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_heavy", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(2), new RandRange(1))), 10);
-                        }
-
-                        MultiStepSpawner<ListMapGenContext, MapItem> boxPicker = new MultiStepSpawner<ListMapGenContext, MapItem>(new LoopedRand<IStepSpawner<ListMapGenContext, MapItem>>(boxSpawn, new RandRange(1)));
-
-                        //StepSpawner <- PresetMultiRand
-                        MultiStepSpawner<ListMapGenContext, MapItem> mainSpawner = new MultiStepSpawner<ListMapGenContext, MapItem>();
-                        mainSpawner.Picker = new PresetMultiRand<IStepSpawner<ListMapGenContext, MapItem>>(treasurePicker, boxPicker);
-                        vaultChanceZoneStep.ItemSpawners.SetRange(mainSpawner, new IntRange(0, max_floors));
-                    }
-                    vaultChanceZoneStep.ItemAmount.SetRange(new RandRange(1), new IntRange(0, max_floors));
-
-
-                    // item placements for the vault
-                    {
-                        RandomRoomSpawnStep<ListMapGenContext, MapItem> detourItems = new RandomRoomSpawnStep<ListMapGenContext, MapItem>();
-                        detourItems.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.KeyVault));
-                        vaultChanceZoneStep.ItemPlacements.SetRange(detourItems, new IntRange(0, max_floors));
-                    }
+                    PopulateVaultItems(vaultChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.SidePath, max_floors, true);
 
                     floorSegment.ZoneSteps.Add(vaultChanceZoneStep);
                 }
@@ -1163,6 +1059,13 @@ namespace DataGenerator.Data
 
                     //items
                     AddItemData(layout, new RandRange(3, 7), 25);
+
+                    SpawnList<MapItem> wallSpawns = new SpawnList<MapItem>();
+                    PopulateWallItems(wallSpawns, DungeonStage.Rogue, DungeonEnvironment.Rock);
+
+                    TerrainSpawnStep<ListMapGenContext, MapItem> wallItemZoneStep = new TerrainSpawnStep<ListMapGenContext, MapItem>(new Tile("wall"));
+                    wallItemZoneStep.Spawn = new PickerSpawner<ListMapGenContext, MapItem>(new LoopedRand<MapItem>(wallSpawns, new RandRange(6, 10)));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, wallItemZoneStep);
 
                     //construct paths
                     {
@@ -1647,18 +1550,15 @@ namespace DataGenerator.Data
                     //monster houses
                     SpreadHouseZoneStep monsterChanceZoneStep = new SpreadHouseZoneStep(PR_HOUSES, new SpreadPlanChance(20, new IntRange(1, 10)));
                     monsterChanceZoneStep.HouseStepSpawns.Add(new MonsterHouseStep<ListMapGenContext>(GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
-                    foreach (string gummi in IterateGummis())
-                        monsterChanceZoneStep.Items.Add(new MapItem(gummi), new IntRange(0, max_floors), 4);//gummis
+
                     foreach (string key in IterateTMs(TMClass.Starter | TMClass.Bottom | TMClass.Mid))
                         monsterChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 1);//TMs
 
-                    monsterChanceZoneStep.Items.Add(new MapItem("food_banana"), new IntRange(0, max_floors), 50);//banana
-                    monsterChanceZoneStep.Items.Add(new MapItem("food_apple_big"), new IntRange(0, max_floors), 50);//big apple
-                    monsterChanceZoneStep.Items.Add(new MapItem("food_banana_big"), new IntRange(0, max_floors), 10);//big banana
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_heart_scale", 2), new IntRange(0, max_floors), 10);//heart scale
-                    monsterChanceZoneStep.Items.Add(new MapItem("key", 1), new IntRange(0, max_floors), 10);//key
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_recall_box"), new IntRange(0, max_floors), 10);//link box
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 10);//ability capsule
+                    monsterChanceZoneStep.Items.Add(new MapItem("food_banana"), new IntRange(0, max_floors), 25);//banana
+                    monsterChanceZoneStep.Items.Add(new MapItem("food_apple_huge"), new IntRange(0, max_floors), 50);//huge apple
+                    monsterChanceZoneStep.Items.Add(new MapItem("food_apple_perfect"), new IntRange(0, max_floors), 10);//perfect apple
+
+                    PopulateHouseItems(monsterChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.Hidden, max_floors);
 
                     monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemThemeNone(40, new RandRange(2, 4))), new IntRange(0, max_floors), 20);//no theme
                                                                                                                                                                                                                                 //monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMoney(500, new ParamRange(5, 11)), new ParamRange(0, 30));
@@ -1676,8 +1576,6 @@ namespace DataGenerator.Data
                     monsterChanceZoneStep.HouseStepSpawns.Add(new MonsterHallStep<ListMapGenContext>(new Loc(11, 9), GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
                     monsterChanceZoneStep.HouseStepSpawns.Add(new MonsterHallStep<ListMapGenContext>(new Loc(15, 13), GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
 
-                    foreach (string key in IterateGummis())
-                        monsterChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 4);//gummis
                     monsterChanceZoneStep.Items.Add(new MapItem("evo_thunder_stone"), new IntRange(0, 30), 4);//Thunder Stone
                     monsterChanceZoneStep.Items.Add(new MapItem("evo_leaf_stone"), new IntRange(0, 30), 4);//Leaf Stone
                     monsterChanceZoneStep.Items.Add(new MapItem("evo_ice_stone"), new IntRange(0, 30), 4);//Ice Stone
@@ -1688,54 +1586,20 @@ namespace DataGenerator.Data
                     monsterChanceZoneStep.Items.Add(new MapItem("evo_kings_rock"), new IntRange(0, max_floors), 4);//King's Rock
                     monsterChanceZoneStep.Items.Add(new MapItem("evo_link_cable"), new IntRange(0, max_floors), 4);//Link Cable
                     monsterChanceZoneStep.Items.Add(new MapItem("evo_sun_stone"), new IntRange(0, max_floors), 4);//Sun Stone
-                    monsterChanceZoneStep.Items.Add(new MapItem("food_banana"), new IntRange(0, max_floors), 25);//banana
+
                     foreach (string tm_id in IterateDistroTMs(TMDistroClass.Ordinary))
                         monsterChanceZoneStep.Items.Add(new MapItem(tm_id), new IntRange(0, max_floors), 2);//TMs
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 10);//nugget
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_pearl", 1), new IntRange(0, max_floors), 10);//pearl
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_heart_scale", 2), new IntRange(0, max_floors), 10);//heart scale
-                    monsterChanceZoneStep.Items.Add(new MapItem("key", 1), new IntRange(0, max_floors), 10);//key
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_recall_box"), new IntRange(0, max_floors), 30);//link box
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 10);//ability capsule
 
-
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_mobile_scarf"), new IntRange(0, max_floors), 1);//Mobile Scarf
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_pass_scarf"), new IntRange(0, max_floors), 1);//Pass Scarf
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_cover_band"), new IntRange(0, max_floors), 1);//Cover Band
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_reunion_cape"), new IntRange(0, max_floors), 1);//Reunion Cape
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_trap_scarf"), new IntRange(0, max_floors), 1);//Trap Scarf
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_grip_claw"), new IntRange(0, max_floors), 1);//Grip Claw
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_twist_band"), new IntRange(0, max_floors), 1);//Twist Band
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_metronome"), new IntRange(0, max_floors), 1);//Metronome
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_shell_bell"), new IntRange(0, max_floors), 1);//Shell Bell
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_scope_lens"), new IntRange(0, max_floors), 1);//Scope Lens
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_power_band"), new IntRange(0, max_floors), 1);//Power Band
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_special_band"), new IntRange(0, max_floors), 1);//Special Band
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_defense_scarf"), new IntRange(0, max_floors), 1);//Defense Scarf
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_zinc_band"), new IntRange(0, max_floors), 1);//Zinc Band
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_wide_lens"), new IntRange(0, max_floors), 1);//Wide Lens
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_pierce_band"), new IntRange(0, max_floors), 1);//Pierce Band
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_shed_shell"), new IntRange(0, max_floors), 1);//Shed Shell
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_x_ray_specs"), new IntRange(0, max_floors), 1);//X-Ray Specs
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_big_root"), new IntRange(0, max_floors), 1);//Big Root
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_weather_rock"), new IntRange(0, max_floors), 1);//Weather Rock
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_expert_belt"), new IntRange(0, max_floors), 1);//Expert Belt
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_choice_scarf"), new IntRange(0, max_floors), 1);//Choice Scarf
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_choice_specs"), new IntRange(0, max_floors), 1);//Choice Specs
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_choice_band"), new IntRange(0, max_floors), 1);//Choice Band
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_assault_vest"), new IntRange(0, max_floors), 1);//Assault Vest
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_life_orb"), new IntRange(0, max_floors), 1);//Life Orb
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_heal_ribbon"), new IntRange(0, max_floors), 1);//Heal Ribbon
-                    monsterChanceZoneStep.Items.Add(new MapItem("held_goggle_specs"), new IntRange(0, max_floors), 1);//Goggle Specs
+                    PopulateHallItems(monsterChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.Hidden, max_floors);
 
                     //monsterChanceZoneStep.ItemThemes.Add(new ItemThemeNone(100, new RandRange(5, 11)), new ParamRange(0, 30), 20);
-                    monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemThemeNone(50, new RandRange(2, 4))), new IntRange(0, 30), 30);//no theme
+                    monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_heart_scale"), new ItemThemeNone(50, new RandRange(2, 4))), new IntRange(0, 30), 30);//no theme
                     monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeType(ItemData.UseType.Learn, false, true, new RandRange(3, 5)),
                         new ItemThemeRange(true, true, new RandRange(0, 2), ItemArray(IterateMachines()))), new IntRange(0, 30), 10);//TMs + machines
 
                     monsterChanceZoneStep.ItemThemes.Add(new ItemStateType(new FlagType(typeof(GummiState)), true, true, new RandRange(3, 7)), new IntRange(0, 30), 30);//gummis
-                    monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemStateType(new FlagType(typeof(EvoState)), true, true, new RandRange(2, 4))), new IntRange(0, 10), 20);//evo items
-                    monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemStateType(new FlagType(typeof(EvoState)), true, true, new RandRange(2, 4))), new IntRange(10, 20), 10);//evo items
+                    monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_heart_scale"), new ItemStateType(new FlagType(typeof(EvoState)), true, true, new RandRange(2, 4))), new IntRange(0, 10), 20);//evo items
+                    monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_heart_scale"), new ItemStateType(new FlagType(typeof(EvoState)), true, true, new RandRange(2, 4))), new IntRange(10, 20), 10);//evo items
                     monsterChanceZoneStep.Mobs.Add(GetGenericMob("spiritomb", "", "hypnosis", "dream_eater", "", "", new RandRange(31), "wander_normal", false, true), new IntRange(0, max_floors), 10);
                     monsterChanceZoneStep.Mobs.Add(GetGenericMob("decidueye", "long_reach", "spirit_shackle", "sucker_punch", "", "", new RandRange(37), "wander_normal", false, true), new IntRange(14, max_floors), 10);
                     monsterChanceZoneStep.MobThemes.Add(new MobThemeNone(20, new RandRange(7, 13)), new IntRange(0, max_floors), 10);
@@ -1749,21 +1613,7 @@ namespace DataGenerator.Data
                     chestChanceZoneStep.ModStates.Add(new FlagType(typeof(ChestModGenState)));
                     chestChanceZoneStep.HouseStepSpawns.Add(new ChestStep<ListMapGenContext>(false, GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
 
-                    foreach (string key in IterateVitamins())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 4);//boosters
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_elixir"), new IntRange(0, max_floors), 20);//elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_potion"), new IntRange(0, max_floors), 20);//potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_elixir"), new IntRange(0, max_floors), 20);//max elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_potion"), new IntRange(0, max_floors), 20);//max potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_full_heal"), new IntRange(0, max_floors), 20);//full heal
-                    foreach (string key in IterateXItems())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 10);//X-Items
-                    chestChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 20);//nugget
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 20);//amber tear
-                    chestChanceZoneStep.Items.Add(new MapItem("seed_joy"), new IntRange(0, max_floors), 15);//joy seed
-                    chestChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 15);//ability capsule
-
-                    chestChanceZoneStep.ItemThemes.Add(new ItemThemeNone(100, new RandRange(1, 3)), new IntRange(0, max_floors), 30);
+                    PopulateChestItems(chestChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.Hidden, false, max_floors);
 
                     floorSegment.ZoneSteps.Add(chestChanceZoneStep);
                 }
@@ -1773,24 +1623,7 @@ namespace DataGenerator.Data
                     chestChanceZoneStep.ModStates.Add(new FlagType(typeof(ChestModGenState)));
                     chestChanceZoneStep.HouseStepSpawns.Add(new ChestStep<ListMapGenContext>(true, GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
 
-                    foreach (string key in IterateVitamins())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 4);//boosters
-                    foreach (string key in IterateGummis())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 4);//gummis
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_elixir"), new IntRange(0, max_floors), 20);//elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_potion"), new IntRange(0, max_floors), 20);//potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_elixir"), new IntRange(0, max_floors), 20);//max elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_potion"), new IntRange(0, max_floors), 20);//max potion
-                    chestChanceZoneStep.Items.Add(new MapItem("food_apple_perfect"), new IntRange(0, max_floors), 20);//perfect apple
-                    foreach (string key in IterateXItems())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 10);//X-Items
-                    chestChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 20);//nugget
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 20);//amber tear
-                    chestChanceZoneStep.Items.Add(new MapItem("seed_joy"), new IntRange(0, max_floors), 15);//joy seed
-                    chestChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 15);//ability capsule
-
-                    chestChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(3), "loot_pearl"), new ItemThemeNone(100, new RandRange(3, 5))), new IntRange(0, max_floors), 30);
-                    chestChanceZoneStep.ItemThemes.Add(new ItemStateType(new FlagType(typeof(GummiState)), true, true, new RandRange(5, 10)), new IntRange(0, max_floors), 10);//gummis
+                    PopulateChestItems(chestChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.Hidden, true, max_floors);
 
                     chestChanceZoneStep.Mobs.Add(GetGenericMob("spiritomb", "", "hypnosis", "dream_eater", "", "", new RandRange(31), "wander_normal", false, true), new IntRange(0, max_floors), 10);
                     chestChanceZoneStep.Mobs.Add(GetGenericMob("decidueye", "long_reach", "spirit_shackle", "sucker_punch", "", "", new RandRange(37), "wander_normal", false, true), new IntRange(14, max_floors), 10);
@@ -1881,6 +1714,16 @@ namespace DataGenerator.Data
                         AddItemData(layout, new RandRange(3, 6), 25);
                     else
                         AddItemData(layout, new RandRange(4, 7), 25);
+
+                    SpawnList<MapItem> wallSpawns = new SpawnList<MapItem>();
+                    wallSpawns.Add(MapItem.CreateMoney(100), 20);
+                    wallSpawns.Add(MapItem.CreateMoney(200), 15);
+                    wallSpawns.Add(MapItem.CreateMoney(300), 10);
+                    PopulateWallItems(wallSpawns, DungeonStage.Advanced, DungeonEnvironment.Forest);
+
+                    TerrainSpawnStep<MapGenContext, MapItem> wallItemZoneStep = new TerrainSpawnStep<MapGenContext, MapItem>(new Tile("wall"));
+                    wallItemZoneStep.Spawn = new PickerSpawner<MapGenContext, MapItem>(new LoopedRand<MapItem>(wallSpawns, new RandRange(6, 10)));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, wallItemZoneStep);
 
                     //construct paths
                     if (ii < 4)
@@ -2136,7 +1979,7 @@ namespace DataGenerator.Data
                 SingularSegment structure = new SingularSegment(-1);
 
                 SpawnList<TeamMemberSpawn> enemyList = new SpawnList<TeamMemberSpawn>();
-                structure.BaseFloor = getSecretRoom(translate, "special_grass_maze", -1, "murky_forest_wall", "murky_forest_floor", "murky_forest_secondary", "tall_grass_blue", "bug", enemyList, new Loc(5, 11));
+                structure.BaseFloor = getSecretRoom(translate, "special_grass_maze", -1, "murky_forest_wall", "murky_forest_floor", "murky_forest_secondary", "tall_grass_blue", "bug", DungeonStage.Advanced, DungeonAccessibility.Hidden, enemyList, new Loc(5, 11));
 
                 zone.Segments.Add(structure);
             }
@@ -2443,17 +2286,14 @@ namespace DataGenerator.Data
                     //monster houses
                     SpreadHouseZoneStep monsterChanceZoneStep = new SpreadHouseZoneStep(PR_HOUSES, new SpreadPlanChance(15, new IntRange(2, max_floors)));
                     monsterChanceZoneStep.HouseStepSpawns.Add(new MonsterHouseStep<ListMapGenContext>(GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
-                    foreach (string gummi in IterateGummis())
-                        monsterChanceZoneStep.Items.Add(new MapItem(gummi), new IntRange(0, max_floors), 4);//gummis
-                    foreach (string key in IterateTMs(TMClass.Starter | TMClass.Bottom | TMClass.Mid))
+
+                    foreach (string key in IterateTMs(TMClass.Top | TMClass.Mid))
                         monsterChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 1);//TMs
 
-                    monsterChanceZoneStep.Items.Add(new MapItem("ammo_silver_spike", 6), new IntRange(0, max_floors), 30);//silver spike
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 10);//nugget
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_heart_scale", 2), new IntRange(0, max_floors), 10);//heart scale
-                    monsterChanceZoneStep.Items.Add(new MapItem("key", 1), new IntRange(0, max_floors), 10);//key
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_recall_box"), new IntRange(0, max_floors), 10);//link box
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 10);//ability capsule
+                    monsterChanceZoneStep.Items.Add(new MapItem("ammo_silver_spike", 6), new IntRange(0, max_floors), 15);//silver spike
+                    monsterChanceZoneStep.Items.Add(new MapItem("ammo_rare_fossil", 5), new IntRange(0, max_floors), 15);//rare fossil
+
+                    PopulateHouseItems(monsterChanceZoneStep, DungeonStage.Advanced, DungeonAccessibility.Hidden, max_floors);
 
                     monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemThemeNone(40, new RandRange(2, 4))), new IntRange(0, max_floors), 20);//no theme
                                                                                                                                                                                                                                 //monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMoney(500, new ParamRange(5, 11)), new ParamRange(0, 30));
@@ -2468,21 +2308,7 @@ namespace DataGenerator.Data
                     chestChanceZoneStep.ModStates.Add(new FlagType(typeof(ChestModGenState)));
                     chestChanceZoneStep.HouseStepSpawns.Add(new ChestStep<ListMapGenContext>(false, GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
 
-                    foreach (string key in IterateVitamins())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 4);//boosters
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_elixir"), new IntRange(0, max_floors), 20);//elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_potion"), new IntRange(0, max_floors), 20);//potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_elixir"), new IntRange(0, max_floors), 20);//max elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_potion"), new IntRange(0, max_floors), 20);//max potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_full_heal"), new IntRange(0, max_floors), 20);//full heal
-                    foreach (string key in IterateXItems())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 10);//X-Items
-                    chestChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 20);//nugget
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 20);//amber tear
-                    chestChanceZoneStep.Items.Add(new MapItem("seed_joy"), new IntRange(0, max_floors), 15);//joy seed
-                    chestChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 15);//ability capsule
-
-                    chestChanceZoneStep.ItemThemes.Add(new ItemThemeNone(100, new RandRange(1, 3)), new IntRange(0, max_floors), 30);
+                    PopulateChestItems(chestChanceZoneStep, DungeonStage.Advanced, DungeonAccessibility.Hidden, false, max_floors);
 
                     floorSegment.ZoneSteps.Add(chestChanceZoneStep);
                 }
@@ -2531,99 +2357,7 @@ namespace DataGenerator.Data
                         vaultChanceZoneStep.VaultSteps.Add(new GenPriority<GenStep<ListMapGenContext>>(PR_TILES_GEN_EXTRA, vaultStep));
                     }
 
-                    //items for the vault
-                    {
-                        foreach (string key in IterateGummis())
-                            vaultChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 200);//gummis
-                        vaultChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 2000);//amber tear
-                        vaultChanceZoneStep.Items.Add(new MapItem("seed_reviver"), new IntRange(0, max_floors), 200);//reviver seed
-                        vaultChanceZoneStep.Items.Add(new MapItem("seed_joy"), new IntRange(0, max_floors), 200);//joy seed
-                        vaultChanceZoneStep.Items.Add(new MapItem("orb_itemizer"), new IntRange(0, max_floors), 50);//itemizer orb
-                        vaultChanceZoneStep.Items.Add(new MapItem("wand_transfer", 3), new IntRange(0, max_floors), 50);//transfer wand
-                        vaultChanceZoneStep.Items.Add(new MapItem("key", 1), new IntRange(0, max_floors), 1000);//key
-                    }
-
-                    // item spawnings for the vault
-                    {
-                        //add a PickerSpawner <- PresetMultiRand <- coins
-                        List<MapItem> treasures = new List<MapItem>();
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        treasures.Add(MapItem.CreateMoney(200));
-                        PickerSpawner<ListMapGenContext, MapItem> treasurePicker = new PickerSpawner<ListMapGenContext, MapItem>(new PresetMultiRand<MapItem>(treasures));
-
-
-                        SpawnList<IStepSpawner<ListMapGenContext, MapItem>> boxSpawn = new SpawnList<IStepSpawner<ListMapGenContext, MapItem>>();
-
-                        //444      ***    Light Box - 1* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_light", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(1), new RandRange(1))), 30);
-                        }
-
-                        //445      ***    Heavy Box - 2* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_heavy", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(2), new RandRange(1))), 10);
-                        }
-
-                        //446      ***    Nifty Box - all high tier TMs, ability capsule, heart scale 9, max potion, full heal, max elixir
-                        {
-                            SpawnList<MapItem> boxTreasure = new SpawnList<MapItem>();
-
-                            //TMs
-                            foreach (string key in IterateTMs(TMClass.Top))
-                                boxTreasure.Add(new MapItem(key), 10);
-
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_nifty", new PickerSpawner<ListMapGenContext, MapItem>(new LoopedRand<MapItem>(boxTreasure, new RandRange(1)))), 10);
-                        }
-
-                        //447      ***    Dainty Box - Stat ups, wonder gummi, nectar, golden apple, golden banana
-                        {
-                            SpawnList<MapItem> boxTreasure = new SpawnList<MapItem>();
-
-                            foreach (string key in IterateGummis())
-                                boxTreasure.Add(new MapItem(key), 1);
-
-                            boxTreasure.Add(new MapItem("boost_protein"), 2);//protein
-                            boxTreasure.Add(new MapItem("boost_iron"), 2);//iron
-                            boxTreasure.Add(new MapItem("boost_calcium"), 2);//calcium
-                            boxTreasure.Add(new MapItem("boost_zinc"), 2);//zinc
-                            boxTreasure.Add(new MapItem("boost_carbos"), 2);//carbos
-                            boxTreasure.Add(new MapItem("boost_hp_up"), 2);//hp up
-                            boxTreasure.Add(new MapItem("boost_nectar"), 2);//nectar
-
-                            boxTreasure.Add(new MapItem("food_apple_huge"), 10);//huge apple
-                            boxTreasure.Add(new MapItem("food_banana_big"), 10);//big banana
-                            boxTreasure.Add(new MapItem("seed_joy"), 10);//joy seed
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_dainty", new PickerSpawner<ListMapGenContext, MapItem>(new LoopedRand<MapItem>(boxTreasure, new RandRange(1)))), 3);
-                        }
-
-                        //448    Glittery Box - golden apple, amber tear, golden banana, nugget, golden thorn 9
-                        {
-                            SpawnList<MapItem> boxTreasure = new SpawnList<MapItem>();
-                            boxTreasure.Add(new MapItem("ammo_golden_thorn"), 10);//golden thorn
-                            boxTreasure.Add(new MapItem("medicine_amber_tear"), 10);//Amber Tear
-                            boxTreasure.Add(new MapItem("loot_nugget"), 10);//nugget
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_glittery", new PickerSpawner<ListMapGenContext, MapItem>(new LoopedRand<MapItem>(boxTreasure, new RandRange(1)))), 2);
-                        }
-
-                        MultiStepSpawner<ListMapGenContext, MapItem> boxPicker = new MultiStepSpawner<ListMapGenContext, MapItem>(new LoopedRand<IStepSpawner<ListMapGenContext, MapItem>>(boxSpawn, new RandRange(3, 5)));
-
-                        //MultiStepSpawner <- PresetMultiRand
-                        MultiStepSpawner<ListMapGenContext, MapItem> mainSpawner = new MultiStepSpawner<ListMapGenContext, MapItem>();
-                        mainSpawner.Picker = new PresetMultiRand<IStepSpawner<ListMapGenContext, MapItem>>(treasurePicker, boxPicker);
-                        vaultChanceZoneStep.ItemSpawners.SetRange(mainSpawner, new IntRange(0, max_floors));
-                    }
-                    vaultChanceZoneStep.ItemAmount.SetRange(new RandRange(3, 5), new IntRange(0, max_floors));
-
-                    // item placements for the vault
-                    {
-                        RandomRoomSpawnStep<ListMapGenContext, MapItem> detourItems = new RandomRoomSpawnStep<ListMapGenContext, MapItem>();
-                        detourItems.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.SwitchVault));
-                        vaultChanceZoneStep.ItemPlacements.SetRange(detourItems, new IntRange(0, max_floors));
-                    }
+                    PopulateFOEItems(vaultChanceZoneStep, DungeonStage.Advanced, DungeonAccessibility.Hidden, max_floors);
 
                     // mobs
                     // Vault FOES
@@ -2744,6 +2478,16 @@ namespace DataGenerator.Data
                         AddItemData(layout, new RandRange(3, 6), 25);
                     else
                         AddItemData(layout, new RandRange(4, 7), 25);
+
+                    SpawnList<MapItem> wallSpawns = new SpawnList<MapItem>();
+                    wallSpawns.Add(MapItem.CreateMoney(100), 20);
+                    wallSpawns.Add(MapItem.CreateMoney(200), 15);
+                    wallSpawns.Add(MapItem.CreateMoney(300), 10);
+                    PopulateWallItems(wallSpawns, DungeonStage.Advanced, DungeonEnvironment.Rock);
+
+                    TerrainSpawnStep<ListMapGenContext, MapItem> wallItemZoneStep = new TerrainSpawnStep<ListMapGenContext, MapItem>(new Tile("wall"));
+                    wallItemZoneStep.Spawn = new PickerSpawner<ListMapGenContext, MapItem>(new LoopedRand<MapItem>(wallSpawns, new RandRange(6, 10)));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, wallItemZoneStep);
 
                     //construct paths
                     if (ii < 4)
@@ -2996,7 +2740,7 @@ namespace DataGenerator.Data
                 SingularSegment structure = new SingularSegment(-1);
 
                 SpawnList<TeamMemberSpawn> enemyList = new SpawnList<TeamMemberSpawn>();
-                structure.BaseFloor = getSecretRoom(translate, "special_grass_maze", -1, "southern_cavern_1_wall", "southern_cavern_1_floor", "southern_cavern_1_secondary", "tall_grass_white", "rock", enemyList, new Loc(5, 11));
+                structure.BaseFloor = getSecretRoom(translate, "special_grass_maze", -1, "southern_cavern_1_wall", "southern_cavern_1_floor", "southern_cavern_1_secondary", "tall_grass_white", "rock", DungeonStage.Advanced, DungeonAccessibility.Hidden, enemyList, new Loc(5, 11));
 
                 zone.Segments.Add(structure);
             }
@@ -3037,6 +2781,7 @@ namespace DataGenerator.Data
                 zone.Level = 25;
                 zone.LevelCap = true;
                 zone.BagRestrict = 16;
+                zone.KeepTreasure = true;
                 zone.TeamSize = 3;
                 zone.Rogue = RogueStatus.NoTransfer;
 
@@ -3421,17 +3166,11 @@ namespace DataGenerator.Data
                     //monster houses
                     SpreadHouseZoneStep monsterChanceZoneStep = new SpreadHouseZoneStep(PR_HOUSES, new SpreadPlanChance(20, new IntRange(1, 15)));
                     monsterChanceZoneStep.HouseStepSpawns.Add(new MonsterHouseStep<ListMapGenContext>(GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
-                    foreach (string gummi in IterateGummis())
-                        monsterChanceZoneStep.Items.Add(new MapItem(gummi), new IntRange(0, max_floors), 4);//gummis
-                    foreach (string iter_item in IterateApricorns())
+
+                    foreach (string iter_item in IterateApricorns(true))
                         monsterChanceZoneStep.Items.Add(new MapItem(iter_item), new IntRange(0, max_floors), 4);//apricorns
-                    monsterChanceZoneStep.Items.Add(new MapItem("food_banana"), new IntRange(0, max_floors), 50);//banana
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 10);//nugget
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_heart_scale", 2), new IntRange(0, max_floors), 10);//heart scale
-                    monsterChanceZoneStep.Items.Add(new MapItem("key", 1), new IntRange(0, max_floors), 10);//key
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_recall_box"), new IntRange(0, max_floors), 10);//link box
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_assembly_box"), new IntRange(8, max_floors), 10);//assembly box
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 10);//ability capsule
+
+                    PopulateHouseItems(monsterChanceZoneStep, DungeonStage.Advanced, DungeonAccessibility.Unlockable, max_floors);
 
                     monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemThemeNone(30, new RandRange(2, 4))), new IntRange(0, max_floors), 20);//no theme
 
@@ -3486,108 +3225,10 @@ namespace DataGenerator.Data
 
                     //items for the vault
                     {
-                        foreach (string key in IterateTMs(TMClass.Natural))
-                            vaultChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 5);//TMs
-                        vaultChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 200);//nugget
-                        vaultChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 100);//amber tear
-                        vaultChanceZoneStep.Items.Add(new MapItem("seed_reviver"), new IntRange(0, max_floors), 200);//reviver seed
-                        vaultChanceZoneStep.Items.Add(new MapItem("seed_joy"), new IntRange(0, max_floors), 100);//joy seed
-                        vaultChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 200);//ability capsule
+                        vaultChanceZoneStep.Items.Add(new MapItem("evo_reaper_cloth"), new IntRange(0, max_floors), 150);//reaper cloth
                     }
 
-                    // item spawnings for the vault
-                    {
-                        //add a PickerSpawner <- PresetMultiRand <- coins
-                        List<MapItem> treasures = new List<MapItem>();
-                        treasures.Add(MapItem.CreateMoney(150));
-                        treasures.Add(MapItem.CreateMoney(150));
-                        treasures.Add(MapItem.CreateMoney(150));
-                        treasures.Add(MapItem.CreateMoney(150));
-                        treasures.Add(MapItem.CreateMoney(150));
-                        PickerSpawner<ListMapGenContext, MapItem> treasurePicker = new PickerSpawner<ListMapGenContext, MapItem>(new PresetMultiRand<MapItem>(treasures));
-
-                        SpawnList<IStepSpawner<ListMapGenContext, MapItem>> boxSpawn = new SpawnList<IStepSpawner<ListMapGenContext, MapItem>>();
-
-                        //444      ***    Light Box - 1* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_light", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(1), new RandRange(1))), 30);
-                        }
-
-                        //445      ***    Heavy Box - 2* items
-                        {
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_heavy", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(2), new RandRange(1))), 10);
-                        }
-
-                        //446      ***    Nifty Box - all high tier TMs, ability capsule, heart scale 9, max potion, full heal, max elixir
-                        {
-                            SpawnList<MapItem> boxTreasure = new SpawnList<MapItem>();
-
-                            //TMs
-                            boxTreasure.Add(new MapItem("tm_will_o_wisp"), 8);//TM Will-o-Wisp
-                            boxTreasure.Add(new MapItem("tm_protect"), 8);//TM Protect
-                            boxTreasure.Add(new MapItem("tm_facade"), 8);//TM Facade
-                            boxTreasure.Add(new MapItem("tm_safeguard"), 8);//TM Safeguard
-
-                            boxTreasure.Add(new MapItem("machine_ability_capsule"), 100);//ability capsule
-                            boxTreasure.Add(new MapItem("loot_heart_scale"), 100);//heart scale
-                            boxTreasure.Add(new MapItem("medicine_max_potion"), 30);//max potion
-                            boxTreasure.Add(new MapItem("medicine_full_heal"), 100);//full heal
-                            boxTreasure.Add(new MapItem("medicine_max_elixir"), 30);//max elixir
-                            boxTreasure.Add(new MapItem("evo_reaper_cloth"), 80);//Reaper Cloth
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_nifty", new PickerSpawner<ListMapGenContext, MapItem>(new LoopedRand<MapItem>(boxTreasure, new RandRange(1)))), 10);
-                        }
-
-                        //447      ***    Dainty Box - Stat ups, wonder gummi, nectar, golden apple, golden banana
-                        {
-                            SpawnList<MapItem> boxTreasure = new SpawnList<MapItem>();
-
-                            //Stat-up
-                            boxTreasure.Add(new MapItem("gummi_grass"), 2);//grass gummi
-                            boxTreasure.Add(new MapItem("gummi_pink"), 2);//pink gummi
-                            boxTreasure.Add(new MapItem("gummi_purple"), 2);//purple gummi
-                            boxTreasure.Add(new MapItem("gummi_red"), 2);//red gummi
-                            boxTreasure.Add(new MapItem("gummi_sky"), 2);//sky gummi
-
-                            boxTreasure.Add(new MapItem("boost_protein"), 2);//protein
-                            boxTreasure.Add(new MapItem("boost_iron"), 2);//iron
-                            boxTreasure.Add(new MapItem("boost_calcium"), 2);//calcium
-                            boxTreasure.Add(new MapItem("boost_zinc"), 2);//zinc
-                            boxTreasure.Add(new MapItem("boost_carbos"), 2);//carbos
-                            boxTreasure.Add(new MapItem("boost_hp_up"), 2);//hp up
-                            boxTreasure.Add(new MapItem("boost_nectar"), 2);//nectar
-
-                            boxTreasure.Add(new MapItem("food_apple_perfect"), 10);//perfect apple
-                            boxTreasure.Add(new MapItem("food_banana_big"), 10);//big banana
-                            boxTreasure.Add(new MapItem("seed_joy"), 10);//joy seed
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_dainty", new PickerSpawner<ListMapGenContext, MapItem>(new LoopedRand<MapItem>(boxTreasure, new RandRange(1)))), 3);
-                        }
-
-                        //448    Glittery Box - golden apple, amber tear, golden banana, nugget, golden thorn 9
-                        {
-                            SpawnList<MapItem> boxTreasure = new SpawnList<MapItem>();
-                            boxTreasure.Add(new MapItem("ammo_golden_thorn"), 10);//golden thorn
-                            boxTreasure.Add(new MapItem("medicine_amber_tear"), 10);//Amber Tear
-                            boxTreasure.Add(new MapItem("loot_nugget"), 10);//nugget
-                            boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_glittery", new PickerSpawner<ListMapGenContext, MapItem>(new LoopedRand<MapItem>(boxTreasure, new RandRange(1)))), 2);
-                        }
-
-                        MultiStepSpawner<ListMapGenContext, MapItem> boxPicker = new MultiStepSpawner<ListMapGenContext, MapItem>(new LoopedRand<IStepSpawner<ListMapGenContext, MapItem>>(boxSpawn, new RandRange(1, 3)));
-
-                        //StepSpawner <- PresetMultiRand
-                        MultiStepSpawner<ListMapGenContext, MapItem> mainSpawner = new MultiStepSpawner<ListMapGenContext, MapItem>();
-                        mainSpawner.Picker = new PresetMultiRand<IStepSpawner<ListMapGenContext, MapItem>>(treasurePicker, boxPicker);
-                        vaultChanceZoneStep.ItemSpawners.SetRange(mainSpawner, new IntRange(0, max_floors));
-                    }
-                    vaultChanceZoneStep.ItemAmount.SetRange(new RandRange(1), new IntRange(0, max_floors));
-
-
-                    // item placements for the vault
-                    {
-                        RandomRoomSpawnStep<ListMapGenContext, MapItem> detourItems = new RandomRoomSpawnStep<ListMapGenContext, MapItem>();
-                        detourItems.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.KeyVault));
-                        vaultChanceZoneStep.ItemPlacements.SetRange(detourItems, new IntRange(0, max_floors));
-                    }
-
+                    PopulateVaultItems(vaultChanceZoneStep, DungeonStage.Advanced, DungeonAccessibility.Unlockable, max_floors, true);
 
                     floorSegment.ZoneSteps.Add(vaultChanceZoneStep);
                 }
@@ -3728,6 +3369,13 @@ namespace DataGenerator.Data
 
                     //items
                     AddItemData(layout, new RandRange(4, 7), 25);
+
+                    SpawnList<MapItem> wallSpawns = new SpawnList<MapItem>();
+                    PopulateWallItems(wallSpawns, DungeonStage.Advanced, DungeonEnvironment.Forest);
+
+                    TerrainSpawnStep<MapGenContext, MapItem> wallItemZoneStep = new TerrainSpawnStep<MapGenContext, MapItem>(new Tile("wall"));
+                    wallItemZoneStep.Spawn = new PickerSpawner<MapGenContext, MapItem>(new LoopedRand<MapItem>(wallSpawns, new RandRange(6, 10)));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, wallItemZoneStep);
 
 
                     //construct paths
@@ -3871,7 +3519,7 @@ namespace DataGenerator.Data
                 enemyList.Add(GetTeamMob(new MonsterID("alcremie", 25, "", Gender.Unknown), "", "sweet_kiss", "sweet_scent", "draining_kiss", "decorate", new RandRange(zone.Level)), 10);
                 enemyList.Add(GetTeamMob(new MonsterID("alcremie", 26, "", Gender.Unknown), "", "sweet_kiss", "sweet_scent", "draining_kiss", "decorate", new RandRange(zone.Level)), 10);
                 enemyList.Add(GetTeamMob(new MonsterID("alcremie", 27, "", Gender.Unknown), "", "sweet_kiss", "sweet_scent", "draining_kiss", "decorate", new RandRange(zone.Level)), 10);
-                structure.BaseFloor = getSecretRoom(translate, "special_gsc_ghost", -2, "mystery_jungle_2_wall", "mystery_jungle_2_floor", "mystery_jungle_2_secondary", "tall_grass_dark", "poison", enemyList, new Loc(7, 6));
+                structure.BaseFloor = getSecretRoom(translate, "special_gsc_ghost", -2, "mystery_jungle_2_wall", "mystery_jungle_2_floor", "mystery_jungle_2_secondary", "tall_grass_dark", "poison", DungeonStage.Advanced, DungeonAccessibility.Unlockable, enemyList, new Loc(7, 6));
 
                 zone.Segments.Add(structure);
             }
@@ -3899,6 +3547,7 @@ namespace DataGenerator.Data
                 zone.LevelCap = true;
                 zone.Rescues = 2;
                 zone.BagRestrict = 8;
+                zone.KeepTreasure = true;
                 zone.TeamSize = 2;
                 zone.Rogue = RogueStatus.NoTransfer;
 
@@ -4220,18 +3869,13 @@ namespace DataGenerator.Data
                     //monster houses
                     SpreadHouseZoneStep monsterChanceZoneStep = new SpreadHouseZoneStep(PR_HOUSES, new SpreadPlanChance(15, new IntRange(0, max_floors)));
                     monsterChanceZoneStep.HouseStepSpawns.Add(new MonsterHouseStep<ListMapGenContext>(GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
-                    foreach (string gummi in IterateGummis())
-                        monsterChanceZoneStep.Items.Add(new MapItem(gummi), new IntRange(0, max_floors), 4);//gummis
-                    foreach (string iter_item in IterateApricorns())
+
+                    foreach (string iter_item in IterateApricorns(true))
                         monsterChanceZoneStep.Items.Add(new MapItem(iter_item), new IntRange(0, max_floors), 2);//apricorns
                     foreach (string iter_item in IterateTypePlates())
                         monsterChanceZoneStep.Items.Add(new MapItem(iter_item), new IntRange(0, max_floors), 5);//type plates
 
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 10);//nugget
-                    monsterChanceZoneStep.Items.Add(new MapItem("loot_heart_scale", 2), new IntRange(0, max_floors), 10);//heart scale
-                    monsterChanceZoneStep.Items.Add(new MapItem("key", 1), new IntRange(0, max_floors), 10);//key
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_recall_box"), new IntRange(0, max_floors), 10);//link box
-                    monsterChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 10);//ability capsule
+                    PopulateHouseItems(monsterChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.Hidden, max_floors);
 
                     monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemThemeNone(40, new RandRange(2, 4))), new IntRange(0, max_floors), 30);//no theme
 
@@ -4247,25 +3891,9 @@ namespace DataGenerator.Data
                     chestChanceZoneStep.ModStates.Add(new FlagType(typeof(ChestModGenState)));
                     chestChanceZoneStep.HouseStepSpawns.Add(new ChestStep<ListMapGenContext>(false, GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
 
-                    foreach (string key in IterateVitamins())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 4);//boosters
-                    foreach (string key in IterateGummis())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 4);//gummis
-                    chestChanceZoneStep.Items.Add(new MapItem("apricorn_big"), new IntRange(0, max_floors), 20);//big apricorn
                     chestChanceZoneStep.Items.Add(new MapItem("evo_link_cable"), new IntRange(0, max_floors), 15);
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_elixir"), new IntRange(0, max_floors), 40);//elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_potion"), new IntRange(0, max_floors), 30);//potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_elixir"), new IntRange(0, max_floors), 20);//max elixir
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_max_potion"), new IntRange(0, max_floors), 20);//max potion
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_full_heal"), new IntRange(0, max_floors), 20);//full heal
-                    foreach (string key in IterateXItems())
-                        chestChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 15);//X-Items
-                    chestChanceZoneStep.Items.Add(new MapItem("loot_nugget"), new IntRange(0, max_floors), 20);//nugget
-                    chestChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 20);//amber tear
-                    chestChanceZoneStep.Items.Add(new MapItem("seed_joy"), new IntRange(0, max_floors), 15);//joy seed
-                    chestChanceZoneStep.Items.Add(new MapItem("machine_ability_capsule"), new IntRange(0, max_floors), 15);//ability capsule
 
-                    chestChanceZoneStep.ItemThemes.Add(new ItemThemeNone(100, new RandRange(1, 3)), new IntRange(0, max_floors), 30);
+                    PopulateChestItems(chestChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.Hidden, false, max_floors);
 
                     floorSegment.ZoneSteps.Add(chestChanceZoneStep);
                 }
@@ -4363,40 +3991,7 @@ namespace DataGenerator.Data
                             detourChanceZoneStep.VaultSteps.Add(new GenPriority<GenStep<ListMapGenContext>>(PR_TILES_GEN_EXTRA, vaultStep));
                         }
 
-                        // item spawnings for the vault
-                        {
-                            //add a PickerSpawner <- PresetMultiRand <- coins
-                            List<MapItem> treasures = new List<MapItem>();
-                            treasures.Add(new MapItem("loot_pearl", 2));
-                            PickerSpawner<ListMapGenContext, MapItem> treasurePicker = new PickerSpawner<ListMapGenContext, MapItem>(new PresetMultiRand<MapItem>(treasures));
-
-                            SpawnList<IStepSpawner<ListMapGenContext, MapItem>> boxSpawn = new SpawnList<IStepSpawner<ListMapGenContext, MapItem>>();
-
-                            //444      ***    Light Box - 1* items
-                            {
-                                boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_light", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(1), new RandRange(1))), 30);
-                            }
-
-                            //445      ***    Heavy Box - 2* items
-                            {
-                                boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_heavy", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(2), new RandRange(1))), 10);
-                            }
-
-                            MultiStepSpawner<ListMapGenContext, MapItem> boxPicker = new MultiStepSpawner<ListMapGenContext, MapItem>(new LoopedRand<IStepSpawner<ListMapGenContext, MapItem>>(boxSpawn, new RandRange(1)));
-
-                            //StepSpawner <- PresetMultiRand
-                            MultiStepSpawner<ListMapGenContext, MapItem> mainSpawner = new MultiStepSpawner<ListMapGenContext, MapItem>();
-                            mainSpawner.Picker = new PresetMultiRand<IStepSpawner<ListMapGenContext, MapItem>>(treasurePicker, boxPicker);
-                            detourChanceZoneStep.ItemSpawners.SetRange(mainSpawner, new IntRange(0, max_floors));
-                        }
-                        detourChanceZoneStep.ItemAmount.SetRange(new RandRange(0), new IntRange(0, max_floors));
-
-                        // item placements for the vault
-                        {
-                            RandomRoomSpawnStep<ListMapGenContext, MapItem> detourItems = new RandomRoomSpawnStep<ListMapGenContext, MapItem>();
-                            detourItems.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.KeyVault));
-                            detourChanceZoneStep.ItemPlacements.SetRange(detourItems, new IntRange(0, max_floors));
-                        }
+                        PopulateVaultItems(detourChanceZoneStep, DungeonStage.Intermediate, DungeonAccessibility.Hidden, max_floors, true, true);
 
                         // trap spawnings for the vault
                         {
@@ -4460,53 +4055,10 @@ namespace DataGenerator.Data
 
                         //items for the vault
                         {
-                            foreach (string key in IterateTMs(TMClass.Starter))
-                                vaultChanceZoneStep.Items.Add(new MapItem(key), new IntRange(0, max_floors), 5);//TMs
-                            vaultChanceZoneStep.Items.Add(new MapItem("medicine_amber_tear", 1), new IntRange(0, max_floors), 100);//amber tear
-                            vaultChanceZoneStep.Items.Add(new MapItem("seed_reviver"), new IntRange(0, max_floors), 200);//reviver seed
-                            vaultChanceZoneStep.Items.Add(new MapItem("seed_pure"), new IntRange(0, max_floors), 100);//pure seed
-                            vaultChanceZoneStep.Items.Add(new MapItem("machine_recall_box"), new IntRange(0, max_floors), 200);//recall box
+
                         }
 
-                        // item spawnings for the vault
-                        {
-                            //add a PickerSpawner <- PresetMultiRand <- coins
-                            List<MapItem> treasures = new List<MapItem>();
-                            treasures.Add(MapItem.CreateMoney(200));
-                            treasures.Add(MapItem.CreateMoney(200));
-                            treasures.Add(MapItem.CreateMoney(200));
-                            treasures.Add(MapItem.CreateMoney(200));
-                            treasures.Add(MapItem.CreateMoney(200));
-                            PickerSpawner<ListMapGenContext, MapItem> treasurePicker = new PickerSpawner<ListMapGenContext, MapItem>(new PresetMultiRand<MapItem>(treasures));
-
-                            SpawnList<IStepSpawner<ListMapGenContext, MapItem>> boxSpawn = new SpawnList<IStepSpawner<ListMapGenContext, MapItem>>();
-
-                            //444      ***    Light Box - 1* items
-                            {
-                                boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_light", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(1), new RandRange(1))), 30);
-                            }
-
-                            //445      ***    Heavy Box - 2* items
-                            {
-                                boxSpawn.Add(new BoxSpawner<ListMapGenContext>("box_heavy", new SpeciesItemContextSpawner<ListMapGenContext>(new IntRange(2), new RandRange(1))), 10);
-                            }
-
-                            MultiStepSpawner<ListMapGenContext, MapItem> boxPicker = new MultiStepSpawner<ListMapGenContext, MapItem>(new LoopedRand<IStepSpawner<ListMapGenContext, MapItem>>(boxSpawn, new RandRange(1)));
-
-                            //StepSpawner <- PresetMultiRand
-                            MultiStepSpawner<ListMapGenContext, MapItem> mainSpawner = new MultiStepSpawner<ListMapGenContext, MapItem>();
-                            mainSpawner.Picker = new PresetMultiRand<IStepSpawner<ListMapGenContext, MapItem>>(treasurePicker, boxPicker);
-                            vaultChanceZoneStep.ItemSpawners.SetRange(mainSpawner, new IntRange(0, max_floors));
-                        }
-                        vaultChanceZoneStep.ItemAmount.SetRange(new RandRange(0, 2), new IntRange(0, max_floors));
-
-
-                        // item placements for the vault
-                        {
-                            RandomRoomSpawnStep<ListMapGenContext, MapItem> detourItems = new RandomRoomSpawnStep<ListMapGenContext, MapItem>();
-                            detourItems.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.KeyVault));
-                            vaultChanceZoneStep.ItemPlacements.SetRange(detourItems, new IntRange(0, max_floors));
-                        }
+                        PopulateVaultItems(vaultChanceZoneStep, DungeonStage.Advanced, DungeonAccessibility.Hidden, max_floors, true);
 
                         combinedVaultZoneStep.Steps.Add(vaultChanceZoneStep);
                     }
@@ -4556,6 +4108,13 @@ namespace DataGenerator.Data
 
                     //items
                     AddItemData(layout, new RandRange(3, 6), 25);
+
+                    SpawnList<MapItem> wallSpawns = new SpawnList<MapItem>();
+                    PopulateWallItems(wallSpawns, DungeonStage.Intermediate, DungeonEnvironment.Rock);
+
+                    TerrainSpawnStep<MapGenContext, MapItem> wallItemZoneStep = new TerrainSpawnStep<MapGenContext, MapItem>(new Tile("wall"));
+                    wallItemZoneStep.Spawn = new PickerSpawner<MapGenContext, MapItem>(new LoopedRand<MapItem>(wallSpawns, new RandRange(6, 10)));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, wallItemZoneStep);
 
                     //construct paths
                     {
@@ -4638,7 +4197,7 @@ namespace DataGenerator.Data
                 enemyList.Add(GetTeamMob(new MonsterID("alcremie", 11, "", Gender.Unknown), "", "sweet_kiss", "sweet_scent", "draining_kiss", "decorate", new RandRange(zone.Level)), 10);
                 enemyList.Add(GetTeamMob(new MonsterID("alcremie", 12, "", Gender.Unknown), "", "sweet_kiss", "sweet_scent", "draining_kiss", "decorate", new RandRange(zone.Level)), 10);
                 enemyList.Add(GetTeamMob(new MonsterID("alcremie", 13, "", Gender.Unknown), "", "sweet_kiss", "sweet_scent", "draining_kiss", "decorate", new RandRange(zone.Level)), 10);
-                structure.BaseFloor = getSecretRoom(translate, "special_gsc_ghost", -1, "buried_relic_3_wall", "buried_relic_3_floor", "buried_relic_3_secondary", "", "psychic", enemyList, new Loc(7, 6));
+                structure.BaseFloor = getSecretRoom(translate, "special_gsc_ghost", -1, "buried_relic_3_wall", "buried_relic_3_floor", "buried_relic_3_secondary", "", "psychic", DungeonStage.Advanced, DungeonAccessibility.Hidden, enemyList, new Loc(7, 6));
 
                 zone.Segments.Add(structure);
             }
