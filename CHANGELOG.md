@@ -1,10 +1,7 @@
-# 0.8 Changes #
+# 0.8.2 Changes #
 
-* Monster Orb is now obtainable in vanilla
-* Effects that destroy items such as bug bite and incinerate now only affect one stack instead of all
-* Fixed an issue where partial trapping moves damaged the player more times than the enemy
-* Fixed the effect of Neutralizing Gas
-* X Items and Full Heal Range 3 -> 5
-* RC: End-of-adventure inventory menu fixed to support inv extensions
-* Dev: Report error when generating with type mismatch
-* Dev: Fixed a constructor for GroundObject not taking passable parameter
+* Sorting will preserve multi-selections in menus
+* Fix range inaccuracies for move preview
+* Mission mod fixes
+* Dev: Improve partner following logic
+* Dev: Lua modding no longer requires replacing whole files for maps, common functions, and event functions

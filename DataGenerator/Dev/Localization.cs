@@ -52,7 +52,7 @@ namespace DataGenerator.Dev
             {
                 ItemData item = new ItemData();
                 item.UseEvent.Element = "none";
-                AutoItemInfo.FillExclusiveEffects(item, new List<LocalText>(), false, descType, new object[0], false);
+                AutoItemInfo.FillExclusiveEffects("", item, new List<LocalText>(), false, descType, new object[0], false);
                 updateWorkingLists(rows, orderedKeys, languages, typeof(ExclusiveItemEffect).Name + "." + descType, item.Comment, item.Desc);
             }
 
@@ -315,7 +315,7 @@ namespace DataGenerator.Dev
 
                 data.Name = rows[entryNames[ii] + "-" + 0.ToString("D4") + "|data.Name"];
 
-                DataManager.SaveData(PathMod.ModPath(path + entryNames[ii] + ext), data);
+                DataManager.SaveData(data, path, entryNames[ii], ext);
             }
         }
 
@@ -328,14 +328,14 @@ namespace DataGenerator.Dev
                 string tlKey = dataType.ToString() + "-" + key + "|data.Name";
                 if (rows.ContainsKey(tlKey))
                 {
-                    string dir = PathMod.ModPath(DataManager.DATA_PATH + dataType.ToString() + "/" + key + DataManager.DATA_EXT);
+                    string dir = PathMod.NoMod(DataManager.DATA_PATH + dataType.ToString() + "/" + key + DataManager.DATA_EXT);
 
-                    IEntryData describedData = DataManager.LoadData<IEntryData>(dir);
+                    IEntryData describedData = DataManager.LoadObject<IEntryData>(dir);
 
                     if (describedData.Name.DefaultText != "")
                     {
                         describedData.Name = rows[tlKey];
-                        DataManager.SaveData(dir, describedData);
+                        DataManager.SaveObject(describedData, dir);
                     }
                 }
             }
@@ -343,14 +343,14 @@ namespace DataGenerator.Dev
 
         public static void CopyNamedData(DataManager.DataType dataType, string from, string to)
         {
-            string fromDir = PathMod.ModPath(DataManager.DATA_PATH + dataType.ToString() + "/" + from + DataManager.DATA_EXT);
-            string toDir = PathMod.ModPath(DataManager.DATA_PATH + dataType.ToString() + "/" + to + DataManager.DATA_EXT);
+            string fromDir = PathMod.NoMod(DataManager.DATA_PATH + dataType.ToString() + "/" + from + DataManager.DATA_EXT);
+            string toDir = PathMod.NoMod(DataManager.DATA_PATH + dataType.ToString() + "/" + to + DataManager.DATA_EXT);
 
-            IEntryData fromData = DataManager.LoadData<IEntryData>(fromDir);
-            IEntryData toData = DataManager.LoadData<IEntryData>(toDir);
+            IEntryData fromData = DataManager.LoadObject<IEntryData>(fromDir);
+            IEntryData toData = DataManager.LoadObject<IEntryData>(toDir);
 
             toData.Name = fromData.Name;
-            DataManager.SaveData(toDir, toData);
+            DataManager.SaveObject(toData, toDir);
         }
 
         public static void WriteDescribedDataTable(DataManager.DataType dataType)
@@ -359,9 +359,9 @@ namespace DataGenerator.Dev
             Dictionary<string, LocalText> rows = readLocalizationRows(GenPath.TL_PATH + dataType.ToString() + ".out.txt");
             foreach(string key in DataManager.Instance.DataIndices[dataType].GetOrderedKeys(true))
             {
-                string dir = PathMod.ModPath(DataManager.DATA_PATH + dataType.ToString() + "/" + key + DataManager.DATA_EXT);
+                string dir = PathMod.NoMod(DataManager.DATA_PATH + dataType.ToString() + "/" + key + DataManager.DATA_EXT);
 
-                IDescribedData describedData = DataManager.LoadData<IDescribedData>(dir);
+                IDescribedData describedData = DataManager.LoadObject<IDescribedData>(dir);
 
                 if (describedData.Name.DefaultText != "")
                 {
@@ -369,7 +369,7 @@ namespace DataGenerator.Dev
                     describedData.Name = rows[sort.ToString("D4") + "-" + key + "-" + 0.ToString("D4") + "|data.Name"];
                     describedData.Desc = rows[sort.ToString("D4") + "-" + key + "-" + 1.ToString("D4") + "|data.Desc"];
 
-                    DataManager.SaveData(dir, describedData);
+                    DataManager.SaveObject(describedData, dir);
                 }
             }
         }
@@ -385,9 +385,9 @@ namespace DataGenerator.Dev
             EntryDataIndex skillIndex = DataManager.Instance.DataIndices[DataManager.DataType.Skill];
             foreach (string key in itemIndex.GetOrderedKeys(true))
             {
-                string dir = PathMod.ModPath(DataManager.DATA_PATH + dataType.ToString() + "/" + key + DataManager.DATA_EXT);
+                string dir = PathMod.NoMod(DataManager.DATA_PATH + dataType.ToString() + "/" + key + DataManager.DATA_EXT);
 
-                ItemData data = DataManager.LoadData<ItemData>(dir);
+                ItemData data = DataManager.LoadObject<ItemData>(dir);
 
                 //skip blank entries
                 if (data.Name.DefaultText == "")
@@ -443,7 +443,7 @@ namespace DataGenerator.Dev
                     data.Desc = rows[itemIndex.Get(key).SortOrder.ToString("D4") + "-" + key + "-" + 1.ToString("D4") + "|data.Desc"];
                 }
 
-                DataManager.SaveData(dir, data);
+                DataManager.SaveObject(data, dir);
             }
         }
 
@@ -453,9 +453,9 @@ namespace DataGenerator.Dev
             Dictionary<string, LocalText> rows = readLocalizationRows(GenPath.TL_PATH + dataType.ToString() + ".out.txt");
             foreach (string key in DataManager.Instance.DataIndices[dataType].GetOrderedKeys(false))
             {
-                string dir = PathMod.ModPath(DataManager.DATA_PATH + dataType.ToString() + "/" + key + DataManager.DATA_EXT);
+                string dir = PathMod.NoMod(DataManager.DATA_PATH + dataType.ToString() + "/" + key + DataManager.DATA_EXT);
 
-                ZoneData data = DataManager.LoadData<ZoneData>(dir);
+                ZoneData data = DataManager.LoadObject<ZoneData>(dir);
 
                 int nn = 0;
                 int sort = DataManager.Instance.DataIndices[dataType].Get(key).SortOrder;
@@ -475,7 +475,7 @@ namespace DataGenerator.Dev
                     }
                 }
 
-                DataManager.SaveData(dir, data);
+                DataManager.SaveObject(data, dir);
             }
         }
 

@@ -28,7 +28,7 @@ namespace DataGenerator.Data
             {
                 (string, ItemData) item = GetItemData(ii);
                 if (item.Item1 != "")
-                    DataManager.SaveData(item.Item1, DataManager.DataType.Item.ToString(), item.Item2);
+                    DataManager.SaveEntryData(item.Item1, DataManager.DataType.Item.ToString(), item.Item2);
             }
             AddExclItemData(false);
         }
@@ -569,21 +569,21 @@ namespace DataGenerator.Data
                 item.Name = new LocalText("Joy Seed");
                 item.Desc = new LocalText("A seed that raises the Pokémon's level by 1.");
                 item.Sprite = "Seed_White";
-                item.UseEvent.OnHits.Add(0, new LevelChangeEvent(1));
+                item.UseEvent.OnHits.Add(0, new LevelChangeEvent(1, true));
             }
             else if (ii == 103)
             {
                 item.Name = new LocalText("Golden Seed");
                 item.Desc = new LocalText("A seed that raises the Pokémon's level by 3.");
                 item.Sprite = "Seed_Yellow";
-                item.UseEvent.OnHits.Add(0, new LevelChangeEvent(3));
+                item.UseEvent.OnHits.Add(0, new LevelChangeEvent(3, true));
             }
             else if (ii == 104)
             {
                 item.Name = new LocalText("Doom Seed");
                 item.Desc = new LocalText("A seed that reduces the Pokémon's level by 5.");
                 item.Sprite = "Seed_DarkBlue";
-                item.UseEvent.OnHits.Add(0, new LevelChangeEvent(-5));
+                item.UseEvent.OnHits.Add(0, new LevelChangeEvent(-5, true));
             }
             else if (ii == 105)
             {
@@ -2305,6 +2305,7 @@ namespace DataGenerator.Data
                 item.BeforeStatusAdds.Add(0, new PreventStatusCheck("telekinesis", new StringKey("MSG_SHED_SHELL")));
                 item.BeforeStatusAdds.Add(0, new PreventStatusCheck("clamp", new StringKey("MSG_SHED_SHELL")));
                 item.BeforeStatusAdds.Add(0, new PreventStatusCheck("infestation", new StringKey("MSG_SHED_SHELL")));
+                item.BeforeStatusAdds.Add(0, new PreventStatusCheck("magma_storm", new StringKey("MSG_SHED_SHELL")));
             }
             else if (ii == 312)
             {
@@ -2328,7 +2329,7 @@ namespace DataGenerator.Data
                 item.Desc = new LocalText("A magnifying lens that boosts the Pokémon's Attack Range.");
                 item.Sprite = "Specs_LightBlue";
                 item.Price = 200;
-                item.OnActions.Add(-1, new OnMoveUseEvent(new AddRangeEvent(1)));
+                item.OnActions.Add(-1, new AddRangeEvent(1));
             }
             else if (ii == 315)
             {
@@ -3112,7 +3113,7 @@ namespace DataGenerator.Data
                 item.Icon = 12;
                 item.UsageType = ItemData.UseType.Use;
                 item.ItemStates.Set(new UtilityState());
-                item.Price = 800;
+                item.Price = 450;
                 item.UseEvent.BeforeTryActions.Add(1, new AssemblyBoxEvent());
                 item.UseEvent.OnHits.Add(0, new WithdrawRecruitEvent());
                 item.UseAction = new SelfAction();
@@ -3122,14 +3123,15 @@ namespace DataGenerator.Data
             else if (ii == 452)
             {
                 item.Name = new LocalText("Storage Box");
-                item.Desc = new LocalText("A marvelous box that lets the user add any item from storage into the Treasure Bag.");
+                item.Desc = new LocalText("A marvelous box that sends the item currently held by the user to storage.");
                 item.Sprite = "Machine_Gray";
                 item.Icon = 12;
                 item.UsageType = ItemData.UseType.Use;
                 item.ItemStates.Set(new UtilityState());
-                item.Price = 800;
-                item.UseEvent.BeforeTryActions.Add(1, new StorageBoxEvent());
-                item.UseEvent.OnHits.Add(0, new WithdrawItemEvent());
+                item.Price = 150;
+                item.MaxStack = 3;
+                item.UseEvent.BeforeTryActions.Add(1, new DepositBoxEvent());
+                item.UseEvent.OnHits.Add(0, new StoreItemEvent());
                 item.UseAction = new SelfAction();
                 item.UseAction.TargetAlignments |= Alignment.Self;
                 item.Explosion.TargetAlignments |= Alignment.Self;
@@ -3213,7 +3215,7 @@ namespace DataGenerator.Data
                 item.ItemStates.Set(new FoodState());
                 item.Price = 1000;
                 item.UseEvent.OnHits.Add(0, new RestoreBellyEvent(25, false));
-                item.UseEvent.OnHits.Add(0, new LevelChangeEvent(-1));
+                item.UseEvent.OnHits.Add(0, new LevelChangeEvent(-1, true));
                 item.UseAction = new SelfAction();
                 item.UseAction.TargetAlignments |= Alignment.Self;
                 item.Explosion.TargetAlignments |= Alignment.Self;
@@ -3397,16 +3399,16 @@ namespace DataGenerator.Data
             }
             else if (ii == 493)
             {
-                item.Name = new LocalText("**Secret Slab");
-                item.Desc = new LocalText("An ancient stone slab inscribed with what seems to be prehistoric legend, rumored to hold an incredible secret. Its writings change depending on the dungeon it's used in.");
-                // Lua script: Will list out all restrictions the player needs to abide by to get to the dungeon's golden chamber, also keep track of which restrictions are met?
-                // If the dungeon doesn't have a golden chamber, just say it's blank.
-                item.Price = 80000;
+                item.Name = new LocalText("Secret Slab");
+                item.Desc = new LocalText("An ancient stone slab inscribed with what seems to be prehistoric legend. It is said to draw something special to it when kept close by.");
+                item.Sprite = "Slab_Gold";
+                item.Price = 30000;
             }
             else if (ii == 494)
             {
                 item.Name = new LocalText("**Music Box");
                 item.Desc = new LocalText("An enchanting music box that plays a beautiful melody. It is said to draw something special to it when it is kept close by.");
+                item.Sprite = "Box_Blue";
                 // This will trigger legendaries to appear.
                 // when they do appear, the music will change to a music box tune.
                 // they will never spawn at the start of the dungeon, or when the wind timer is visible.
@@ -3786,7 +3788,6 @@ namespace DataGenerator.Data
                             fileName = "medicine_" + Text.Sanitize(item.Name.DefaultText).ToLower();
                         item.SortCategory = 10;
                         item.UsageType = ItemData.UseType.Use;
-                        item.ItemStates.Set(new UtilityState());
                         item.Icon = 7;
                     }
                     else if (ii >= 183 && ii <= 185)//herbs
@@ -4023,6 +4024,13 @@ namespace DataGenerator.Data
                     itemFX.Emitter = new SingleEmitter(new AnimData("Circle_Small_Blue_In", 2));
                     item.UseAction.PreActions.Add(itemFX);
                 }
+            }
+            else if (item.SortCategory == 10)
+            {
+                BattleFX itemFX = new BattleFX();
+                itemFX.Sound = "DUN_Wonder_Tile";
+                itemFX.Emitter = new SingleEmitter(new AnimData("Circle_Small_Blue_In", 2));
+                item.UseAction.PreActions.Add(itemFX);
             }
 
             return (fileName, item);
@@ -4500,7 +4508,7 @@ namespace DataGenerator.Data
                     item.Released = true;
 
                 if (item.Name.DefaultText != "")
-                    DataManager.SaveData(fileName, DataManager.DataType.Item.ToString(), item);
+                    DataManager.SaveEntryData(fileName, DataManager.DataType.Item.ToString(), item);
             }
 
             AutoItemInfo.WriteExclusiveItems(MAX_INIT_EXCL_ITEMS, translate);

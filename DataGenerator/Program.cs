@@ -42,8 +42,8 @@ namespace DataGenerator
                 bool loadStrings = false;
                 bool itemPrep = false;
                 bool zonePrep = false;
+                bool monsterPrep = false;
                 bool saveStrings = false;
-                bool demo = false;
                 DataManager.DataType convertIndices = DataManager.DataType.None;
                 DataManager.DataType reserializeIndices = DataManager.DataType.None;
                 DataManager.DataType dump = DataManager.DataType.None;
@@ -105,6 +105,11 @@ namespace DataGenerator
                         ii++;
                         zonePrep = true;
                     }
+                    else if (args[ii] == "-monsterprep")
+                    {
+                        ii++;
+                        monsterPrep = true;
+                    }
                     else if (args[ii] == "-reserialize")
                     {
                         int jj = 1;
@@ -149,10 +154,6 @@ namespace DataGenerator
                         }
                         ii += jj - 1;
                     }
-                    else if (args[ii] == "-demo")
-                    {
-                        demo = true;
-                    }
                     else if (args[ii] == "-preconvert")
                     {
                         preConvert = true;
@@ -186,6 +187,16 @@ namespace DataGenerator
                     DataManager.Instance.InitData();
 
                     ZoneInfo.CreateContentLists();
+                }
+
+                if (monsterPrep)
+                {
+                    LuaEngine.InitInstance();
+                    LuaEngine.Instance.LoadScripts();
+                    DataManager.InitInstance();
+                    DataManager.Instance.InitData();
+
+                    MonsterInfo.CreateContentLists();
                 }
 
                 if (loadStrings)
@@ -272,7 +283,7 @@ namespace DataGenerator
                     DataManager.Instance.LoadIndex(DataManager.DataType.Zone);
                     DataManager.Instance.ClearCache(DataManager.DataType.Zone);
 
-                    DataManager.Instance.UniversalData = DataManager.LoadData<TypeDict<BaseData>>(PathMod.ModPath(DataManager.MISC_PATH + "Index" + DataManager.DATA_EXT));
+                    DataManager.Instance.UniversalData = DataManager.LoadData<TypeDict<BaseData>>(DataManager.MISC_PATH, "Index", DataManager.DATA_EXT);
                     RogueEssence.Dev.DevHelper.RunExtraIndexing(DataManager.DataType.All);
                     return;
                 }
@@ -304,7 +315,7 @@ namespace DataGenerator
                     DataManager.Instance.LoadConversions();
 
                     DataManager.InitDataDirs(PathMod.ModPath(""));
-                    RogueEssence.Dev.DevHelper.ConvertAssetNames();
+                    //RogueEssence.Dev.DevHelper.ConvertAssetNames();
                     RogueEssence.Dev.DevHelper.ReserializeBase();
                     DiagManager.Instance.LogInfo("Reserializing main data");
                     RogueEssence.Dev.DevHelper.Reserialize(reserializeIndices);
@@ -317,11 +328,7 @@ namespace DataGenerator
                     DiagManager.Instance.LogInfo("Reserializing indices");
                     RogueEssence.Dev.DevHelper.RunIndexing(reserializeIndices);
 
-                    //TODO: Created v0.5.20, delete on v1.1
-                    if (File.Exists(PathMod.HardMod(DataManager.MISC_PATH + "Index.bin")))
-                        DataManager.Instance.UniversalData = DataManager.LoadData<TypeDict<BaseData>>(PathMod.ModPath(DataManager.MISC_PATH + "Index.bin"));
-                    else
-                        DataManager.Instance.UniversalData = DataManager.LoadData<TypeDict<BaseData>>(PathMod.ModPath(DataManager.MISC_PATH + "Index" + DataManager.DATA_EXT));
+                    DataManager.Instance.UniversalData = DataManager.LoadData<TypeDict<BaseData>>(DataManager.MISC_PATH, "Index", DataManager.DATA_EXT);
                     RogueEssence.Dev.DevHelper.RunExtraIndexing(reserializeIndices);
                     return;
                 }
@@ -337,7 +344,7 @@ namespace DataGenerator
                     DataManager.InitDataDirs(PathMod.ModPath(""));
                     RogueEssence.Dev.DevHelper.RunIndexing(convertIndices);
 
-                    DataManager.Instance.UniversalData = DataManager.LoadData<TypeDict<BaseData>>(PathMod.ModPath(DataManager.MISC_PATH + "Index" + DataManager.DATA_EXT));
+                    DataManager.Instance.UniversalData = DataManager.LoadData<TypeDict<BaseData>>(DataManager.MISC_PATH, "Index", DataManager.DATA_EXT);
                     RogueEssence.Dev.DevHelper.RunExtraIndexing(convertIndices);
                     return;
                 }
@@ -393,7 +400,7 @@ namespace DataGenerator
                         {
                             //SkillInfo.AddUnreleasedMoveData();
                             //SkillInfo.AddMoveData();
-                            //SkillInfo.AddMoveData(888);
+                            //SkillInfo.AddMoveData(229, 578, 587, 693, 866, 806, 893);
                             //SkillInfo.AddMoveDataToAnims(120, 153);
                         }
 
@@ -433,16 +440,6 @@ namespace DataGenerator
                         RogueEssence.Dev.DevHelper.RunExtraIndexing(dump);
                     }
                     return;
-                }
-
-                if (demo)
-                {
-                    LuaEngine.InitInstance();
-                    LuaEngine.Instance.LoadScripts();
-                    RogueEssence.Dev.DevHelper.DemoData(DataManager.DATA_PATH + "Zone/", DataManager.DATA_EXT, typeof(ZoneData));
-                    //RogueEssence.Dev.DevHelper.DemoData(DataManager.DATA_PATH + "Map/", DataManager.MAP_EXT);
-                    RogueEssence.Dev.DevHelper.DemoData(DataManager.DATA_PATH + "Ground/", DataManager.GROUND_EXT, typeof(GroundMap));
-                    RogueEssence.Dev.DevHelper.RunIndexing(DataManager.DataType.Zone);
                 }
 
 

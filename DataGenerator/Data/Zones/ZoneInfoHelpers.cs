@@ -263,8 +263,23 @@ namespace DataGenerator.Data
         public static MoneySpawnZoneStep GetMoneySpawn(int level, int floors_in)
         {
             RandRange addRange = new RandRange(level * 2 / 5, level * 2 / 5 + 4);
-            RandRange startRange = new RandRange(level * 3 + 25 + floors_in * addRange.Min, level * 3 + 30 + floors_in * addRange.Max);
+            RandRange startRange = new RandRange(level * 5 + 25 + floors_in * addRange.Min, level * 5 + 30 + floors_in * addRange.Max);
             return new MoneySpawnZoneStep(PR_RESPAWN_MONEY, startRange, addRange);
+        }
+
+        public static SpeciesItemListSpawner<T> GetLegendaryItemSpawner<T>(bool subLegend, bool boxLegend, bool mythical) where T : BaseMapGenContext
+        {
+            return GetLegendaryItemSpawner<T>(subLegend, boxLegend, mythical, new RandRange(1));
+        }
+
+        public static SpeciesItemListSpawner<T> GetLegendaryItemSpawner<T>(bool subLegend, bool boxLegend, bool mythical, RandRange rand) where T : BaseMapGenContext
+        {
+            SpeciesItemListSpawner<T> spawn = new SpeciesItemListSpawner<T>(new IntRange(1), rand);
+
+            foreach (string legend in IterateLegendaries(subLegend, false, boxLegend, mythical))
+                spawn.Species.Add(legend);
+
+            return spawn;
         }
 
         public static void AddMoneyData<T>(MapGen<T> layout, RandRange divAmount, bool includeHalls = false, ConnectivityRoom.Connectivity connectivity = ConnectivityRoom.Connectivity.None) where T : ListMapGenContext
@@ -397,6 +412,14 @@ namespace DataGenerator.Data
             layout.GenSteps.Add(PR_WATER, trapStep);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="layout"></param>
+        /// <param name="roomBlobCount"></param>
+        /// <param name="roomBlobSize"></param>
+        /// <param name="hallPercent">Beware, this only works for one-tile halls</param>
         public static void AddGrassSteps<T>(MapGen<T> layout, RandRange roomBlobCount, IntRange roomBlobSize, RandRange hallPercent) where T : BaseMapGenContext
         {
             string coverTerrain = "grass";
@@ -884,11 +907,12 @@ namespace DataGenerator.Data
             return step;
         }
 
-        static string[] ItemArray(IEnumerable<string> iter)
+        static string[] ItemArray(params IEnumerable<string>[] iters)
         {
             List<string> result = new List<string>();
-            foreach (string item in iter)
-                result.Add(item);
+            foreach(IEnumerable<string> iter in iters)
+                foreach (string item in iter)
+                    result.Add(item);
             return result.ToArray();
         }
 

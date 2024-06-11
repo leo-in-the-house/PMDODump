@@ -26,7 +26,7 @@ namespace DataGenerator.Data
             {
                 (string, TileData) tile = GetTileData(ii);
                 if (tile.Item1 != "")
-                    DataManager.SaveData(tile.Item1, DataManager.DataType.Tile.ToString(), tile.Item2);
+                    DataManager.SaveEntryData(tile.Item1, DataManager.DataType.Tile.ToString(), tile.Item2);
             }
         }
 
@@ -1004,15 +1004,16 @@ namespace DataGenerator.Data
             }
             else if (ii == 38)
             {
-                tile.Name = new LocalText("Mirage Tablet");
+                tile.Name = new LocalText("Mirage Tile");
                 fileName = "tile_boss";
-                tile.Desc = new LocalText("A stone tablet engraved with a set of names. There is an indent at the bottom that fits an Explorer Badge...");
+                tile.Desc = new LocalText("A tile that shows the mirage of a formidable team of Pokémon.");
                 tile.BlockItem = true;
                 tile.StepType = TileData.TriggerType.Site;
                 tile.Anim = new ObjAnimData("Tile_Signal", 12);
                 tile.MinimapIcon = new Loc(4, 1);
                 tile.MinimapColor = Color.Cyan;
-                tile.LandedOnTiles.Add(0, new TriggerUnderfootEvent());
+                tile.LandedOnTiles.Add(0, new AskLeaderEvent());
+                tile.InteractWithTiles.Add(0, new AskIfDangerEvent());
                 tile.InteractWithTiles.Add(0, new LeaderCharEvent(new LockdownTileEvent("map_clear_check")));
                 tile.InteractWithTiles.Add(0, new LeaderCharEvent(new BossSpawnEvent()));
             }
@@ -1348,7 +1349,7 @@ namespace DataGenerator.Data
             for (int ii = 0; ii < MAX_TERRAIN; ii++)
             {
                 (string, TerrainData) entry = GetTerrainData(ii);
-                DataManager.SaveData(entry.Item1, DataManager.DataType.Terrain.ToString(), entry.Item2);
+                DataManager.SaveEntryData(entry.Item1, DataManager.DataType.Terrain.ToString(), entry.Item2);
             }
         }
 

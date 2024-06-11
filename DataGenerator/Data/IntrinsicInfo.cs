@@ -21,7 +21,7 @@ namespace DataGenerator.Data
             {
                 (string, IntrinsicData) ability = GetIntrinsicData(ii);
                 if (ability.Item1 != "")
-                    DataManager.SaveData(ability.Item1, DataManager.DataType.Intrinsic.ToString(), ability.Item2);
+                    DataManager.SaveEntryData(ability.Item1, DataManager.DataType.Intrinsic.ToString(), ability.Item2);
             }
         }
         public static (string, IntrinsicData) GetIntrinsicData(int ii)
@@ -304,7 +304,7 @@ namespace DataGenerator.Data
             {
                 ability.Name = new LocalText("Illuminate");
                 ability.Desc = new LocalText("It may warp an ally to the Pokémon when it is hurt.");
-                ability.AfterBeingHits.Add(0, new HitCounterEvent(Alignment.Foe, true, false, true, 35, new WarpAlliesInEvent(80, 1, true, new StringKey("MSG_ILLUMINATE"), true)));
+                ability.AfterBeingHits.Add(0, new HitCounterEvent(Alignment.Foe, true, false, true, 25, new WarpAlliesInEvent(80, 1, true, new StringKey("MSG_ILLUMINATE"), true)));
             }
             else if (ii == 36)
             {
@@ -443,6 +443,7 @@ namespace DataGenerator.Data
                 ability.BeforeStatusAdds.Add(0, new PreventStatusCheck("telekinesis", new StringKey("MSG_RUN_AWAY")));
                 ability.BeforeStatusAdds.Add(0, new PreventStatusCheck("clamp", new StringKey("MSG_RUN_AWAY")));
                 ability.BeforeStatusAdds.Add(0, new PreventStatusCheck("infestation", new StringKey("MSG_RUN_AWAY")));
+                ability.BeforeStatusAdds.Add(0, new PreventStatusCheck("magma_storm", new StringKey("MSG_RUN_AWAY")));
             }
             else if (ii == 51)
             {
@@ -1405,8 +1406,8 @@ namespace DataGenerator.Data
             else if (ii == 176)
             {
                 ability.Name = new LocalText("Stance Change");
-                ability.Desc = new LocalText("The Pokémon changes its form to Blade Forme when it uses an attack move, and changes to Shield Forme when it uses King's Shield.");
-                ability.AfterActions.Add(-1, new StanceChangeEvent("aegislash", "kings_shield", 0, 1));
+                ability.Desc = new LocalText("The Pokémon changes its form to Blade Forme when it uses an attack move, and changes to Shield Forme when it uses a status move.");
+                ability.AfterActions.Add(-1, new StanceChangeEvent("aegislash", 0, 1));
             }
             else if (ii == 177)
             {
@@ -2027,11 +2028,13 @@ namespace DataGenerator.Data
             }
             else if (ii == 278)
             {
-                ability.Name = new LocalText("**Zero to Hero");
-                ability.Desc = new LocalText("");
+                ability.Name = new LocalText("Zero to Hero");
+                ability.Desc = new LocalText("The Pokémon switches between Zero Form and Hero Form when entering a new floor.");
+                ability.OnMapStarts.Add(-10, new RevolvingFormeEvent("palfin", 0, 1));
             }
             else if (ii == 279)
             {
+                //PLEASE NO
                 ability.Name = new LocalText("**Commander");
                 ability.Desc = new LocalText("");
             }
@@ -2126,8 +2129,9 @@ namespace DataGenerator.Data
             }
             else if (ii == 295)
             {
-                ability.Name = new LocalText("**Toxic Debris");
-                ability.Desc = new LocalText("");
+                ability.Name = new LocalText("Toxic Debris");
+                ability.Desc = new LocalText("Scatters poison spikes when the Pokémon takes damage from physical moves.");
+                ability.AfterBeingHits.Add(0, new CategoryNeededEvent(BattleData.SkillCategory.Physical, new CounterTrapEvent("trap_toxic_spikes", new SingleEmitter(new AnimData("Puff_Purple", 3)), "DUN_Substitute")));
             }
             else if (ii == 296)
             {

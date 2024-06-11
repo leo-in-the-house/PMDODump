@@ -505,8 +505,7 @@ namespace DataGenerator.Data
 
 
             //353 Shuppet : 174 Curse : 101 Night Shade
-            poolSpawn.Spawns.Add(GetTeamMob("shuppet", "", "curse", "night_shade", "", "", new RandRange(11)), new IntRange(6, 8), 10);
-
+            poolSpawn.Spawns.Add(GetTeamMob("shuppet", "insomnia", "night_shade", "", "", "", new RandRange(11)), new IntRange(6, 8), 10);
 
             //220 Swinub : 426 Mud Bomb
             poolSpawn.Spawns.Add(GetTeamMob("swinub", "", "mud_bomb", "", "", "", new RandRange(13), TeamMemberSpawn.MemberRole.Leader), new IntRange(6, 8), 10);
@@ -665,7 +664,7 @@ namespace DataGenerator.Data
             poolSpawn.Spawns.Add(GetTeamMob("probopass", "", "magnet_bomb", "magnet_rise", "earth_power", "", new RandRange(26), TeamMemberSpawn.MemberRole.Loner), new IntRange(15, 17), 10);
 
             //353 Shuppet : 271 Trick : 180 Spite
-            poolSpawn.Spawns.Add(GetTeamMob("shuppet", "", "trick", "spite", "", "", new RandRange(25), "thief"), new IntRange(15, 17), 10);
+            poolSpawn.Spawns.Add(GetTeamMob("shuppet", "insomnia", "curse", "night_shade", "", "", new RandRange(25)), new IntRange(15, 17), 10);
 
             //136 Flareon : 83 Fire Spin : 387 Last Resort
             poolSpawn.Spawns.Add(GetTeamMob("flareon", "", "fire_spin", "last_resort", "", "", new RandRange(26)), new IntRange(15, 17), 10);
@@ -748,7 +747,7 @@ namespace DataGenerator.Data
 
             //491 Acid Spray? 380 Gastro Acid?
             //317 Swalot : 60 Sticky Hold : 188 Sludge Bomb : 151 Acid Armor
-            poolSpawn.Spawns.Add(GetTeamMob("swalot", "sticky_hold", "sludge_bomb", "acid_armor", "", "", new RandRange(32), TeamMemberSpawn.MemberRole.Loner), new IntRange(18, 20), 10);
+            poolSpawn.Spawns.Add(GetTeamMob("swalot", "liquid_ooze", "sludge_bomb", "acid_armor", "", "", new RandRange(32), TeamMemberSpawn.MemberRole.Loner), new IntRange(18, 20), 10);
 
             //50//428 Lopunny : 415 Switcheroo : 494 Entrainment : 98 Quick Attack
 
@@ -911,7 +910,7 @@ namespace DataGenerator.Data
             poolSpawn.Spawns.Add(GetTeamMob("piloswine", "", "ice_fang", "fury_attack", "take_down", "", new RandRange(38)), new IntRange(22, 24), 10);
 
             //101 Electrode : 205 Rollout : 153 Explosion : 113 Light Screen
-            poolSpawn.Spawns.Add(GetTeamMob("electrode", "", "rollout", "explosion", "", "", new RandRange(38), TeamMemberSpawn.MemberRole.Support), new IntRange(22, 24), 10);
+            poolSpawn.Spawns.Add(GetTeamMob("electrode", "", "rollout", "self_destruct", "light_screen", "", new RandRange(38), TeamMemberSpawn.MemberRole.Support), new IntRange(22, 24), 10);
 
             //1//225 Delibird : 217 Present
 
@@ -1180,9 +1179,11 @@ namespace DataGenerator.Data
 
                 //monsterChanceZoneStep.ItemThemes.Add(new ItemThemeNone(0, new RandRange(5, 11)), new ParamRange(0, max_floors), 20);
                 monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemThemeNone(50, new RandRange(2, 4))), new IntRange(0, max_floors), 20);//no theme
-                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeType(ItemData.UseType.Learn, true, true, new RandRange(3, 5)), new IntRange(0, max_floors), 10);//TMs
-                monsterChanceZoneStep.ItemThemes.Add(new ItemStateType(new FlagType(typeof(GummiState)), true, true, new RandRange(3, 7)), new IntRange(0, max_floors), 30);//gummis
-                monsterChanceZoneStep.ItemThemes.Add(new ItemStateType(new FlagType(typeof(RecruitState)), true, true, new RandRange(2, 6)), new IntRange(0, max_floors), 10);//apricorns
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_deluxe", GetLegendaryItemSpawner<BaseMapGenContext>(false, true, true)), new RandRange(1)), new ItemThemeType(ItemData.UseType.Learn, true, true, new RandRange(2, 5))), new IntRange(20, max_floors), 10);//TMs
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_deluxe", GetLegendaryItemSpawner<BaseMapGenContext>(false, true, true)), new RandRange(1)), new ItemStateType(new FlagType(typeof(GummiState)), true, true, new RandRange(3, 6))), new IntRange(20, max_floors), 30);//gummis
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_light", new SpeciesItemContextSpawner<BaseMapGenContext>(new IntRange(1), new RandRange(1))), new RandRange(1)), new ItemThemeType(ItemData.UseType.Learn, true, true, new RandRange(2, 5))), new IntRange(0, 20), 10);//TMs
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_light", new SpeciesItemContextSpawner<BaseMapGenContext>(new IntRange(1), new RandRange(1))), new RandRange(1)), new ItemStateType(new FlagType(typeof(GummiState)), true, true, new RandRange(3, 6))), new IntRange(0, 20), 30);//gummis
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_light", new SpeciesItemContextSpawner<BaseMapGenContext>(new IntRange(1), new RandRange(1))), new RandRange(1)), new ItemStateType(new FlagType(typeof(RecruitState)), true, true, new RandRange(2, 5))), new IntRange(0, 20), 10);//apricorns
 
                 monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemStateType(new FlagType(typeof(EvoState)), true, true, new RandRange(2, 4))), new IntRange(0, 10), 40);//evo items
                 monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemStateType(new FlagType(typeof(EvoState)), true, true, new RandRange(2, 4))), new IntRange(10, 20), 20);//evo items
@@ -1348,7 +1349,7 @@ namespace DataGenerator.Data
             }
 
             {
-                SpreadBossZoneStep bossChanceZoneStep = new SpreadBossZoneStep(PR_ROOMS_GEN_EXTRA, PR_SPAWN_ITEMS_EXTRA, new SpreadPlanQuota(new RandDecay(1, 10, 55), new IntRange(2, 30)));
+                SpreadBossZoneStep bossChanceZoneStep = new SpreadBossZoneStep(PR_ROOMS_GEN_EXTRA, PR_SPAWN_ITEMS_EXTRA, new SpreadPlanQuota(new RandDecay(1, 10, 55), new IntRange(2, max_floors)));
 
                 {
                     ResizeFloorStep<ListMapGenContext> addSizeStep = new ResizeFloorStep<ListMapGenContext>(new Loc(16, 16), Dir8.None);
@@ -1555,11 +1556,13 @@ namespace DataGenerator.Data
                 shop.Items.Add(new MapItem("held_metal_coat", 0, 3500), 40);//Metal Coat
                 foreach (string key in IterateTypeBoosters())
                     shop.Items.Add(new MapItem(key, 0, 2000), 10);//type items
+                foreach (string key in IterateTypePlates())
+                    shop.Items.Add(new MapItem(key, 0, 2000), 10);//type items
 
 
                 shop.ItemThemes.Add(new ItemThemeNone(100, new RandRange(3, 9)), 10);
                 shop.ItemThemes.Add(new ItemStateType(new FlagType(typeof(EvoState)), false, true, new RandRange(3, 5)), 10);//evo items
-                shop.ItemThemes.Add(new ItemThemeRange(false, true, new RandRange(3, 5), ItemArray(IterateTypePlates())), 10);//type items
+                shop.ItemThemes.Add(new ItemThemeRange(false, true, new RandRange(3, 5), ItemArray(IterateTypeBoosters(), IterateTypePlates())), 10);//type items
 
                 // Cleffa : 98 Magic Guard : 118 Metronome : 47 Sing : 204 Charm : 313 Fake Tears
                 {
@@ -1775,16 +1778,17 @@ namespace DataGenerator.Data
                 else
                     AddItemData(layout, new RandRange(4, 7), 25);
 
-                List<MapItem> specificSpawns = new List<MapItem>();
-                if (ii == 0)
-                    specificSpawns.Add(new MapItem("apricorn_plain"));//Plain Apricorn
-                if (ii == 29)
-                    specificSpawns.Add(new MapItem("seed_reviver"));//Reviver Seed
+                {
+                    List<MapItem> specificSpawns = new List<MapItem>();
+                    if (ii == 0)
+                        specificSpawns.Add(new MapItem("apricorn_plain"));//Plain Apricorn
+                    if (ii == 29)
+                        specificSpawns.Add(new MapItem("seed_reviver"));//Reviver Seed
 
-                RandomRoomSpawnStep<MapGenContext, MapItem> specificItemZoneStep = new RandomRoomSpawnStep<MapGenContext, MapItem>(new PickerSpawner<MapGenContext, MapItem>(new PresetMultiRand<MapItem>(specificSpawns)));
-                specificItemZoneStep.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
-                layout.GenSteps.Add(PR_SPAWN_ITEMS, specificItemZoneStep);
-
+                    RandomRoomSpawnStep<MapGenContext, MapItem> specificItemZoneStep = new RandomRoomSpawnStep<MapGenContext, MapItem>(new PickerSpawner<MapGenContext, MapItem>(new PresetMultiRand<MapItem>(specificSpawns)));
+                    specificItemZoneStep.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, specificItemZoneStep);
+                }
 
                 SpawnList<MapItem> wallSpawns = new SpawnList<MapItem>();
                 PopulateWallItems(wallSpawns, DungeonStage.Rogue, DungeonEnvironment.Rock);
@@ -2249,6 +2253,8 @@ namespace DataGenerator.Data
             }
 
             zone.Segments.Add(floorSegment);
+
+            zone.GroundMaps.Add("guildmaster_summit");
         }
         #endregion
 
@@ -2889,10 +2895,14 @@ namespace DataGenerator.Data
 
                 //monsterChanceZoneStep.ItemThemes.Add(new ItemThemeNone(0, new RandRange(5, 11)), new ParamRange(0, 30), 20);
                 monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemThemeNone(80, new RandRange(2, 4))), new IntRange(0, 30), 30);//no theme
-                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeType(ItemData.UseType.Learn, false, true, new RandRange(3, 5)),
-                    new ItemThemeRange(true, true, new RandRange(0, 2), ItemArray(IterateMachines()))), new IntRange(0, 30), 10);//TMs + machines
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_deluxe", GetLegendaryItemSpawner<BaseMapGenContext>(false, true, true)), new RandRange(1)), new ItemThemeType(ItemData.UseType.Learn, false, true, new RandRange(3, 5)),
+                    new ItemThemeRange(true, true, new RandRange(0, 2), ItemArray(IterateMachines()))), new IntRange(20, 30), 10);//TMs + machines
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_light", new SpeciesItemContextSpawner<BaseMapGenContext>(new IntRange(1), new RandRange(1))), new RandRange(1)), new ItemThemeType(ItemData.UseType.Learn, false, true, new RandRange(3, 5)),
+                    new ItemThemeRange(true, true, new RandRange(0, 2), ItemArray(IterateMachines()))), new IntRange(0, 20), 10);//TMs + machines
 
-                monsterChanceZoneStep.ItemThemes.Add(new ItemStateType(new FlagType(typeof(GummiState)), true, true, new RandRange(3, 7)), new IntRange(0, 30), 30);//gummis
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_deluxe", GetLegendaryItemSpawner<BaseMapGenContext>(false, true, true)), new RandRange(1)), new ItemStateType(new FlagType(typeof(GummiState)), true, true, new RandRange(3, 6))), new IntRange(20, 30), 30);//gummis
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_light", new SpeciesItemContextSpawner<BaseMapGenContext>(new IntRange(1), new RandRange(1))), new RandRange(1)), new ItemStateType(new FlagType(typeof(GummiState)), true, true, new RandRange(3, 6))), new IntRange(0, 20), 30);//gummis
+
                 monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemStateType(new FlagType(typeof(EvoState)), true, true, new RandRange(2, 4))), new IntRange(0, 10), 20);//evo items
                 monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeRange(true, true, new RandRange(1, 4), "loot_pearl"), new ItemStateType(new FlagType(typeof(EvoState)), true, true, new RandRange(2, 4))), new IntRange(10, 20), 10);//evo items
                 monsterChanceZoneStep.MobThemes.Add(new MobThemeNone(0, new RandRange(7, 13)), new IntRange(0, max_floors), 10);
@@ -2905,13 +2915,13 @@ namespace DataGenerator.Data
                 monsterChanceZoneStep.HouseStepSpawns.Add(new MonsterHallStep<ListMapGenContext>(new Loc(11, 9), GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
                 monsterChanceZoneStep.HouseStepSpawns.Add(new MonsterHallStep<ListMapGenContext>(new Loc(15, 13), GetAntiFilterList(new ImmutableRoom(), new NoEventRoom())), 10);
 
-                foreach (string tm_id in IterateDistroTMs(TMDistroClass.Ordinary))
+                foreach (string tm_id in IterateTMs(TMClass.Top))
                     monsterChanceZoneStep.Items.Add(new MapItem(tm_id), new IntRange(0, max_floors), 2);//TMs
 
                 PopulateHallItems(monsterChanceZoneStep, DungeonStage.Rogue, DungeonAccessibility.Unlockable, max_floors);
 
-                //monsterChanceZoneStep.ItemThemes.Add(new ItemThemeNone(0, new RandRange(5, 11)), new ParamRange(0, 30), 20);
-                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeMoney(250, new RandRange(4, 7)), new ItemThemeNone(50, new RandRange(2, 4))), new IntRange(0, 30), 20);//no theme
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeMoney(100, new RandRange(4, 7)), new ItemThemeNone(50, new RandRange(2, 4))), new IntRange(0, 34), 20);
+                monsterChanceZoneStep.ItemThemes.Add(new ItemThemeMultiple(new ItemThemeMoney(100, new RandRange(4, 7)), new ItemThemeBox(new BoxSpawner<BaseMapGenContext>("box_deluxe", GetLegendaryItemSpawner<BaseMapGenContext>(false, false, true)), new RandRange(1))), new IntRange(30, max_floors), 20);
                 monsterChanceZoneStep.MobThemes.Add(new MobThemeNone(0, new RandRange(7, 13)), new IntRange(0, max_floors), 10);
 
                 floorSegment.ZoneSteps.Add(monsterChanceZoneStep);
@@ -3184,13 +3194,15 @@ namespace DataGenerator.Data
                 shop.Items.Add(new MapItem("evo_kings_rock", 0, 3500), 50);//King's Rock
                 shop.Items.Add(new MapItem("evo_link_cable", 0, 3500), 50);//Link Cable
 
+                foreach (string key in IterateTypeBoosters())
+                    shop.Items.Add(new MapItem(key, 0, 2000), 10);//type items
                 foreach (string key in IterateTypePlates())
                     shop.Items.Add(new MapItem(key, 0, 2000), 10);//type items
 
 
                 shop.ItemThemes.Add(new ItemThemeNone(100, new RandRange(3, 9)), 10);
                 shop.ItemThemes.Add(new ItemStateType(new FlagType(typeof(EvoState)), false, true, new RandRange(3, 5)), 10);//evo items
-                shop.ItemThemes.Add(new ItemThemeRange(false, true, new RandRange(3, 5), ItemArray(IterateTypePlates())), 10);//type items
+                shop.ItemThemes.Add(new ItemThemeRange(false, true, new RandRange(3, 5), ItemArray(IterateTypeBoosters(), IterateTypePlates())), 10);//type items
 
                 // Cleffa : 98 Magic Guard : 118 Metronome : 47 Sing : 204 Charm : 313 Fake Tears
                 {
@@ -3237,7 +3249,7 @@ namespace DataGenerator.Data
                 else if (ii <= 16)
                     floorData.Music = "B22. Overgrown Wilds.ogg";
                 else if (ii <= 20)
-                    floorData.Music = "B24. Castaway Cave 2.ogg";
+                    floorData.Music = "Treeshroud Forest.ogg";
                 else if (ii <= 27)
                     floorData.Music = "B03. Demonstration 3.ogg";
                 else if (ii <= 34)
@@ -3484,6 +3496,20 @@ namespace DataGenerator.Data
                     RandomRoomSpawnStep<MapGenContext, MapItem> specificItemZoneStep = new RandomRoomSpawnStep<MapGenContext, MapItem>(new PickerSpawner<MapGenContext, MapItem>(new LoopedRand<MapItem>(new RandBag<MapItem>(specificSpawns), new RandRange(1))));
                     specificItemZoneStep.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
                     layout.GenSteps.Add(PR_SPAWN_ITEMS, specificItemZoneStep);
+                }
+                if (ii >= 30)
+                {
+                    BoxSpawner<MapGenContext> boxSpawn = new BoxSpawner<MapGenContext>("box_deluxe", GetLegendaryItemSpawner<MapGenContext>(false, true, true, new RandRange(0, 2)));
+                    RandomRoomSpawnStep<MapGenContext, MapItem> secretPlacement = new RandomRoomSpawnStep<MapGenContext, MapItem>(boxSpawn);
+                    secretPlacement.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, secretPlacement);
+                }
+                if (ii == max_floors - 1)
+                {
+                    BoxSpawner<MapGenContext> boxSpawn = new BoxSpawner<MapGenContext>("box_deluxe", GetLegendaryItemSpawner<MapGenContext>(false, true, true, new RandRange(1)));
+                    RandomRoomSpawnStep<MapGenContext, MapItem> secretPlacement = new RandomRoomSpawnStep<MapGenContext, MapItem>(boxSpawn);
+                    secretPlacement.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
+                    layout.GenSteps.Add(PR_SPAWN_ITEMS, secretPlacement);
                 }
 
                 SpawnList<MapItem> wallSpawns = new SpawnList<MapItem>();

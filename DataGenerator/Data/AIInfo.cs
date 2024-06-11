@@ -354,7 +354,28 @@ namespace DataGenerator.Data
             tactic.Plans.Add(new ExplorePlan(iq | AIFlags.TrapAvoider, 0, 0, 4, (TerrainData.Mobility) 14, false));
             tactic.Plans.Add(new FleeStairsPlan(iq | AIFlags.TrapAvoider, new HashSet<string>() {"stairs_back_down", "stairs_back_up", "stairs_exit_down", "stairs_exit_up", "stairs_go_up", "stairs_go_down"}));
             Tactics.Add(tactic);
-            
+
+            tactic = new AITactic();
+            tactic.Name = new LocalText("Itemless Normal Wander");//31
+            tactic.ID = "wander_normal_itemless";
+            iq = AIFlags.AttackToEscape | AIFlags.WontDisturb;
+            tactic.Plans.Add(new AttackFoesPlan(iq, 0, 0, 4, AIPlan.AttackChoice.RandomAttack, AIPlan.PositionChoice.Close, 0, false));
+            tactic.Plans.Add(new FollowLeaderPlan(iq | AIFlags.TrapAvoider));
+            tactic.Plans.Add(new ExplorePlan(iq | AIFlags.TrapAvoider));
+            tactic.Plans.Add(new WaitPlan(iq | AIFlags.TrapAvoider));
+            Tactics.Add(tactic);
+
+            tactic = new AITactic();
+            tactic.Name = new LocalText("Itemless Retreater");//32
+            tactic.ID = "retreater_itemless";
+            iq = AIFlags.WontDisturb;
+            tactic.Plans.Add(new RetreaterPlan(AIFlags.AttackToEscape | AIFlags.TrapAvoider, 3));
+            tactic.Plans.Add(new AttackFoesPlan(iq, 0, 0, 4, AIPlan.AttackChoice.RandomAttack, AIPlan.PositionChoice.Close, 0, false));
+            tactic.Plans.Add(new FollowLeaderPlan(iq | AIFlags.TrapAvoider));
+            tactic.Plans.Add(new ExplorePlan(iq | AIFlags.TrapAvoider));
+            tactic.Plans.Add(new WaitPlan(iq | AIFlags.TrapAvoider));
+            Tactics.Add(tactic);
+
             //make a variant of explore to go for items (For use of team characters, certain thief enemies)
             //always avoid traps when exploring
             //always avoid traps when following a leader
@@ -369,7 +390,7 @@ namespace DataGenerator.Data
                 if (ii < 6)
                     Tactics[ii].Assignable = true;
                 Tactics[ii].Released = true;
-                DataManager.SaveData(Tactics[ii].ID, DataManager.DataType.AI.ToString(), Tactics[ii]);
+                DataManager.SaveEntryData(Tactics[ii].ID, DataManager.DataType.AI.ToString(), Tactics[ii]);
             }
         }
 

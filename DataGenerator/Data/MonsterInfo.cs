@@ -12,6 +12,8 @@ using System.Linq;
 using PMDC;
 using PMDC.Data;
 using System.Data.SQLite;
+using PMDC.Dev;
+using SkiaSharp;
 
 namespace DataGenerator.Data
 {
@@ -117,6 +119,7 @@ namespace DataGenerator.Data
             MonsterData[] totalEntries = new MonsterData[TOTAL_DEX];
 
             Dictionary<string, List<byte>> personalities = GetPersonalityChecklist();
+            Dictionary<string, bool> releases = GetReleaseChecklist();
             monsterKeys = new List<string>();
             for (int ii = 0; ii < TOTAL_DEX; ii++)
             {
@@ -127,6 +130,7 @@ namespace DataGenerator.Data
             {
                 totalEntries[ii] = LoadDex(m_dbTLConnection, ii);
                 Console.WriteLine("#" + ii + " " + totalEntries[ii].Name + " Read");
+                bool anyReleased = false;
                 for (int jj = 0; jj < totalEntries[ii].Forms.Count; jj++)
                 {
                     List<byte> personality;
@@ -136,7 +140,15 @@ namespace DataGenerator.Data
                     if (personality == null)
                         personality = new List<byte>();
                     ((MonsterFormData)totalEntries[ii].Forms[jj]).Personalities = personality;
+
+                    bool released;
+                    if (releases.TryGetValue(ii + "-" + jj, out released))
+                    {
+                        ((MonsterFormData)totalEntries[ii].Forms[jj]).Released = released;
+                        anyReleased |= released;
+                    }
                 }
+                totalEntries[ii].Released = anyReleased;
             }
 
             m_dbTLConnection.Close();
@@ -145,15 +157,54 @@ namespace DataGenerator.Data
 
 
             //string outpt = "";
+            Dictionary<int, EvoPosition> evoStatus = new Dictionary<int, EvoPosition>();
+            Dictionary<EvoPosition, List<int>> evoBuckets = new Dictionary<EvoPosition, List<int>>();
+            for(int ii = 0; ii < 5; ii++)
+                evoBuckets[(EvoPosition)ii] = new List<int>();
+            for (int ii = 0; ii < TOTAL_DEX; ii++)
+                MapJoinRateCount(ii, totalEntries, evoStatus, evoBuckets);
+            //for (int ii = 0; ii < 5; ii++)
+            //{
+            //    evoBuckets[(EvoPosition)ii].Sort();
+            //    Console.WriteLine("#" + (EvoPosition)ii + " Values:");
+            //    for (int jj = 0; jj < 11; jj++)
+            //    {
+            //        int pctVal = jj * (evoBuckets[(EvoPosition)ii].Count - 1) / 10;
+            //        Console.WriteLine((jj * 10).ToString() + "pct: " + evoBuckets[(EvoPosition)ii][pctVal] * 100 / 255);
+            //    }
+            //}
+
+            //int improved = 0;
+            //int dropped = 0;
+            //int recruitableDiff = 0;
+            //int recruitable40Diff = 0;
             for (int ii = 0; ii < TOTAL_DEX; ii++)
             {
-                totalEntries[ii].JoinRate = MapJoinRate(ii, totalEntries);
+                //int oldJoin = MapJoinRateOld(evoStatus, ii, totalEntries[ii].JoinRate);
+                int newJoin = MapJoinRate(evoStatus, ii, totalEntries[ii].JoinRate);
+                //if (newJoin > oldJoin)
+                //    improved++;
+                //else if (newJoin < oldJoin)
+                //    dropped++;
+                //if (newJoin > 0)
+                //    recruitableDiff++;
+                //if (oldJoin > 0)
+                //    recruitableDiff--;
+                //if (newJoin > -40)
+                //    recruitable40Diff++;
+                //if (oldJoin > -40)
+                //    recruitable40Diff--;
+                totalEntries[ii].JoinRate = newJoin;
                 MapFriendshipEvo(ii, totalEntries);
                 MapFormEvo(ii, totalEntries);
                 PropagateSkills(ii, totalEntries);
                 //if (TotalEntries[ii].JoinRate > 0)
                 //    outpt += (TotalEntries[ii].Name + ": " + TotalEntries[ii].JoinRate + "\n");
             }
+            //Console.WriteLine("Improved: " + improved);
+            //Console.WriteLine("Dropped: " + dropped);
+            //Console.WriteLine("Diff Above 0: " + recruitableDiff);
+            //Console.WriteLine("Diff Above -40: " + recruitableDiff);
 
             //CreateLearnables(totalEntries);
             //ListAllIncompletes(totalEntries);
@@ -161,7 +212,7 @@ namespace DataGenerator.Data
             for (int ii = 0; ii < TOTAL_DEX; ii++)
             {
                 string fileName = getAssetName(totalEntries[ii].Name.DefaultText);
-                DataManager.SaveData(fileName, DataManager.DataType.Monster.ToString(), totalEntries[ii]);
+                DataManager.SaveEntryData(fileName, DataManager.DataType.Monster.ToString(), totalEntries[ii]);
                 //TotalEntries[ii].SaveXml("Dex\\" + ii + ".xml");
                 Console.WriteLine("#" + ii + " " + totalEntries[ii].Name + " Written");
             }
@@ -175,6 +226,20 @@ namespace DataGenerator.Data
             Console.SetCursorPosition(0, currentLineCursor);
         }
 
+        public static Dictionary<string, bool> GetReleaseChecklist()
+        {
+            Dictionary<string, bool> pairs = new Dictionary<string, bool>();
+
+            using (StreamReader file = new StreamReader(MONSTER_PATH + "releases.out.txt"))
+            {
+                while (!file.EndOfStream)
+                {
+                    string[] checks = file.ReadLine().Trim().Split('\t');
+                    pairs[checks[0] + "-" + checks[1]] = checks[2] == "TRUE";
+                }
+            }
+            return pairs;
+        }
 
         public static Dictionary<string, List<byte>> GetPersonalityChecklist()
         {
@@ -1317,6 +1382,17 @@ namespace DataGenerator.Data
                     // hisui forms don't have info for their original game...
                     if (version == 24)
                         version = 25;
+
+                    if (false)
+                    {
+                        //mankey, primeape: must be on SV
+                        if (index == 56 || index == 57)
+                            version = 25;
+                        //girafarig: must be on SV
+                        if (index == 203)
+                            version = 25;
+                    }
+
                     MonsterFormData formEntry = LoadForme(m_dbTLConnection, version, index, dexId, formId, entry.Name);
                     formEntry.Generation = genVersion(version);
                     if (Ratio == -1)
@@ -1372,8 +1448,6 @@ namespace DataGenerator.Data
                     if (index == 875 && entry.Forms.Count > 0)
                         formEntry.Temporary = true;
 
-                    formEntry.Released = hasFormeGraphics(index, entry.Forms.Count);
-
                     //vivillon meadow form should be considered standard
                     if (index == 666)
                     {
@@ -1410,10 +1484,6 @@ namespace DataGenerator.Data
                             formEntry.GenderlessWeight = 0;
                         }
                     }
-
-                    if (formEntry.Released)
-                        entry.Released = true;
-
                 }
             }
 
@@ -1815,7 +1885,215 @@ namespace DataGenerator.Data
             return Text.Sanitize(elementEnum.ToString()).ToLower();
         }
 
-        public static int MapJoinRate(int dexIndex, MonsterData[] totalEntries)
+
+        public enum EvoPosition
+        {
+            SingleStage,
+            First,
+            LastOf2,
+            MidOf3,
+            LastOf3
+        }
+
+        public static void MapJoinRateCount(int dexIndex, MonsterData[] totalEntries, Dictionary<int, EvoPosition> evoStatus, Dictionary<EvoPosition, List<int>> evoBuckets)
+        {
+            MonsterData entry = totalEntries[dexIndex];
+            int evoCount = 0;
+            foreach (PromoteBranch evolution in entry.Promotions)
+            {
+                if (monsterKeys.IndexOf(evolution.Result) < GetGenBoundary(dexIndex))
+                    evoCount++;
+            }
+
+            EvoPosition evo;
+            if (evoCount == 0)//...if it doesn't have any evos (don't count future gens)
+            {
+                //cannot evolve further
+                if (String.IsNullOrEmpty(entry.PromoteFrom))//single stager -20% to 70%
+                    evo = EvoPosition.SingleStage;
+                else if (String.IsNullOrEmpty(totalEntries[monsterKeys.IndexOf(entry.PromoteFrom)].PromoteFrom))//second stage -40% to 30%
+                    evo = EvoPosition.LastOf2;
+                else//third stage: -60% to -10%
+                    evo = EvoPosition.LastOf3;
+            }
+            else if (String.IsNullOrEmpty(entry.PromoteFrom))//first stage evolvable: 10% to 80%
+                evo = EvoPosition.First;
+            else //mid evos: -20% to 60%
+                evo = EvoPosition.MidOf3;
+
+            evoStatus[dexIndex] = evo;
+            evoBuckets[evo].Add(entry.JoinRate);
+        }
+
+        public static int MapJoinRate(Dictionary<int, EvoPosition> evoStatus, int dexIndex, int origRate)
+        {
+            //special cases
+            switch (dexIndex)
+            {
+                //eeveelutions
+                case 134:
+                case 135:
+                case 136:
+                case 196:
+                case 197:
+                case 470:
+                case 471:
+                case 700:
+                    return -60;
+                //pseudolegend stage 1
+                case 147:
+                case 246:
+                case 371:
+                case 374:
+                case 443:
+                case 633:
+                case 704:
+                case 782:
+                case 885:
+                    return -5;
+                //pseudolegend stage 2
+                case 148:
+                case 247:
+                case 372:
+                case 375:
+                case 444:
+                case 634:
+                case 705:
+                case 783:
+                case 886:
+                    return -40;
+                //pseudolegend final
+                case 149:
+                case 248:
+                case 373:
+                case 376:
+                case 445:
+                case 635:
+                case 706:
+                case 784:
+                case 887:
+                    return -100;
+                //wandering legendaries
+                case 243:
+                case 244:
+                case 245:
+                    return -40;
+                //wandering unobtainables
+                case 251://celebi
+                case 647://keldeo
+                case 719://diancie
+                    return -50;
+                //UBs
+                case 793:
+                case 794:
+                case 795:
+                case 796:
+                case 797:
+                case 798:
+                case 799:
+                case 804:
+                case 805:
+                case 806:
+                    return -115;
+                case 803:
+                    return -80;
+                //heatran
+                case 485:
+                    return -60;
+
+            }
+
+            //0% = Normal
+            //+30% = With Friend Bow/Big Apricorn
+            //+40% = With Colored Apricorn
+            //+50% = With Amber Tear
+            //+70% = Friend Bow + Colored Apricorn
+            //+80% = Friend Bow + Amber Tear, Big Apricorn + Amber Tear
+            //+90% = Colored Apricorn + Amber Tear
+            //+120% = Friend Bow + Colored Apricorn + Amber Tear
+
+            decimal newRate = 0;
+            switch (evoStatus[dexIndex])
+            {
+                case EvoPosition.SingleStage://-20% to 70% (in practice 60% are 0 or below)
+                                             //0pct: 0
+                                             //10pct: 1
+                                             //20pct: 1
+                                             //30pct: 11
+                                             //40pct: 17
+                                             //50pct: 17
+                                             //60pct: 19
+                                             //70pct: 39
+                                             //80pct: 74
+                                             //90pct: 88
+                                             //100pct: 100
+                    newRate = origRate * 90 / 255 - 20;
+                    break;
+                case EvoPosition.First://10% to 80%
+                                       //0pct: 1
+                                       //10pct: 17
+                                       //20pct: 47
+                                       //30pct: 56
+                                       //40pct: 74
+                                       //50pct: 74
+                                       //60pct: 74
+                                       //70pct: 88
+                                       //80pct: 100
+                                       //90pct: 100
+                                       //100pct: 100
+                    newRate = origRate * 70 / 255 + 10;
+                    break;
+                case EvoPosition.LastOf2://-40% to 30% (in practice most are -10% or lower)
+                                         //0pct: 1
+                                         //10pct: 17
+                                         //20pct: 17
+                                         //30pct: 17
+                                         //40pct: 23
+                                         //50pct: 23
+                                         //60pct: 29
+                                         //70pct: 29
+                                         //80pct: 35
+                                         //90pct: 47
+                                         //100pct: 100
+                    newRate = origRate * 70 / 255 - 40;
+                    break;
+                case EvoPosition.MidOf3://-20% to 60% (in practice -20% to 40%)
+                                        //0pct: 1
+                                        //10pct: 17
+                                        //20pct: 17
+                                        //30pct: 17
+                                        //40pct: 35
+                                        //50pct: 39
+                                        //60pct: 47
+                                        //70pct: 47
+                                        //80pct: 47
+                                        //90pct: 47
+                                        //100pct: 74
+                    newRate = origRate * 80 / 255 - 20;
+                    break;
+                case EvoPosition.LastOf3://-60% to 40% (in practice -60% to -20%)
+                                         //0pct: 1
+                                         //10pct: 11
+                                         //20pct: 17
+                                         //30pct: 17
+                                         //40pct: 17
+                                         //50pct: 17
+                                         //60pct: 17
+                                         //70pct: 17
+                                         //80pct: 17
+                                         //90pct: 17
+                                         //100pct: 35
+                    newRate = origRate * 100 / 255 - 60;
+                    break;
+            }
+
+            //round to nearest 10%
+            newRate = Math.Round(newRate / 10) * 10;
+
+            return (int)newRate;
+        }
+
+        public static int MapJoinRateOld(Dictionary<int, EvoPosition> evoStatus, int dexIndex, int origRate)
         {
             //special cases
             switch (dexIndex)
@@ -1893,34 +2171,30 @@ namespace DataGenerator.Data
 
             }
 
-            MonsterData entry = totalEntries[dexIndex];
-            int evoCount = 0;
-            foreach (PromoteBranch evo in entry.Promotions)
-            {
-                if (monsterKeys.IndexOf(evo.Result) < GetGenBoundary(dexIndex))
-                    evoCount++;
-            }
             int newRate = 0;
-            if (evoCount == 0)//...if it doesn't have any evos (don't count future gens)
+            switch (evoStatus[dexIndex])
             {
-                //cannot evolve further
-                if (String.IsNullOrEmpty(entry.PromoteFrom))//single stager -25% to 65%
-                    newRate = entry.JoinRate * 90 / 255 - 25;
-                else if (String.IsNullOrEmpty(totalEntries[monsterKeys.IndexOf(entry.PromoteFrom)].PromoteFrom))//second stage -40% to 20%
-                    newRate = entry.JoinRate * 60 / 255 - 40;
-                else//third stage: -65% to -15%
-                    newRate = entry.JoinRate * 50 / 255 - 65;
+                case EvoPosition.SingleStage://single stager -20% to 70%
+                    newRate = origRate * 90 / 255 - 20;
+                    break;
+                case EvoPosition.First:
+                    {
+                        if (origRate <= 200)//0-200 -> 10% to 50%
+                            newRate = origRate * 40 / 200 + 10;
+                        else//200-255 -> 50% to 80%
+                            newRate = (origRate - 200) * 30 / 55 + 50;
+                    }
+                    break;
+                case EvoPosition.LastOf2://second stage -40% to 30%
+                    newRate = origRate * 70 / 255 - 40;
+                    break;
+                case EvoPosition.MidOf3://mid evos: -20% to 60%
+                    newRate = origRate * 80 / 255 - 20;
+                    break;
+                case EvoPosition.LastOf3://third stage: -60% to -10%
+                    newRate = origRate * 50 / 255 - 50;
+                    break;
             }
-            else if (String.IsNullOrEmpty(entry.PromoteFrom))//first stage evolvable: 10% to 80%
-            {
-                //newRate = entry.JoinRate * 70 / 255 + 10;
-                if (entry.JoinRate <= 200)//0-200 -> 10% to 50%
-                    newRate = entry.JoinRate * 40 / 200 + 10;
-                else//200-255 -> 50% to 80%
-                    newRate = (entry.JoinRate - 200) * 30 / 55 + 50;
-            }
-            else //mid evos: -25% to 55%
-                newRate = entry.JoinRate * 80 / 255 - 25;
 
             //leave a gap at -50--40%, -25--15%, 0-10%, 25-35%
             if (newRate < 50)
@@ -1934,6 +2208,17 @@ namespace DataGenerator.Data
             }
 
             return newRate;
+        }
+
+        private static decimal mapPercentile(List<int> sortedList, int val)
+        {
+            //binary search is better but this is a precompute operation...
+            for (int ii = sortedList.Count - 1; ii >= 0; ii--)
+            {
+                if (sortedList[ii] == val)
+                    return (decimal)ii / sortedList.Count;
+            }
+            return 0;
         }
 
         public static void MapFriendshipEvo(int preSpecies, MonsterData[] totalEntries)
@@ -2022,7 +2307,13 @@ namespace DataGenerator.Data
                 foreach (PromoteDetail detail in branch.Details)
                 {
                     if (detail is EvoForm)
-                        reqForm = ((EvoForm)detail).ReqForm;
+                    {
+                        foreach (int req in ((EvoForm)detail).ReqForms)
+                        {
+                            reqForm = req;
+                            break;
+                        }
+                    }
                 }
                 int resultForm = reqForm;
                 foreach (PromoteDetail detail in branch.Details)
@@ -2035,7 +2326,13 @@ namespace DataGenerator.Data
                         foreach (PromoteDetail innerReq in setForm.Conditions)
                         {
                             if (innerReq is EvoForm)
-                                innerReqForm = ((EvoForm)innerReq).ReqForm;
+                            {
+                                foreach (int req in ((EvoForm)innerReq).ReqForms)
+                                {
+                                    innerReqForm = req;
+                                    break;
+                                }
+                            }
                         }
                         BaseMonsterForm form = evoData.Forms[innerForm];
                         form.PromoteForm = innerReqForm;
@@ -2615,12 +2912,142 @@ namespace DataGenerator.Data
             }
         }
 
+        /// <summary>
+        /// Prints the mon number, form, name, list missing moves/abilities, boolean sprite exists, what dungeon to find (recruitable). Spreadsheet will add "certified"
+        /// </summary>
+        public static void CreateContentLists()
+        {
+            HashSet<(int dex, int form)> recentChanges = new HashSet<(int dex, int form)>();
+
+            using (StreamReader inStream = new StreamReader(PathMod.DEV_PATH + "sprite_diffs.csv"))
+            {
+                while (!inStream.EndOfStream)
+                {
+                    string[] row = inStream.ReadLine().Split(',');
+                    recentChanges.Add((int.Parse(row[0]), int.Parse(row[1])));
+                }
+            }
+
+            Dictionary<MonsterID, string> encounterDict = new Dictionary<MonsterID, string>();
+            populateRecruitableEncounters(encounterDict);
+
+            List<(string familyName, List<MonsterID> mons)> evoTrees = new List<(string, List<MonsterID>)>();
+            HashSet<string> traversed = new HashSet<string>();
+
+            List<string> monsterKeys = DataManager.Instance.DataIndices[DataManager.DataType.Monster].GetOrderedKeys(true);
+            for (int ii = 0; ii < monsterKeys.Count; ii++)
+            {
+                string key = monsterKeys[ii];
+                if (traversed.Contains(key))
+                    continue;
+
+                List<MonsterID> family = new List<MonsterID>();
+                foreach (MonsterID monId in DevHelper.FindMonFamily(key))
+                {
+                    if (!family.Contains(monId))
+                        family.Add(monId);
+                    traversed.Add(monId.Species);
+                }
+
+                evoTrees.Add((monsterKeys[ii], family));
+            }
+
+            List<(string family, int index, MonsterID key, string name, string mechanics, string dungeons, bool sprite, bool diff)> totalMons = new List<(string family, int index, MonsterID key, string name, string mechanics, string dungeons, bool sprite, bool diff)>();
+
+            for (int ii = 0; ii < evoTrees.Count; ii++)
+            {
+                for (int jj = 0; jj < evoTrees[ii].mons.Count; jj++)
+                {
+                    MonsterID key = evoTrees[ii].mons[jj];
+                    MonsterEntrySummary entrySummary = (MonsterEntrySummary)DataManager.Instance.DataIndices[DataManager.DataType.Monster].Get(key.Species);
+                    int monId = entrySummary.SortOrder;
+                    BaseFormSummary formData = entrySummary.Forms[key.Form];
+                    string family = evoTrees[ii].familyName;
+                    string name = formData.Name.DefaultText;
+                    string mechanics = getMissingMechanics(key);
+                    string dungeons = "";
+                    if (formData.Temporary)
+                        dungeons = "TEMP";
+                    else if (encounterDict.ContainsKey(key))
+                        dungeons = encounterDict[key];
+
+                    bool sprite = hasFormeGraphics(monId, key.Form);
+                    bool changed = recentChanges.Contains((monId, key.Form));
+                    totalMons.Add((family, monId, key, name, mechanics, dungeons, sprite, changed));
+                }
+            }
+
+            using (StreamWriter file = new StreamWriter(GenPath.MONSTER_PATH + "releases.txt"))
+            {
+                foreach ((string family, int index, MonsterID key, string name, string mechanics, string dungeons, bool sprite, bool diff) mon in totalMons)
+                {
+                    file.WriteLine(mon.family + "\t" + mon.index.ToString("D4") + "\t" + mon.key.Species + "\t" + mon.key.Form + "\t" + mon.name + "\t" + mon.mechanics + "\t" + mon.dungeons + "\t" + (mon.sprite ? "TRUE" : "FALSE") + "\t" + (mon.diff ? "TRUE" : "FALSE"));
+                }
+            }
+        }
+
+        private static bool intrinsicUnfinished(string intrinsic)
+        {
+            if (String.IsNullOrEmpty(intrinsic))
+                return false;
+
+            EntrySummary summary = DataManager.Instance.DataIndices[DataManager.DataType.Intrinsic].Get(intrinsic);
+            return !summary.Released;
+        }
+
+        private static string getMissingMechanics(MonsterID key)
+        {
+            MonsterData data = DataManager.Instance.GetMonster(key.Species);
+            MonsterFormData formData = (MonsterFormData)data.Forms[key.Form];
+
+            HashSet<string> unfinished = new HashSet<string>();
+            //does it have any unfinished abilities?
+            if (intrinsicUnfinished(formData.Intrinsic1))
+                unfinished.Add(formData.Intrinsic1);
+            if (intrinsicUnfinished(formData.Intrinsic2))
+                unfinished.Add(formData.Intrinsic2);
+            if (intrinsicUnfinished(formData.Intrinsic3))
+                unfinished.Add(formData.Intrinsic3);
+
+            //do level skills feature any unfinished moves?
+            foreach (LevelUpSkill skill in formData.LevelSkills)
+            {
+                EntrySummary summary = DataManager.Instance.DataIndices[DataManager.DataType.Skill].Get(skill.Skill);
+                if (!summary.Released)
+                    unfinished.Add(skill.Skill);
+            }
+
+            return String.Join(" ", unfinished);
+        }
+
+        private static void populateRecruitableEncounters(Dictionary<MonsterID, string> encounterDict)
+        {
+            Dictionary<MonsterID, HashSet<(string tag, ZoneLoc encounter)>> foundSpecies = DevHelper.GetAllAppearingMonsters(true);
+            foreach (MonsterID key in foundSpecies.Keys)
+            {
+                HashSet<(string tag, ZoneLoc encounter)> find = foundSpecies[key];
+                HashSet<string> availableZones = new HashSet<string>();
+                bool evo = false;
+                foreach ((string tag, ZoneLoc encounter) element in find)
+                {
+                    if (!String.IsNullOrEmpty(element.encounter.ID))
+                        availableZones.Add(element.encounter.ID);
+                    if (element.tag == "EVOLVE")
+                        evo = true;
+                }
+                if (availableZones.Count == 0 && evo)
+                    availableZones.Add("EVOLVE");
+
+                encounterDict[key] = String.Join(" ", availableZones);
+            }
+        }
+
         public static void CreateLearnables(MonsterData[] totalEntries)
         {
             Dictionary<string, int> dexToId = new Dictionary<string, int>();
             for (int ii = 0; ii < TOTAL_DEX; ii++)
             {
-                string fileName = getAssetName(totalEntries[ii].Name.DefaultText);
+                string fileName = monsterKeys[ii];
                 dexToId[fileName] = ii;
             }
 
@@ -2685,11 +3112,11 @@ namespace DataGenerator.Data
                 if (!eggMoves.ContainsKey(key) && !levelMoves.ContainsKey(key))
                     totalMoves[key] = (0, tutorMoves[key], ChooseTeacher(levelTeachers, eggTeachers, tutorTeachers, key));
             }
-            using (StreamWriter file = new StreamWriter("tutor.txt"))
+            using (StreamWriter file = new StreamWriter(GenPath.MONSTER_PATH + "tutor.txt"))
             {
                 foreach (string key in totalMoves.Keys)
                 {
-                    SkillData skillData = DataManager.LoadData<SkillData>(key, DataManager.DataType.Skill.ToString());
+                    SkillData skillData = DataManager.LoadEntryData<SkillData>(key, DataManager.DataType.Skill.ToString());
                     int tutorCost;
                     if (skillData.BaseCharges < 10)
                         tutorCost = (10 - skillData.BaseCharges) + 7;
