@@ -164,11 +164,11 @@ namespace DataGenerator.Data
                 status.OnStatusAdds.Add(-5, new ReplaceMajorStatusEvent());
                 status.OnStatusAdds.Add(0, new StatusBattleLogEvent(new StringKey("MSG_POISON_START"), true));
                 status.OnStatusRemoves.Add(0, new StatusBattleLogEvent(new StringKey("MSG_POISON_END")));
-                status.AfterActions.Add(0, new OnAggressionEvent(new PoisonEvent(false, 16, 12)));
+                status.AfterActions.Add(0, new OnAggressionEvent(new PoisonEvent(false, 16, 4)));
                 status.AfterActions.Add(0, new OnAggressionEvent(new AttackedThisTurnEvent()));
-                status.OnWalks.Add(0, new PoisonSingleEvent(false, false, 16, 12));
+                status.OnWalks.Add(0, new PoisonSingleEvent(false, false, 16, 4));
                 status.OnWalks.Add(0, new WalkedThisTurnEvent(false));
-                status.OnTurnEnds.Add(1, new PoisonEndEvent(false, true, 16, 12));
+                status.OnTurnEnds.Add(1, new PoisonEndEvent(false, true, 16, 8));
                 status.OnTurnEnds.Add(0, new CountDownRemoveEvent(true));
                 status.ModifyHPs.Add(0, new HealMultEvent(0, 1));
                 status.RestoreHPs.Add(0, new HealMultEvent(1, 2));
@@ -195,11 +195,11 @@ namespace DataGenerator.Data
                 status.OnStatusAdds.Add(-5, new ReplaceMajorStatusEvent());
                 status.OnStatusAdds.Add(0, new StatusBattleLogEvent(new StringKey("MSG_POISON_TOXIC_START"), true));
                 status.OnStatusRemoves.Add(0, new StatusBattleLogEvent(new StringKey("MSG_POISON_END")));
-                status.AfterActions.Add(0, new OnAggressionEvent(new PoisonEvent(true, 16, 12)));
+                status.AfterActions.Add(0, new OnAggressionEvent(new PoisonEvent(true, 16, 4)));
                 status.AfterActions.Add(0, new OnAggressionEvent(new AttackedThisTurnEvent()));
-                status.OnWalks.Add(0, new PoisonSingleEvent(false, false, 16, 12));
+                status.OnWalks.Add(0, new PoisonSingleEvent(false, false, 16, 4));
                 status.OnWalks.Add(0, new WalkedThisTurnEvent(false));
-                status.OnTurnEnds.Add(1, new PoisonEndEvent(false, true, 16, 12));
+                status.OnTurnEnds.Add(1, new PoisonEndEvent(false, true, 16, 8));
                 status.OnTurnEnds.Add(0, new CountDownRemoveEvent(true));
                 status.ModifyHPs.Add(0, new HealMultEvent(0, 1));
                 status.RestoreHPs.Add(0, new HealMultEvent(1, 2));
@@ -946,7 +946,7 @@ namespace DataGenerator.Data
                 emitter.TotalParticles = 1;
                 emitter.StartHeight = 16;
                 status.AfterHittings.Add(0, new CurseEvent(new BattleAnimEvent(emitter, "DUN_Curse_2", false, 0)));
-                status.StatusStates.Set(new CountDownState(5));
+                status.StatusStates.Set(new CountDownState(10));
                 status.OnTurnEnds.Add(0, new CountDownRemoveEvent(true));
             }
             else if (ii == 51)
@@ -1196,7 +1196,7 @@ namespace DataGenerator.Data
                 status.Name = new LocalText("Mirror Coat");
                 status.MenuName = true;
                 status.Desc = new LocalText("The Pokémon will return damage from special attacks back at the user with double the power. This status wears off after a few turns.");
-                status.Emoticon = "Shield_Pink";
+                status.Emoticon = "Sword_Shield_Pink";
                 status.StatusStates.Set(new TransferStatusState());
                 status.BeforeStatusAdds.Add(0, new SameStatusCheck(new StringKey("MSG_MIRROR_COAT_ALREADY")));
                 status.OnStatusAdds.Add(0, new StatusBattleLogEvent(new StringKey("MSG_MIRROR_COAT_START"), true));
@@ -1213,7 +1213,7 @@ namespace DataGenerator.Data
                 status.Name = new LocalText("Counter");
                 status.MenuName = true;
                 status.Desc = new LocalText("The Pokémon will return damage from physical attacks back at the user with double the power. This status wears off after a few turns.");
-                status.Emoticon = "Sword_Brown";
+                status.Emoticon = "Sword_Shield_Brown";
                 status.StatusStates.Set(new TransferStatusState());
                 status.BeforeStatusAdds.Add(0, new SameStatusCheck(new StringKey("MSG_COUNTER_ALREADY")));
                 status.OnStatusAdds.Add(0, new StatusBattleLogEvent(new StringKey("MSG_COUNTER_START"), true));
@@ -1423,7 +1423,7 @@ namespace DataGenerator.Data
                 status.Name = new LocalText("Area Counter");
                 status.MenuName = true;
                 status.Desc = new LocalText("All damage done to this Pokémon of a certain category of moves will be reflected on all foes within 3 tiles. This status wears off after many turns have passed.");
-                status.Emoticon = "Shield_DarkBlue";
+                status.Emoticon = "Sword_Shield_Green";
                 status.StatusStates.Set(new TransferStatusState());
                 status.OnStatusAdds.Add(0, new StatusLogCategoryEvent(new StringKey("MSG_AREA_COUNTER_START"), true));
                 status.OnStatusRemoves.Add(0, new StatusLogCategoryEvent(new StringKey("MSG_AREA_COUNTER_END")));
@@ -1472,7 +1472,7 @@ namespace DataGenerator.Data
                 status.Name = new LocalText("Metal Burst");
                 status.MenuName = true;
                 status.Desc = new LocalText("All damage done to this Pokémon will be reflected on all nearby foes. This status wears off after a few turns, or if the Pokémon moves.");
-                status.Emoticon = "Shield_DarkBlue";
+                status.Emoticon = "Sword_Shield_White";
                 status.StatusStates.Set(new TransferStatusState());
                 status.BeforeStatusAdds.Add(0, new SameStatusCheck(new StringKey("MSG_METAL_BURST_ALREADY")));
                 status.OnStatusAdds.Add(0, new StatusBattleLogEvent(new StringKey("MSG_METAL_BURST_START"), true));
@@ -1765,7 +1765,7 @@ namespace DataGenerator.Data
                 status.Name = new LocalText("Mini-Counter");
                 status.MenuName = true;
                 status.Desc = new LocalText("The Pokémon will return damage from all attacks back at the user. This status wears off after many turns have passed.");
-                status.Emoticon = "Shield_Pink";
+                status.Emoticon = "Sword_Shield_Blue";
                 status.StatusStates.Set(new TransferStatusState());
                 status.BeforeStatusAdds.Add(0, new SameStatusCheck(new StringKey("MSG_MINI_COUNTER_ALREADY")));
                 status.OnStatusAdds.Add(0, new StatusBattleLogEvent(new StringKey("MSG_MINI_COUNTER_START"), true));
@@ -2022,7 +2022,7 @@ namespace DataGenerator.Data
             {
                 status.Name = new LocalText("Blinker");
                 status.MenuName = true;
-                status.Desc = new LocalText("The Pokémon has its Attack Range limited, allowing it to hit only targets in front. This status wears off after many turns have passed.");
+                status.Desc = new LocalText("The Pokémon has its Attack Range dropped to its lowest level. This status wears off after many turns have passed.");
                 status.Emoticon = "Blind_Blue";
                 status.StatusStates.Set(new TransferStatusState());
                 status.StatusStates.Set(new BadStatusState());
@@ -2186,14 +2186,10 @@ namespace DataGenerator.Data
 
                 status.OnActions.Add(0, new ElementNeededEvent("fire", new RemoveBattleEvent(false)));
                 status.OnActions.Add(0, new ElementNeededEvent("electric", new RemoveBattleEvent(false)));
-                status.OnActions.Add(0, new ElementNeededEvent("fire", new PreventActionEvent(new StringKey())));
-                status.OnActions.Add(0, new ElementNeededEvent("electric", new PreventActionEvent(new StringKey())));
 
                 {
-                    AreaAction altAction = new AreaAction();
-                    altAction.HitTiles = true;
-                    altAction.BurstTiles = TileAlignment.Any;
-                    altAction.TargetAlignments = (Alignment.Self | Alignment.Friend | Alignment.Foe);
+                    SelfAction altAction = new SelfAction();
+                    altAction.TargetAlignments = Alignment.Self;
                     ExplosionData altExplosion = new ExplosionData();
                     altExplosion.TargetAlignments = (Alignment.Self | Alignment.Friend | Alignment.Foe);
                     altExplosion.Range = 1;
@@ -2214,10 +2210,8 @@ namespace DataGenerator.Data
                 }
 
                 {
-                    AreaAction altAction = new AreaAction();
-                    altAction.HitTiles = true;
-                    altAction.BurstTiles = TileAlignment.Any;
-                    altAction.TargetAlignments = (Alignment.Self | Alignment.Friend | Alignment.Foe);
+                    SelfAction altAction = new SelfAction();
+                    altAction.TargetAlignments = Alignment.Self;
                     ExplosionData altExplosion = new ExplosionData();
                     altExplosion.TargetAlignments = (Alignment.Self | Alignment.Friend | Alignment.Foe);
                     altExplosion.Range = 1;
@@ -2236,14 +2230,16 @@ namespace DataGenerator.Data
                     newData.OnHitTiles.Add(0, new RemoveTerrainStateEvent("", new EmptyFiniteEmitter(), new FlagType(typeof(WallTerrainState)), new FlagType(typeof(FoliageTerrainState))));
                     status.OnActions.Add(0, new ElementNeededEvent("electric", new InvokeCustomBattleEvent(altAction, altExplosion, newData, new StringKey("MSG_POWDER"), false)));
                 }
+
+                status.OnActions.Add(0, new ElementNeededEvent("fire", new PreventActionEvent(new StringKey(), BattleActionType.Skill)));
+                status.OnActions.Add(0, new ElementNeededEvent("electric", new PreventActionEvent(new StringKey(), BattleActionType.Skill)));
+
+
                 status.AfterBeingHits.Add(0, new ElementNeededEvent("fire", new RemoveBattleEvent(false)));
                 status.AfterBeingHits.Add(0, new ElementNeededEvent("electric", new RemoveBattleEvent(false)));
-
                 {
-                    AreaAction altAction = new AreaAction();
-                    altAction.HitTiles = true;
-                    altAction.BurstTiles = TileAlignment.Any;
-                    altAction.TargetAlignments = (Alignment.Self | Alignment.Friend | Alignment.Foe);
+                    SelfAction altAction = new SelfAction();
+                    altAction.TargetAlignments = Alignment.Self;
                     ExplosionData altExplosion = new ExplosionData();
                     altExplosion.TargetAlignments = (Alignment.Self | Alignment.Friend | Alignment.Foe);
                     altExplosion.Range = 1;
@@ -2265,10 +2261,8 @@ namespace DataGenerator.Data
 
 
                 {
-                    AreaAction altAction = new AreaAction();
-                    altAction.HitTiles = true;
-                    altAction.BurstTiles = TileAlignment.Any;
-                    altAction.TargetAlignments = (Alignment.Self | Alignment.Friend | Alignment.Foe);
+                    SelfAction altAction = new SelfAction();
+                    altAction.TargetAlignments = Alignment.Self;
                     ExplosionData altExplosion = new ExplosionData();
                     altExplosion.TargetAlignments = (Alignment.Self | Alignment.Friend | Alignment.Foe);
                     altExplosion.Range = 1;
@@ -2494,6 +2488,12 @@ namespace DataGenerator.Data
                 status.OnRefresh.Add(0, new DisableEvent());
                 status.OnSkillChanges.Add(0, new UpdateIndicesEvent());
                 status.OnActions.Add(0, new OnAggressionEvent(new RemoveBattleEvent()));
+            }
+            else if (ii == 141)
+            {
+                status.Name = new LocalText("Was Hurt Since Attack");
+                status.StatusStates.Set(new StackState(1));
+                status.AfterActions.Add(0, new OnAggressionEvent(new RemoveBattleEvent()));
             }
 
             if (status.Name.DefaultText.StartsWith("**"))

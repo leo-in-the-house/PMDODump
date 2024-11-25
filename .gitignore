@@ -7,13 +7,28 @@ obj/
 *.tmp
 *.zip
 *.manifest
-.vscode
 publish/
-.idea/
+
+# Debug logs (npm, yarn)
+*.log
+
+# Editor artifacts
+.*.sw[a-z]
+*~
+.#*
+.vscode
+.idea
+
+# OS files
+Thumbs.db
+.DS_Store
+
 __pycache__/
 Scripts/.credentials/sheets.googleapis.com-localization.json
 Scripts/client_secret.json
 Scripts/string_sheet_id.txt
 Scripts/zone_sheet_id.txt
 Scripts/item_sheet_id.txt
+Scripts/talk_sheet_id.txt
+Scripts/monster_sheet_id.txt
 venv/

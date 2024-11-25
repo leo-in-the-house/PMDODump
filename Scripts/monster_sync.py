@@ -5,7 +5,7 @@ from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
-from itemGen import ItemGen
+from monsterGen import MonsterGen
 from subprocess import call
 
 import argparse
@@ -15,8 +15,8 @@ flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
 CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Item Sync'
-SHEET_ID_FILE = 'item_sheet_id.txt'
+APPLICATION_NAME = 'Monster Sync'
+SHEET_ID_FILE = 'monster_sheet_id.txt'
 
 def get_credentials():
     """Gets valid user credentials from storage.
@@ -56,25 +56,19 @@ def main():
     credentials = get_credentials()
     sheet_id = get_sheet_id()
 
-    itemGen = ItemGen()
-    itemGen.open_sheet(credentials, sheet_id)
+    monsterGen = MonsterGen()
+    monsterGen.open_sheet(credentials, sheet_id)
     print("Sheet opened.")
 
     # Reference
-    # first run the game in a setting that spits out all item types to their own files
-    # call("../PMDO/PMDO.exe -itemprep", shell=True)
-
-
-    # Reference
-    itemGen.write_data_text("PreAutoItem", "Resources")
-    itemGen.write_data_text("AutoItemRef", "Reference")
+    monsterGen.write_data_text("releases", "Availability")
 
     print("Updated References.")
 
-    # Item Data
-    itemGen.load_sheet_text("ExclusiveItem", "Content")
+    # Monster Data
+    monsterGen.load_sheet_text("releases", "Availability")
 
-    print("Pulled Item Data.")
+    print("Pulled Mons Data.")
 
     print("Complete.")
 

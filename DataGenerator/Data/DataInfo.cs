@@ -26,7 +26,7 @@ namespace DataGenerator.Data
             File.Delete(PathMod.ModPath(DataManager.DATA_PATH + "Universal" + DataManager.DATA_EXT));
             UniversalActiveEffect universalEvent = new UniversalActiveEffect();
 
-            universalEvent.OnHits.Add(5, new HitPostEvent("was_hurt_last_turn", "last_move_hit_by_other", "last_targeted_by", "crits_landed"));
+            universalEvent.OnHits.Add(5, new HitPostEvent("was_hurt_last_turn", "was_hurt_since_attack", "last_move_hit_by_other", "last_targeted_by", "crits_landed"));
             universalEvent.OnHitTiles.Add(5, new TilePostEvent());
             universalEvent.OnActions.Add(-10, new PreActionEvent("last_used_move_slot", "last_used_move", "times_move_used"));
             universalEvent.AfterActions.Add(5, new UsePostEvent("times_move_used", "last_ally_move", "missed_all_last_turn"));
@@ -49,11 +49,12 @@ namespace DataGenerator.Data
             universalEvent.OnDeaths.Add(0, new ImpostorReviveEvent("imposter", "transformed"));
 
             universalEvent.OnDeaths.Add(10, new HandoutRelativeExpEvent(1, 7, 5, 2));
-            //universalEvent.OnMapStarts.Add(-10, new SingleCharScriptEvent("UpdateEscort"));
+            universalEvent.OnMapStarts.Add(-10, new SingleCharScriptEvent("UpdateEscort"));
             universalEvent.OnMapStarts.Add(-10, new StealthEvoEvent(35, "tandemaus"));
             universalEvent.OnMapStarts.Add(-10, new FadeInEvent());
             universalEvent.OnMapStarts.Add(-5, new SpecialIntroEvent());
             universalEvent.OnMapStarts.Add(-5, new ReactivateItemsEvent());
+            universalEvent.ZoneSteps.Add(new ScriptZoneStep("SpawnRescueNote"));
             universalEvent.ZoneSteps.Add(new ScriptZoneStep("SpawnMissionNpcFromSV"));
             //UniversalEvent.OnWalks.Add(-5, new RevealFrontTrapEvent());
 
@@ -116,24 +117,24 @@ namespace DataGenerator.Data
             DeleteData(Path.Combine(PathMod.RESOURCE_PATH, "Extensions"));
             {
                 CharSheetGenAnimOp op = new CharSheetGenAnimOp();
-                DataManager.SaveData(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions"), "GenAnim", ".op");
+                DataManager.SaveObject(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions", "GenAnim" + ".op"));
             }
             {
                 CharSheetAlignOp op = new CharSheetAlignOp();
-                DataManager.SaveData(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions"), "Align", ".op");
+                DataManager.SaveObject(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions", "Align" + ".op"));
             }
             {
                 CharSheetMirrorOp op = new CharSheetMirrorOp();
-                DataManager.SaveData(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions"), "MirrorLR", ".op");
+                DataManager.SaveObject(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions", "MirrorLR" + ".op"));
             }
             {
                 CharSheetMirrorOp op = new CharSheetMirrorOp();
                 op.StartRight = true;
-                DataManager.SaveData(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions"), "MirrorRL", ".op");
+                DataManager.SaveObject(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions", "MirrorRL" + ".op"));
             }
             {
                 CharSheetCollapseOffsetsOp op = new CharSheetCollapseOffsetsOp();
-                DataManager.SaveData(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions"), "CollapseOffsets", ".op");
+                DataManager.SaveObject(op, Path.Combine(PathMod.RESOURCE_PATH, "Extensions", "CollapseOffsets" + ".op"));
             }
         }
 

@@ -683,7 +683,7 @@ namespace DataGenerator.Data
             }
 
             //output trade tables to common_gen.lua
-            string path = PathMod.ModPath(LuaEngine.SCRIPT_PATH + "common_gen.lua");
+            string path = PathMod.ModPath(Path.Join(LuaEngine.SCRIPT_PATH, PathMod.BaseNamespace, "common_gen.lua"));
             using (StreamWriter file = new StreamWriter(path))
             {
                 file.Write("--[[\n" +
@@ -1408,7 +1408,7 @@ namespace DataGenerator.Data
             }
             else if (type == ExclusiveItemEffect.LungeAttack)
             {
-                item.Rarity = 3;
+                item.Rarity = 5;
                 item.Desc = new LocalText("When kept in the bag, it changes the Pokémon's regular attack into a dash.");
                 if (includeEffects)
                 {

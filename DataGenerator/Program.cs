@@ -24,40 +24,33 @@ namespace DataGenerator
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-
-            string[] args = System.Environment.GetCommandLineArgs();
-            PathMod.InitPathMod(args[0], "origin");
-            DiagManager.InitInstance();
             Serializer.InitSettings(new SerializerContractResolver(), new UpgradeBinder());
-            //DiagManager.Instance.CurSettings = DiagManager.Instance.LoadSettings();
+
+            string[] args = Environment.GetCommandLineArgs();
+            PathMod.InitPathMod(args[0]);
+
+            bool loadStrings = false;
+            bool itemPrep = false;
+            bool zonePrep = false;
+            bool monsterPrep = false;
+            bool saveStrings = false;
+            DataManager.DataType convertIndices = DataManager.DataType.None;
+            DataManager.DataType reserializeIndices = DataManager.DataType.None;
+            DataManager.DataType dump = DataManager.DataType.None;
+            bool preConvert = false;
 
             try
             {
-                DiagManager.Instance.LogInfo("=========================================");
-                DiagManager.Instance.LogInfo(String.Format("SESSION STARTED: {0}", String.Format("{0:yyyy/MM/dd HH:mm:ss}", DateTime.Now)));
-                DiagManager.Instance.LogInfo("Version: " + Versioning.GetVersion().ToString());
-                DiagManager.Instance.LogInfo(Versioning.GetDotNetInfo());
-                DiagManager.Instance.LogInfo("=========================================");
-
-                bool loadStrings = false;
-                bool itemPrep = false;
-                bool zonePrep = false;
-                bool monsterPrep = false;
-                bool saveStrings = false;
-                DataManager.DataType convertIndices = DataManager.DataType.None;
-                DataManager.DataType reserializeIndices = DataManager.DataType.None;
-                DataManager.DataType dump = DataManager.DataType.None;
-                bool preConvert = false;
                 for (int ii = 1; ii < args.Length; ii++)
                 {
                     if (args[ii] == "-asset")
                     {
-                        PathMod.ASSET_PATH = System.IO.Path.GetFullPath(PathMod.ExePath + args[ii + 1]);
+                        PathMod.ASSET_PATH = Path.GetFullPath(PathMod.ExePath + args[ii + 1]);
                         ii++;
                     }
                     else if (args[ii] == "-raw")
                     {
-                        PathMod.DEV_PATH = System.IO.Path.GetFullPath(PathMod.ExePath + args[ii + 1]);
+                        PathMod.DEV_PATH = Path.GetFullPath(PathMod.ExePath + args[ii + 1]);
                         ii++;
                     }
                     else if (args[ii] == "-gen")
@@ -161,7 +154,29 @@ namespace DataGenerator
                     }
                 }
 
+                DiagManager.InitInstance();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+#if DEBUG
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
+                return;
+            }
 
+            try
+            {
+                //DiagManager.Instance.CurSettings = DiagManager.Instance.LoadSettings();
+
+                DiagManager.Instance.LogInfo("=========================================");
+                DiagManager.Instance.LogInfo(String.Format("SESSION STARTED: {0}", String.Format("{0:yyyy/MM/dd HH:mm:ss}", DateTime.Now)));
+                DiagManager.Instance.LogInfo("Version: " + Versioning.GetVersion().ToString());
+                DiagManager.Instance.LogInfo(Versioning.GetDotNetInfo());
+                DiagManager.Instance.LogInfo("=========================================");
+
+
+                PathMod.InitNamespaces();
                 GraphicsManager.InitParams();
 
                 DiagManager.Instance.DevMode = true;
@@ -171,9 +186,9 @@ namespace DataGenerator
 
                 if (itemPrep)
                 {
+                    DataManager.InitInstance();
                     LuaEngine.InitInstance();
                     LuaEngine.Instance.LoadScripts();
-                    DataManager.InitInstance();
                     DataManager.Instance.InitData();
 
                     AutoItemInfo.CreateContentLists();
@@ -181,9 +196,9 @@ namespace DataGenerator
 
                 if (zonePrep)
                 {
+                    DataManager.InitInstance();
                     LuaEngine.InitInstance();
                     LuaEngine.Instance.LoadScripts();
-                    DataManager.InitInstance();
                     DataManager.Instance.InitData();
 
                     ZoneInfo.CreateContentLists();
@@ -191,9 +206,9 @@ namespace DataGenerator
 
                 if (monsterPrep)
                 {
+                    DataManager.InitInstance();
                     LuaEngine.InitInstance();
                     LuaEngine.Instance.LoadScripts();
-                    DataManager.InitInstance();
                     DataManager.Instance.InitData();
 
                     MonsterInfo.CreateContentLists();
@@ -202,9 +217,9 @@ namespace DataGenerator
                 if (loadStrings)
                 {
                     //we need the datamanager for this
+                    DataManager.InitInstance();
                     LuaEngine.InitInstance();
                     LuaEngine.Instance.LoadScripts();
-                    DataManager.InitInstance();
                     DataManager.Instance.InitData();
 
                     Localization.PrintDescribedStringTable(DataManager.DataType.Skill, DataManager.Instance.GetSkill);
@@ -224,10 +239,10 @@ namespace DataGenerator
                 }
                 if (saveStrings)
                 {
+                    DataManager.InitInstance();
                     LuaEngine.InitInstance();
                     LuaEngine.Instance.LoadScripts();
                     //we need the datamanager for this
-                    DataManager.InitInstance();
                     DataManager.Instance.InitData();
 
                     Localization.WriteNamedDataTable(DataManager.DataType.Skin);
@@ -292,13 +307,14 @@ namespace DataGenerator
                 {
                     using (GameBase game = new GameBase())
                     {
+                        GraphicsManager.SetWindowMode(1);
                         GraphicsManager.InitSystem(game.GraphicsDevice);
                         GraphicsManager.RebuildIndices(GraphicsManager.AssetType.All);
                     }
 
+                    DataManager.InitInstance();
                     LuaEngine.InitInstance();
                     LuaEngine.Instance.LoadScripts();
-                    DataManager.InitInstance();
                     DataManager.Instance.LoadConversions();
                     RogueEssence.Dev.DevHelper.PrepareAssetConversion();
                     return;
@@ -309,12 +325,13 @@ namespace DataGenerator
                     DiagManager.Instance.LogInfo("Beginning Reserialization");
                     //we need the datamanager for this, but only while data is hardcoded
                     //TODO: remove when data is no longer hardcoded
+                    DataManager.InitInstance();
                     LuaEngine.InitInstance();
                     LuaEngine.Instance.LoadScripts();
-                    DataManager.InitInstance();
                     DataManager.Instance.LoadConversions();
 
                     DataManager.InitDataDirs(PathMod.ModPath(""));
+                    PMDC.Dev.DevHelper.ConvertLua();
                     //RogueEssence.Dev.DevHelper.ConvertAssetNames();
                     RogueEssence.Dev.DevHelper.ReserializeBase();
                     DiagManager.Instance.LogInfo("Reserializing main data");
@@ -337,9 +354,9 @@ namespace DataGenerator
                 {
                     //we need the datamanager for this, but only while data is hardcoded
                     //TODO: remove when data is no longer hardcoded
+                    DataManager.InitInstance();
                     LuaEngine.InitInstance();
                     LuaEngine.Instance.LoadScripts();
-                    DataManager.InitInstance();
                     DataManager.Instance.LoadConversions();
                     DataManager.InitDataDirs(PathMod.ModPath(""));
                     RogueEssence.Dev.DevHelper.RunIndexing(convertIndices);
@@ -352,8 +369,6 @@ namespace DataGenerator
                 //For exporting to data
                 if (dump > DataManager.DataType.None)
                 {
-                    LuaEngine.InitInstance();
-                    LuaEngine.Instance.LoadScripts();
 
                     //before reserializing, reserialize skill and monsters, and delete all data
                     //dump = addTypeDependency(dump, DataManager.DataType.Element, DataManager.DataType.Item);
@@ -367,6 +382,9 @@ namespace DataGenerator
 
                     {
                         DataManager.InitInstance();
+                        LuaEngine.InitInstance();
+                        LuaEngine.Instance.LoadScripts();
+
                         DataManager.Instance.LoadConversions();
                         DataInfo.AddEditorOps();
                         DataInfo.AddSystemFX();
@@ -400,7 +418,7 @@ namespace DataGenerator
                         {
                             //SkillInfo.AddUnreleasedMoveData();
                             //SkillInfo.AddMoveData();
-                            //SkillInfo.AddMoveData(229, 578, 587, 693, 866, 806, 893);
+                            //SkillInfo.AddMoveData(845, 830);
                             //SkillInfo.AddMoveDataToAnims(120, 153);
                         }
 
