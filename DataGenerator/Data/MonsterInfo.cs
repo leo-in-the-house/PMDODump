@@ -1070,6 +1070,13 @@ namespace DataGenerator.Data
                                 branch.Details.Add(new EvoSetForm(0));
                             }
                             break;
+                        case 980://clodsire
+                            {
+                                //first alt form required
+                                branch.Details.Insert(0, new EvoForm(1));
+                                branch.Details.Add(new EvoSetForm(0));
+                            }
+                            break;
                     }
 
 
@@ -1384,16 +1391,6 @@ namespace DataGenerator.Data
                     if (version == 24)
                         version = 25;
 
-                    if (false)
-                    {
-                        //mankey, primeape: must be on SV
-                        if (index == 56 || index == 57)
-                            version = 25;
-                        //girafarig: must be on SV
-                        if (index == 203)
-                            version = 25;
-                    }
-
                     MonsterFormData formEntry = LoadForme(m_dbTLConnection, version, index, dexId, formId, entry.Name);
                     formEntry.Generation = genVersion(version);
                     if (Ratio == -1)
@@ -1665,13 +1662,14 @@ namespace DataGenerator.Data
                     (string, SkillData) skill = SkillInfo.GetSkillData(Convert.ToInt32(reader["move_id"].ToString()));
                     levelMove.Skill = skill.Item1;
 
-                    //Girafarig gets Twin Beam at level 32
-                    //Primeape gets Rage Fist at level 35
-                    //Stantler gets Psyshield Bash at level 31
-                    //Dunsparce gets Hyper Drill at level 32
                     entry.LevelSkills.Add(levelMove);
                 }
             }
+
+            //Girafarig gets Twin Beam at level 32
+            //Primeape gets Rage Fist at level 35
+            //Stantler gets Psyshield Bash at level 31
+            //Dunsparce gets Hyper Drill at level 32
             if (dexId == 57) //primeape
                 InsertLevelSkill(entry.LevelSkills, new LevelUpSkill("rage_fist", 35));
             else if (dexId == 203) //girafarig
@@ -2410,8 +2408,14 @@ namespace DataGenerator.Data
                 return 493;
             else if (index < 649)
                 return 649;
-            else
+            else if (index < 721)
                 return 721;
+            else if (index < 808)
+                return 808;
+            else if (index < 905)
+                return 905;
+            else
+                return 1025;
         }
 
         private static int genVersion(int version)
@@ -2988,7 +2992,29 @@ namespace DataGenerator.Data
                     traversed.Add(monId.Species);
                 }
 
-                evoTrees.Add((monsterKeys[ii], family));
+                // look for an evo tree that already contains this mon
+                // stupid shedinja
+                bool added_one = false;
+                foreach ((string familyName, List<MonsterID> mons) in evoTrees)
+                {
+                    foreach (MonsterID existingMon in family)
+                    {
+                        if (existingMon.Species == familyName)
+                        {
+                            if (!mons.Contains(new MonsterID(key, 0, "", Gender.Unknown)))
+                                mons.Add(new MonsterID(key, 0, "", Gender.Unknown));
+                            traversed.Add(key);
+                            added_one = true;
+                            break;
+                        }
+                    }
+                    if (added_one)
+                        break;
+                }
+                if (added_one)
+                    continue;
+
+                evoTrees.Add((key, family));
             }
 
             List<(int familyIndex, string family, int index, MonsterID key, string name, string mechanics, string dungeons, bool sprite, bool diff)> totalMons = new List<(int familyIndex, string family, int index, MonsterID key, string name, string mechanics, string dungeons, bool sprite, bool diff)>();

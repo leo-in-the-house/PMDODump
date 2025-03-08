@@ -89,36 +89,35 @@ namespace DataGenerator.Data
 
             //snacks
             CategorySpawn<InvItem> snacks = new CategorySpawn<InvItem>();
-            snacks.SpawnRates.SetRange(10, new IntRange(0, 30));
+            snacks.SpawnRates.SetRange(10, new IntRange(0, max_floors));
             itemSpawnZoneStep.Spawns.Add("snacks", snacks);
 
-            foreach(string key in IteratePinchBerries())
-                snacks.Spawns.Add(new InvItem(key), new IntRange(0, 30), 3);
-            snacks.Spawns.Add(new InvItem("berry_enigma"), new IntRange(0, 30), 4);//enigma berry
+            foreach (string key in IteratePinchBerries())
+                snacks.Spawns.Add(new InvItem(key), new IntRange(0, max_floors), 3);
+            snacks.Spawns.Add(new InvItem("berry_enigma"), new IntRange(0, max_floors), 4);//enigma berry
 
-            snacks.Spawns.Add(new InvItem("berry_jaboca"), new IntRange(0, 30), 5);//Jaboca
-            snacks.Spawns.Add(new InvItem("berry_rowap"), new IntRange(0, 30), 5);//Rowap
+            snacks.Spawns.Add(new InvItem("berry_jaboca"), new IntRange(0, max_floors), 5);//Jaboca
+            snacks.Spawns.Add(new InvItem("berry_rowap"), new IntRange(0, max_floors), 5);//Rowap
 
             foreach (string key in IterateTypeBerries())
-                snacks.Spawns.Add(new InvItem(key), new IntRange(6, 30), 1);
+                snacks.Spawns.Add(new InvItem(key), new IntRange(6, max_floors), 1);
 
-            snacks.Spawns.Add(new InvItem("seed_blast"), new IntRange(0, 30), 20);//blast seed
-            snacks.Spawns.Add(new InvItem("seed_warp"), new IntRange(0, 30), 10);//warp seed
-            snacks.Spawns.Add(new InvItem("seed_decoy"), new IntRange(0, 30), 10);//decoy seed
-            snacks.Spawns.Add(new InvItem("seed_sleep"), new IntRange(0, 30), 10);//sleep seed
-            snacks.Spawns.Add(new InvItem("seed_blinker"), new IntRange(0, 30), 10);//blinker seed
-            snacks.Spawns.Add(new InvItem("seed_last_chance"), new IntRange(0, 30), 5);//last-chance seed
-            snacks.Spawns.Add(new InvItem("seed_doom"), new IntRange(0, 30), 5);//doom seed
-            snacks.Spawns.Add(new InvItem("seed_ban"), new IntRange(0, 30), 10);//ban seed
-            snacks.Spawns.Add(new InvItem("seed_pure"), new IntRange(0, 30), 4);//pure seed
-            snacks.Spawns.Add(new InvItem("seed_pure", true), new IntRange(0, 30), 4);//pure seed
-            snacks.Spawns.Add(new InvItem("seed_ice"), new IntRange(0, 30), 10);//ice seed
-            snacks.Spawns.Add(new InvItem("seed_vile"), new IntRange(0, 30), 10);//vile seed
+            snacks.Spawns.Add(new InvItem("seed_blast"), new IntRange(0, max_floors), 20);//blast seed
+            snacks.Spawns.Add(new InvItem("seed_warp"), new IntRange(0, max_floors), 10);//warp seed
+            snacks.Spawns.Add(new InvItem("seed_decoy"), new IntRange(0, max_floors), 10);//decoy seed
+            snacks.Spawns.Add(new InvItem("seed_sleep"), new IntRange(0, max_floors), 10);//sleep seed
+            snacks.Spawns.Add(new InvItem("seed_blinker"), new IntRange(0, max_floors), 10);//blinker seed
+            snacks.Spawns.Add(new InvItem("seed_last_chance"), new IntRange(0, max_floors), 5);//last-chance seed
+            snacks.Spawns.Add(new InvItem("seed_doom"), new IntRange(0, max_floors), 5);//doom seed
+            snacks.Spawns.Add(new InvItem("seed_ban"), new IntRange(0, max_floors), 10);//ban seed
+            snacks.Spawns.Add(new InvItem("seed_pure"), new IntRange(0, max_floors), 4);//pure seed
+            snacks.Spawns.Add(new InvItem("seed_pure", true), new IntRange(0, max_floors), 4);//pure seed
+            snacks.Spawns.Add(new InvItem("seed_ice"), new IntRange(0, max_floors), 10);//ice seed
+            snacks.Spawns.Add(new InvItem("seed_vile"), new IntRange(0, max_floors), 10);//vile seed
 
-            snacks.Spawns.Add(new InvItem("herb_power"), new IntRange(0, 30), 10);//power herb
-            snacks.Spawns.Add(new InvItem("herb_mental"), new IntRange(0, 30), 5);//mental herb
-            snacks.Spawns.Add(new InvItem("herb_white"), new IntRange(0, 30), 50);//white herb
-
+            snacks.Spawns.Add(new InvItem("herb_power"), new IntRange(0, max_floors), 10);//power herb
+            snacks.Spawns.Add(new InvItem("herb_mental"), new IntRange(0, max_floors), 5);//mental herb
+            snacks.Spawns.Add(new InvItem("herb_white"), new IntRange(0, max_floors), 50);//white herb
 
             //boosters
             CategorySpawn<InvItem> boosters = new CategorySpawn<InvItem>();
@@ -472,13 +471,6 @@ namespace DataGenerator.Data
                 poolSpawn.Spawns.Add(GetTeamMob("cascoon", "", "harden", "bug_bite", "", "", new RandRange(8), TeamMemberSpawn.MemberRole.Leader, "wait_attack"), new IntRange(4, 6), 10);
             }
 
-            //if (ii >= 9 && ii < 10)
-            //{
-            //    //174 * Igglybuff : 383 Copycat
-            //    //appears in a special situation
-            //    GetGenericMob(mobZoneStep, 174, -1, 383, -1, -1, -1, new RangeSpawn(15));
-            //}
-
 
             //447 Riolu : 068 Counter : 098 Quick Attack
             poolSpawn.Spawns.Add(GetTeamMob("riolu", "", "counter", "quick_attack", "", "", new RandRange(11), TeamMemberSpawn.MemberRole.Leader), new IntRange(4, 6), 10);
@@ -580,8 +572,6 @@ namespace DataGenerator.Data
             //296 Makuhita : 282 Knock Off : 292 Arm Thrust
             poolSpawn.Spawns.Add(GetTeamMob("makuhita", "", "knock_off", "arm_thrust", "", "", new RandRange(18)), new IntRange(10, 12), 10);
 
-            //37//304 Aron : 232 Metal Claw : 334 Iron Defense
-
             //23//104 Cubone : 099 Rage : 125 Bone Club
             poolSpawn.Spawns.Add(GetTeamMob("cubone", "", "rage", "bone_club", "", "", new RandRange(23)), new IntRange(10, 12), 10);
 
@@ -675,8 +665,6 @@ namespace DataGenerator.Data
             //34//019 Rattata : 283 Endeavor : 098 Quick Attack
 
             //34//075 Graveler : 446 Stealth Rock : 350 Rock Blast
-
-            //26//223 Remoraid : 055 Hustle : 116 Focus Energy : 199 Lock-On : 352 Water Pulse
 
             //31//459 Snover : 420 Ice Shard : 320 Grass Whistle : 275 Ingrain
 
@@ -1058,8 +1046,7 @@ namespace DataGenerator.Data
             tileSpawn.Spawns.Add(new EffectTile("trap_trip", true), new IntRange(0, 15), 10);//trip trap
             tileSpawn.Spawns.Add(new EffectTile("trap_trip", false), new IntRange(15, max_floors), 10);//trip trap
             tileSpawn.Spawns.Add(new EffectTile("trap_hunger", true), new IntRange(0, max_floors), 10);//hunger trap
-            tileSpawn.Spawns.Add(new EffectTile("trap_apple", true), new IntRange(0, 15), 3);//apple trap
-            tileSpawn.Spawns.Add(new EffectTile("trap_apple", false), new IntRange(15, max_floors), 3);//apple trap
+            tileSpawn.Spawns.Add(new EffectTile("trap_apple", true), new IntRange(0, max_floors), 3);//apple trap
             tileSpawn.Spawns.Add(new EffectTile("trap_pp_leech", true), new IntRange(0, max_floors), 10);//pp-leech trap
             tileSpawn.Spawns.Add(new EffectTile("trap_summon", false), new IntRange(0, max_floors), 10);//summon trap
             tileSpawn.Spawns.Add(new EffectTile("trap_explosion", false), new IntRange(0, max_floors), 10);//explosion trap
@@ -1073,13 +1060,13 @@ namespace DataGenerator.Data
             floorSegment.ZoneSteps.Add(tileSpawn);
 
 
-            AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(3, 5), new IntRange(0, 30)), new MapItem("food_apple"));
-            AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(13, 15), new IntRange(0, 30)), new MapItem("food_apple_big"));
-            AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(4, 7), new IntRange(0, 30)), new MapItem("berry_leppa"));
+            AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(3, 5), new IntRange(0, max_floors)), new MapItem("food_apple"));
+            AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(13, 15), new IntRange(0, max_floors)), new MapItem("food_apple_big"));
+            AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(4, 7), new IntRange(0, max_floors)), new MapItem("berry_leppa"));
             AddItemSpreadZoneStep(floorSegment, new SpreadPlanQuota(new RandRange(1), new IntRange(0, 5)), new MapItem("key", 1));
-            AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(3, 7), new IntRange(6, 30)), new MapItem("machine_assembly_box"));
+            AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(3, 7), new IntRange(6, max_floors)), new MapItem("machine_assembly_box"));
 
-            AddItemSpreadZoneStep(floorSegment, new SpreadPlanQuota(new RandDecay(1, 10, 50), new IntRange(3, 30)), new MapItem("orb_cleanse"));
+            AddItemSpreadZoneStep(floorSegment, new SpreadPlanQuota(new RandDecay(1, 10, 50), new IntRange(3, max_floors)), new MapItem("orb_cleanse"));
 
             AddItemSpreadZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(4, 7), new IntRange(1, 21)),
                 new MapItem("apricorn_blue"), new MapItem("apricorn_green"), new MapItem("apricorn_brown"), new MapItem("apricorn_purple"),
@@ -1090,7 +1077,7 @@ namespace DataGenerator.Data
                 new MapItem("evo_dusk_stone"), new MapItem("evo_dawn_stone"), new MapItem("evo_shiny_stone"), new MapItem("evo_leaf_stone"),
                 new MapItem("evo_ice_stone"), new MapItem("evo_sun_ribbon"), new MapItem("evo_lunar_ribbon"));
 
-            AddEvoZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(2, 5), new IntRange(1, max_floors)), false);
+            AddEvoZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(2, 5), new IntRange(1, max_floors)), EvoRoomType.Normal);
 
 
             string[] dexMap = { "bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon", "charizard", "squirtle", "wartortle", "blastoise", "chikorita", "bayleef", "meganium", "cyndaquil", "quilava", "typhlosion", "totodile", "croconaw", "feraligatr",
@@ -1243,7 +1230,7 @@ namespace DataGenerator.Data
 
             //switch vaults
             {
-                SpreadVaultZoneStep vaultChanceZoneStep = new SpreadVaultZoneStep(PR_SPAWN_ITEMS_EXTRA, PR_SPAWN_TRAPS, PR_SPAWN_MOBS_EXTRA, new SpreadPlanQuota(new RandRange(1, 4), new IntRange(0, 30)));
+                SpreadVaultZoneStep vaultChanceZoneStep = new SpreadVaultZoneStep(PR_SPAWN_ITEMS_EXTRA, PR_SPAWN_TRAPS, PR_SPAWN_MOBS_EXTRA, new SpreadPlanQuota(new RandRange(1, 5), new IntRange(0, max_floors)));
 
                 //making room for the vault
                 {
@@ -1296,7 +1283,7 @@ namespace DataGenerator.Data
                     vaultChanceZoneStep.Mobs.Add(GetFOEMob("glaceon", "", "blizzard", "helping_hand", "hail", "", 4), new IntRange(20, 30), 10);
 
                     //64//479 Rotom : 86 Thunder Wave : 271 Trick : 435 Discharge : 164 Substitute
-                    vaultChanceZoneStep.Mobs.Add(GetFOEMob("rotom", "", "thunder_wave", "trick", "discharge", "substitute", 4), new IntRange(0, 30), 10);
+                    vaultChanceZoneStep.Mobs.Add(GetFOEMob("rotom", "", "thunder_wave", "trick", "discharge", "substitute", 4), new IntRange(8, 30), 10);
 
                     //234 !! Stantler : 43 Leer : 95 Hypnosis : 36 Take Down : 109 Confuse Ray
                     vaultChanceZoneStep.Mobs.Add(GetFOEMob("stantler", "", "leer", "hypnosis", "take_down", "confuse_ray", 4), new IntRange(0, 10), 10);
@@ -1311,7 +1298,7 @@ namespace DataGenerator.Data
                     vaultChanceZoneStep.Mobs.Add(GetFOEMob("mightyena", "", "assurance", "howl", "", "", 4), new IntRange(0, 30), 10);
 
                     //24//20 Raticate : 228 Pursuit : 162 Super Fang : 372 Assurance
-                    vaultChanceZoneStep.Mobs.Add(GetFOEMob("raticate", "", "pursuit", "super_fang", "assurance", "", 4), new IntRange(0, 30), 10);
+                    vaultChanceZoneStep.Mobs.Add(GetFOEMob("raticate", "", "pursuit", "super_fang", "assurance", "", 4), new IntRange(0, 20), 10);
 
                     //29//137 Porygon : 160 Conversion : 060 Psybeam : 324 Signal Beam : 033 Tackle
                     vaultChanceZoneStep.Mobs.Add(GetFOEMob("porygon", "", "conversion", "psybeam", "signal_beam", "tackle", 4), new IntRange(5, 25), 10);
@@ -1363,26 +1350,26 @@ namespace DataGenerator.Data
                 //BOSS TEAMS
                 // no specific items to be used in lv5 dungeons
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("vespiquen"), new IntRange(0, 14), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("beehive"), new IntRange(0, 14), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("camerupt"), new IntRange(14, 19), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("lava_plume"), new IntRange(14, 19), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("tyranitar"), new IntRange(12, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("sandstorm_1"), new IntRange(12, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("dragonite"), new IntRange(23, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("dragon_1"), new IntRange(23, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("salamence"), new IntRange(19, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("dragon_2"), new IntRange(19, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("claydol"), new IntRange(23, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("artifact"), new IntRange(23, 30), 10);
 
                 bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("ditto"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("clefable"), new IntRange(0, 14), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("pink_wall"), new IntRange(0, 14), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("vaporeon"), new IntRange(0, 30), 10);
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("espeon"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("eeveelution_1"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("eeveelution_2"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("raichu"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("discharge"), new IntRange(0, 30), 10);
 
                 //sealing the boss room and treasure room
                 {
@@ -1595,6 +1582,7 @@ namespace DataGenerator.Data
             shopZoneStep.ModStates.Add(new FlagType(typeof(ShopModGenState)));
             floorSegment.ZoneSteps.Add(shopZoneStep);
 
+            AddHiddenLegendZoneStep(floorSegment, 11, "Latios", "latios");
 
             for (int ii = 0; ii < 30; ii++)
             {
@@ -1604,17 +1592,17 @@ namespace DataGenerator.Data
                 MapDataStep<MapGenContext> floorData = new MapDataStep<MapGenContext>();
                 floorData.TimeLimit = 1500;
                 if (ii < 5)
-                    floorData.Music = "B01. Demonstration.ogg";
+                    floorData.Music = "Demonstration.ogg";
                 else if (ii < 9)
-                    floorData.Music = "B18. Faultline Ridge.ogg";
+                    floorData.Music = "Faultline Ridge.ogg";
                 else if (ii < 14)
-                    floorData.Music = "B07. Flyaway Cliffs.ogg";
+                    floorData.Music = "Flyaway Cliffs.ogg";
                 else if (ii < 19)
-                    floorData.Music = "B11. Enraged Caldera.ogg";
+                    floorData.Music = "Enraged Caldera.ogg";
                 else if (ii < 24)
-                    floorData.Music = "B34. Glacial Path.ogg";
+                    floorData.Music = "Glacial Path.ogg";
                 else
-                    floorData.Music = "B14. Champion Road.ogg";
+                    floorData.Music = "Champion Road.ogg";
 
                 floorData.CharSight = Map.SightRange.Dark;
 
@@ -2838,7 +2826,7 @@ namespace DataGenerator.Data
             AddItemSpreadZoneStep(floorSegment, new SpreadPlanQuota(new RandRange(1, 4), new IntRange(0, 15)),
                 new MapItem("evo_fire_stone"), new MapItem("evo_leaf_stone"), new MapItem("evo_water_stone"), new MapItem("evo_moon_stone"), new MapItem("evo_sun_stone"), new MapItem("evo_kings_rock"), new MapItem("evo_link_cable"));
 
-            AddEvoZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(2, 5), new IntRange(3, max_floors)), true);
+            AddEvoZoneStep(floorSegment, new SpreadPlanSpaced(new RandRange(2, 5), new IntRange(3, max_floors)), EvoRoomType.Small);
 
 
             {
@@ -3009,7 +2997,7 @@ namespace DataGenerator.Data
                     //327 Spinda : 077 Tangled Feet : 298 Teeter Dance : 037 Thrash
                     vaultChanceZoneStep.Mobs.Add(GetFOEMob("spinda", "tangled_feet", "teeter_dance", "thrash", "", "", 3), new IntRange(0, 30), 10);
                     //425 Drifloon : 466 Ominous Wind : 116 Focus Energy : 132 Constrict
-                    vaultChanceZoneStep.Mobs.Add(GetFOEMob("drifloon", "", "ominous_wind", "focus_energy", "constrict", "", 3), new IntRange(0, 20), 10);
+                    vaultChanceZoneStep.Mobs.Add(GetFOEMob("drifloon", "", "ominous_wind", "focus_energy", "constrict", "", 3), new IntRange(8, 20), 10);
                     //426 Drifblim : 466 Ominous Wind : 226 Baton Pass : 254 Stockpile : 107 Minimize
                     vaultChanceZoneStep.Mobs.Add(GetFOEMob("drifblim", "", "ominous_wind", "baton_pass", "stockpile", "minimize", 3), new IntRange(15, 30), 10);
                     //045 Vileplume : 077 Poison Powder : 080 Petal Dance : 051 Acid
@@ -3021,7 +3009,7 @@ namespace DataGenerator.Data
                     //346 Cradily : 275 Ingrain : 051 Acid : 378 Wring Out : 362 Brine
                     vaultChanceZoneStep.Mobs.Add(GetFOEMob("cradily", "", "ingrain", "acid", "wring_out", "brine", 3), new IntRange(0, 30), 10);
                     //279 Pelipper : 254 Stockpile : 255 Spit Up : 256 Swallow
-                    vaultChanceZoneStep.Mobs.Add(GetFOEMob("pelipper", "", "stockpile", "spit_up", "swallow", "", 3), new IntRange(0, 30), 10);
+                    vaultChanceZoneStep.Mobs.Add(GetFOEMob("pelipper", "", "stockpile", "spit_up", "swallow", "", 3), new IntRange(0, 20), 10);
                     //700 Sylveon : 182 Pixilate : 129 Swift : 113 Light Screen : 581 Misty Terrain : 585 Moonblast
                     vaultChanceZoneStep.Mobs.Add(GetFOEMob("sylveon", "pixilate", "swift", "light_screen", "misty_terrain", "moonblast", 3), new IntRange(0, 30), 10);
                     //134 Vaporeon : 270 Helping Hand : 392 Aqua Ring : 330 Muddy Water
@@ -3058,23 +3046,23 @@ namespace DataGenerator.Data
                 }
 
                 //boss rooms
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("skarmory"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("skarmbliss"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("umbreon"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("eclipse"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("ampharos"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("plus_minus_2"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("plusle"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("plus_minus_1"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("tauros"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("cattle_pair"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("mothim"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("burmy_pair"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("politoed"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("poli_pair"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("slowbro"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("slow_pair"), new IntRange(0, 30), 10);
 
-                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("nidoking"), new IntRange(0, 30), 10);
+                bossChanceZoneStep.BossSteps.Add(getBossRoomStep<ListMapGenContext>("nido_pair"), new IntRange(0, 30), 10);
 
                 //sealing the boss room and treasure room
                 {
@@ -3235,6 +3223,8 @@ namespace DataGenerator.Data
             shopZoneStep.ModStates.Add(new FlagType(typeof(ShopModGenState)));
             floorSegment.ZoneSteps.Add(shopZoneStep);
 
+            AddHiddenLegendZoneStep(floorSegment, 12, "Latias", "latias");
+
             for (int ii = 0; ii < max_floors; ii++)
             {
                 GridFloorGen layout = new GridFloorGen();
@@ -3243,19 +3233,19 @@ namespace DataGenerator.Data
                 MapDataStep<MapGenContext> floorData = new MapDataStep<MapGenContext>();
                 floorData.TimeLimit = 1500;
                 if (ii <= 4)
-                    floorData.Music = "B02. Demonstration 2.ogg";
+                    floorData.Music = "Demonstration 2.ogg";
                 else if (ii <= 12)
-                    floorData.Music = "B25. Trickster Woods.ogg";
+                    floorData.Music = "Trickster Woods.ogg";
                 else if (ii <= 16)
-                    floorData.Music = "B22. Overgrown Wilds.ogg";
+                    floorData.Music = "Overgrown Wilds.ogg";
                 else if (ii <= 20)
                     floorData.Music = "Treeshroud Forest.ogg";
                 else if (ii <= 27)
-                    floorData.Music = "B03. Demonstration 3.ogg";
+                    floorData.Music = "Demonstration 3.ogg";
                 else if (ii <= 34)
-                    floorData.Music = "Hidden Land.ogg";
+                    floorData.Music = "Barren Tundra.ogg";
                 else
-                    floorData.Music = "Hidden Highland.ogg";
+                    floorData.Music = "Barren Tundra 2.ogg";
 
                 if (ii <= 8)
                     floorData.CharSight = Map.SightRange.Dark;
@@ -3909,7 +3899,7 @@ namespace DataGenerator.Data
                     //the main stairs becomes the exit stairs
                     EffectTile exitTile = new EffectTile("stairs_exit_up", true);
                     exitTile.TileStates.Set(new DestState(SegLoc.Invalid));
-                    var step = new FloorStairsStep<MapGenContext, MapGenEntrance, MapGenExit>(new MapGenEntrance(Dir8.Down), new MapGenExit(exitTile));
+                    var step = new FloorStairsStep<MapGenContext, MapGenEntrance, MapGenExit>(2, new MapGenEntrance(Dir8.Down), new MapGenExit(exitTile));
                     step.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
                     step.Filters.Add(new RoomFilterComponent(true, new BossRoom()));
                     layout.GenSteps.Add(PR_EXITS, step);

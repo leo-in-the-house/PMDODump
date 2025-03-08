@@ -1526,6 +1526,7 @@ namespace DataGenerator.Data
                 skill.Data.SkillStates.Set(new BasePowerState(85));
                 skill.Data.SkillStates.Set(new AdditionalEffectState(50));
                 skill.Data.OnActions.Add(0, new WeatherNeededEvent("hail", new SetAccuracyEvent(-1)));
+                skill.Data.OnActions.Add(0, new WeatherNeededEvent("snow", new SetAccuracyEvent(-1)));
                 skill.Data.OnActions.Add(0, new WeatherNeededEvent("sunny", new SetAccuracyEvent(50)));
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
                 skill.Data.OnHits.Add(0, new AdditionalEvent(new StatusBattleEvent("freeze", true, true)));
@@ -1979,6 +1980,7 @@ namespace DataGenerator.Data
                 skill.Data.OnActions.Add(0, new WeatherNeededEvent("rain", new MultiplyDamageEvent(2, 3)));
                 skill.Data.OnActions.Add(0, new WeatherNeededEvent("sandstorm", new MultiplyDamageEvent(2, 3)));
                 skill.Data.OnActions.Add(0, new WeatherNeededEvent("hail", new MultiplyDamageEvent(2, 3)));
+                skill.Data.OnActions.Add(0, new WeatherNeededEvent("snow", new MultiplyDamageEvent(2, 3)));
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
                 SingleEmitter terrainEmitter = new SingleEmitter(new AnimData("Wall_Break", 2));
                 skill.Data.OnHitTiles.Add(0, new RemoveTerrainStateEvent("", terrainEmitter, new FlagType(typeof(WallTerrainState))));
@@ -5326,7 +5328,7 @@ namespace DataGenerator.Data
             else if (ii == 208)
             {
                 skill.Name = new LocalText("Milk Drink");
-                skill.Desc = new LocalText("The user restores the party's HP by up to a half of its max HP");
+                skill.Desc = new LocalText("The user restores the party's HP by up to a half of its max HP.");
                 skill.BaseCharges = 10;
                 skill.Data.Element = "normal";
                 skill.Data.Category = BattleData.SkillCategory.Status;
@@ -5987,6 +5989,7 @@ namespace DataGenerator.Data
                 weather.Add("rain", false);
                 weather.Add("sandstorm", false);
                 weather.Add("hail", false);
+                weather.Add("snow", false);
                 skill.Data.OnHits.Add(0, new WeatherHPEvent(4, weather));
                 skill.Strikes = 1;
                 skill.HitboxAction = new AreaAction();
@@ -6012,6 +6015,7 @@ namespace DataGenerator.Data
                 weather.Add("rain", false);
                 weather.Add("sandstorm", false);
                 weather.Add("hail", false);
+                weather.Add("snow", false);
                 skill.Data.OnHits.Add(0, new WeatherHPEvent(6, weather));
                 skill.Strikes = 1;
                 skill.HitboxAction = new SelfAction();
@@ -6044,6 +6048,7 @@ namespace DataGenerator.Data
                 weather.Add("rain", false);
                 weather.Add("sandstorm", false);
                 weather.Add("hail", false);
+                weather.Add("snow", false);
                 skill.Data.OnHits.Add(0, new WeatherHPEvent(3, weather));
                 skill.Strikes = 1;
                 skill.HitboxAction = new AreaAction();
@@ -8137,6 +8142,7 @@ namespace DataGenerator.Data
                     newData.HitFX.Emitter = endAnim;
 
                     weather.Add("hail", newData);
+                    weather.Add("snow", newData);
                 }
                 skill.Data.BeforeHits.Add(-5, new WeatherDifferentEvent(weather));
 
@@ -9539,7 +9545,13 @@ namespace DataGenerator.Data
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
                 HashSet<FlagType> eligibles = new HashSet<FlagType>();
                 eligibles.Add(new FlagType(typeof(EdibleState)));
-                skill.Data.OnHits.Add(0, new OnHitEvent(true, false, 100, new UseFoeItemEvent(false, false, "seed_decoy", eligibles, true, false)));
+
+                Dictionary<ItemData.UseType, StringKey> useMsgs = new Dictionary<ItemData.UseType, StringKey>();
+                useMsgs[ItemData.UseType.Eat] = new StringKey("MSG_STEAL_EAT");
+                useMsgs[ItemData.UseType.Drink] = new StringKey("MSG_STEAL_DRINK");
+                useMsgs[ItemData.UseType.Learn] = new StringKey("MSG_STEAL_OPERATE");
+                useMsgs[ItemData.UseType.Use] = new StringKey("MSG_STEAL_USE");
+                skill.Data.OnHits.Add(0, new OnHitEvent(true, false, 100, new UseFoeItemEvent(false, false, "seed_decoy", eligibles, true, false, useMsgs)));
                 skill.Strikes = 1;
                 skill.HitboxAction = new AttackAction();
                 ((AttackAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(20);//Jab
@@ -11815,7 +11827,13 @@ namespace DataGenerator.Data
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
                 HashSet<FlagType> eligibles = new HashSet<FlagType>();
                 eligibles.Add(new FlagType(typeof(EdibleState)));
-                skill.Data.OnHits.Add(0, new OnHitEvent(true, false, 100, new UseFoeItemEvent(false, false, "seed_decoy", eligibles, true, false)));
+
+                Dictionary<ItemData.UseType, StringKey> useMsgs = new Dictionary<ItemData.UseType, StringKey>();
+                useMsgs[ItemData.UseType.Eat] = new StringKey("MSG_STEAL_EAT");
+                useMsgs[ItemData.UseType.Drink] = new StringKey("MSG_STEAL_DRINK");
+                useMsgs[ItemData.UseType.Learn] = new StringKey("MSG_STEAL_OPERATE");
+                useMsgs[ItemData.UseType.Use] = new StringKey("MSG_STEAL_USE");
+                skill.Data.OnHits.Add(0, new OnHitEvent(true, false, 100, new UseFoeItemEvent(false, false, "seed_decoy", eligibles, true, false, useMsgs)));
                 skill.Strikes = 1;
                 skill.HitboxAction = new AttackAction();
                 ((AttackAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(18);//Bite

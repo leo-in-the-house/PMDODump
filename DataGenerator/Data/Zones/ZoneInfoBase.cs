@@ -35,7 +35,7 @@ namespace DataGenerator.Data
 
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<StairsMapGenContext>(new LocalText("Debug Dungeon Main Room")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "A07. Summit.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Summit.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     InitTilesStep<StairsMapGenContext> startStep = new InitTilesStep<StairsMapGenContext>();
                     int width = 70;
@@ -147,8 +147,7 @@ namespace DataGenerator.Data
                     }
                     //{
                     //    List<(EffectTile, Loc)> exits = new List<(EffectTile, Loc)>();
-                    //    EffectTile secretStairs = new EffectTile("sign", true);
-                    //    secretStairs.TileStates.Set(new TileScriptState("Test", "{}"));
+                    //    EffectTile secretStairs = new EffectTile("tile_cradle", true);
                     //    exits.Add((secretStairs, new Loc(36, 2)));
                     //    AddSpecificSpawn(layout, exits, PR_EXITS);
                     //}
@@ -232,7 +231,7 @@ namespace DataGenerator.Data
 
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Enemies")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "A07. Summit.ogg", 500, Map.SightRange.Clear, Map.SightRange.Clear);
+                    AddFloorData(layout, "Summit.ogg", 500, Map.SightRange.Clear, Map.SightRange.Clear);
                     AddDefaultMapStatus(layout, "default_weather", "rain");
 
                     AddInitGridStep(layout, 4, 4, 9, 9);
@@ -367,7 +366,7 @@ namespace DataGenerator.Data
 
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Vault Shop Boss")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "A07. Summit.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Summit.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     Dictionary<ItemFake, MobSpawn> spawnTable = new Dictionary<ItemFake, MobSpawn>();
                     spawnTable.Add(new ItemFake("food_apple", "applin"), GetGenericMob("applin", "", "astonish", "", "", "", new RandRange(20)));
@@ -419,7 +418,7 @@ namespace DataGenerator.Data
                     layout.GenSteps.Add(PR_RESPAWN_MOB, spawnStep);
 
                     //Tilesets
-                    AddTextureData(layout, "sky_peak_4th_pass_wall", "sky_peak_4th_pass_floor", "sky_peak_4th_pass_secondary", "normal");
+                    AddTextureData(layout, "surrounded_sea_wall", "surrounded_sea_floor", "surrounded_sea_secondary", "normal");
 
                     AddBlobWaterSteps(layout, "water", new RandRange(10), new IntRange(2, 10));
 
@@ -544,7 +543,7 @@ namespace DataGenerator.Data
                         int boss_idx = 0;
                         {
                             SpawnList<RoomGen<MapGenContext>> bossRooms = new SpawnList<RoomGen<MapGenContext>>();
-                            bossRooms.Add(getBossRoomGen<MapGenContext>("wobbuffet", 23, 0, 1), 10);
+                            bossRooms.Add(getBossRoomGen<MapGenContext>("trapper", 23, 0, 1), 10);
                             layout.GenSteps.Add(PR_ROOMS_GEN_EXTRA, CreateGenericBossRoomStep(bossRooms, boss_idx));
                         }
                         //sealing the boss room and treasure room
@@ -573,7 +572,7 @@ namespace DataGenerator.Data
                         int boss_idx = 1;
                         {
                             SpawnList<RoomGen<MapGenContext>> bossRooms = new SpawnList<RoomGen<MapGenContext>>();
-                            bossRooms.Add(getBossRoomGen<MapGenContext>("delphox", 23, 0, 1), 10);
+                            bossRooms.Add(getBossRoomGen<MapGenContext>("superhero", 23, 0, 1), 10);
                             layout.GenSteps.Add(PR_ROOMS_GEN_EXTRA, CreateGenericBossRoomStep(bossRooms, boss_idx));
                         }
                         //sealing the boss room and treasure room
@@ -609,7 +608,7 @@ namespace DataGenerator.Data
 
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Monster Hall")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     AddInitGridStep(layout, 5, 3, 10, 10);
 
@@ -690,7 +689,7 @@ namespace DataGenerator.Data
 
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Monster Mansion")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     AddInitGridStep(layout, 1, 1, 50, 35);
 
@@ -761,7 +760,7 @@ namespace DataGenerator.Data
 
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Monster Maze")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 500, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     AddInitGridStep(layout, 9, 7, 3, 3);
 
@@ -860,7 +859,7 @@ namespace DataGenerator.Data
                     //Floor settings
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Hedge Maze")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout,"B07. Flyaway Cliffs.ogg", 1000, Map.SightRange.Clear, Map.SightRange.Dark);
+                    AddFloorData(layout,"Flyaway Cliffs.ogg", 1000, Map.SightRange.Clear, Map.SightRange.Dark);
                     AddDefaultMapStatus(layout, "default_weather", "sandstorm");
 
                     //Tilesets
@@ -1020,7 +1019,7 @@ namespace DataGenerator.Data
                     //Floor settings
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Hedge Maze 2")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 1000, Map.SightRange.Clear, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 1000, Map.SightRange.Clear, Map.SightRange.Dark);
                     AddDefaultMapStatus(layout, "default_mapstatus", "gravity");
 
                     //Tilesets
@@ -1179,7 +1178,7 @@ namespace DataGenerator.Data
                     //Floor settings
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<ListMapGenContext>(new LocalText("Test: Floating Islands")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 2000, Map.SightRange.Clear, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 2000, Map.SightRange.Clear, Map.SightRange.Dark);
                     AddDefaultMapStatus(layout, "default_mapstatus", "inverse");
 
                     //Tilesets
@@ -1223,7 +1222,7 @@ namespace DataGenerator.Data
                         {
                             spawner.AmountSpawner = new RandRange(10, 13);
                         }
-                        PlaceTerrainMobsStep<ListMapGenContext> secretMobPlacement = new PlaceTerrainMobsStep<ListMapGenContext>(spawner);
+                        PlaceTerrainMobsStep<ListMapGenContext> secretMobPlacement = new PlaceTerrainMobsStep<ListMapGenContext>(spawner, 0);
                         secretMobPlacement.AcceptedTiles.Add(new Tile("pit"));
                         layout.GenSteps.Add(PR_SPAWN_MOBS, secretMobPlacement);
                     }
@@ -1340,7 +1339,7 @@ namespace DataGenerator.Data
                     //Floor settings
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Grid Room Merging")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 1000, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 1000, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     //Tilesets
                     //AddTextureData(layout, "sky_peak_4th_pass_wall", "sky_peak_4th_pass_floor", "sky_peak_4th_pass_secondary", "normal");
@@ -1526,7 +1525,7 @@ namespace DataGenerator.Data
                     //Floor settings
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Chasm Cave")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 2000, Map.SightRange.Clear, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 2000, Map.SightRange.Clear, Map.SightRange.Dark);
 
                     //Tilesets
                     MapDictTextureStep<MapGenContext> textureStep = new MapDictTextureStep<MapGenContext>();
@@ -1622,7 +1621,7 @@ namespace DataGenerator.Data
 
                     //boss rooms
                     {
-                        layout.GenSteps.Add(PR_ROOMS_GEN_EXTRA, getBossRoomStep<MapGenContext>("hippowdon", 0));
+                        layout.GenSteps.Add(PR_ROOMS_GEN_EXTRA, getBossRoomStep<MapGenContext>("sandstorm_2", 0));
                     }
                     //sealing the boss room and treasure room
                     {
@@ -1660,7 +1659,7 @@ namespace DataGenerator.Data
                     //Floor settings
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Wrapped Tiered Floor")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 1000, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 1000, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     //Tilesets
                     AddTextureData(layout, "sky_peak_4th_pass_wall", "sky_peak_4th_pass_floor", "sky_peak_4th_pass_secondary", "normal");
@@ -1760,7 +1759,7 @@ namespace DataGenerator.Data
                     //Floor settings
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Script Gen Step")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 1000, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 1000, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     //Tilesets
                     //AddTextureData(layout, "sky_peak_4th_pass_wall", "sky_peak_4th_pass_floor", "sky_peak_4th_pass_secondary", "normal");
@@ -1863,7 +1862,7 @@ namespace DataGenerator.Data
                     //Floor settings
                     layout.GenSteps.Add(PR_FLOOR_DATA, new MapNameIDStep<MapGenContext>(new LocalText("Test: Script Gen Step on Grid and Floor")));
                     AddTitleDrop(layout);
-                    AddFloorData(layout, "B07. Flyaway Cliffs.ogg", 1000, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Flyaway Cliffs.ogg", 1000, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     //Tilesets
                     //AddTextureData(layout, "sky_peak_4th_pass_wall", "sky_peak_4th_pass_floor", "sky_peak_4th_pass_secondary", "normal");
@@ -1970,7 +1969,7 @@ namespace DataGenerator.Data
 
                 StairsFloorGen layout = new StairsFloorGen();
                 
-                AddFloorData(layout, "A07. Summit.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
+                AddFloorData(layout, "Summit.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
 
                 //square
                 string[] level = {
@@ -2062,7 +2061,7 @@ namespace DataGenerator.Data
                 #region TILESET TESTS
                 StairsFloorGen layout = new StairsFloorGen();
 
-                AddFloorData(layout, "B02. Demonstration 2.ogg", -1, Map.SightRange.Clear, Map.SightRange.Clear);
+                AddFloorData(layout, "Demonstration 2.ogg", -1, Map.SightRange.Clear, Map.SightRange.Clear);
 
                 string[] level = {
                             "#######.#######",
@@ -2330,7 +2329,7 @@ namespace DataGenerator.Data
 
                     StairsFloorGen layout = new StairsFloorGen();
 
-                    AddFloorData(layout, "A07. Summit.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Summit.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     InitTilesStep<StairsMapGenContext> startStep = new InitTilesStep<StairsMapGenContext>();
                     int width = level[0].Length;
@@ -2549,7 +2548,7 @@ namespace DataGenerator.Data
                 {
                     StairsFloorGen layout = new StairsFloorGen();
 
-                    AddFloorData(layout, "A07. Summit.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Summit.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     InitTilesStep<StairsMapGenContext> startStep = new InitTilesStep<StairsMapGenContext>();
                     int width = 70;
@@ -2624,13 +2623,13 @@ namespace DataGenerator.Data
                         }
 
                         // place the items of the shop
-                        List<InvItem> treasure1 = new List<InvItem>();
-                        treasure1.Add(new InvItem("food_apple", false, 0, 50));//Apple
-                        List<InvItem> treasure2 = new List<InvItem>();
-                        treasure2.Add(InvItem.CreateBox("box_light", "xcl_element_poison_dust", 8000));//Poison Dust
-                        List<(List<InvItem>, Loc)> items = new List<(List<InvItem>, Loc)>();
-                        List<InvItem> treasure3 = new List<InvItem>();
-                        treasure3.Add(new InvItem("wand_lob", false, 9, 180));//Lob Wand
+                        SpawnList<InvItem> treasure1 = new SpawnList<InvItem>();
+                        treasure1.Add(new InvItem("food_apple", false, 0, 50), 10);//Apple
+                        SpawnList<InvItem> treasure2 = new SpawnList<InvItem>();
+                        treasure2.Add(InvItem.CreateBox("box_light", "xcl_element_poison_dust", 8000), 10);//Poison Dust
+                        List<(SpawnList<InvItem>, Loc)> items = new List<(SpawnList<InvItem>, Loc)>();
+                        SpawnList<InvItem> treasure3 = new SpawnList<InvItem>();
+                        treasure3.Add(new InvItem("wand_lob", false, 9, 180), 10);//Lob Wand
                         items.Add((treasure1, new Loc(22, 1)));
                         items.Add((treasure2, new Loc(22, 2)));
                         items.Add((treasure3, new Loc(23, 2)));
@@ -3073,7 +3072,7 @@ namespace DataGenerator.Data
 
                     GridFloorGen layout = new GridFloorGen();
 
-                    AddFloorData(layout, "A02. Base Town.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
+                    AddFloorData(layout, "Base Town.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
 
                     if (ii == 0)
                         AddInitGridStep(layout, 1, 1, 11, 11);
@@ -3712,7 +3711,7 @@ namespace DataGenerator.Data
 
                 StairsFloorGen layout = new StairsFloorGen();
                 
-                AddFloorData(layout, "B02. Demonstration 2.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
+                AddFloorData(layout, "Demonstration 2.ogg", -1, Map.SightRange.Dark, Map.SightRange.Dark);
 
                 string[] level = new string[]  {"#######################################################################################################################################################################################",
                                                     "#########=............................=####=............................=####=............................=####=............................=####=............................=########",

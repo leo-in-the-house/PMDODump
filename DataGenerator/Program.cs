@@ -418,8 +418,10 @@ namespace DataGenerator
                         {
                             //SkillInfo.AddUnreleasedMoveData();
                             //SkillInfo.AddMoveData();
-                            //SkillInfo.AddMoveData(845, 830);
-                            //SkillInfo.AddMoveDataToAnims(120, 153);
+                            //SkillInfo.AddMoveData(679);
+                            //SkillInfo.AddMoveDataToAnims(694, 59, 76);
+                            //SkillInfo.AddMoveDataToAnims(234, 235, 236);
+                            //SkillInfo.AddMoveDataToAnims(311);
                         }
 
                         if ((dump & DataManager.DataType.Intrinsic) != DataManager.DataType.None)

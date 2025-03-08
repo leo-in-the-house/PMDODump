@@ -38,7 +38,14 @@ namespace DataGenerator.Data
             mobility.ElementPair["ghost"] = TerrainData.Mobility.Block;
             universalEvent.OnRefresh.Add(-5, mobility);
             universalEvent.InitActionData.Add(-10, new PreSkillEvent());
-            universalEvent.InitActionData.Add(-10, new PreItemEvent());
+
+            Dictionary<ItemData.UseType, StringKey> useMsgs = new Dictionary<ItemData.UseType, StringKey>();
+            useMsgs[ItemData.UseType.Eat] = new StringKey("MSG_USE_EAT");
+            useMsgs[ItemData.UseType.Drink] = new StringKey("MSG_USE_DRINK");
+            useMsgs[ItemData.UseType.Learn] = new StringKey("MSG_USE_OPERATE");
+            useMsgs[ItemData.UseType.Use] = new StringKey("MSG_USE");
+            universalEvent.InitActionData.Add(-10, new PreItemEvent(useMsgs));
+
             universalEvent.InitActionData.Add(-10, new PreThrowEvent());
             universalEvent.OnEquips.Add(0, new CurseWarningEvent());
             universalEvent.BeforeHits.Add(-10, new PreHitEvent());
@@ -54,6 +61,8 @@ namespace DataGenerator.Data
             universalEvent.OnMapStarts.Add(-10, new FadeInEvent());
             universalEvent.OnMapStarts.Add(-5, new SpecialIntroEvent());
             universalEvent.OnMapStarts.Add(-5, new ReactivateItemsEvent());
+            universalEvent.OnTurnEnds.Add(15, new NaturalHungerEvent(1000, 80, 0, 0, 0, 0));
+            universalEvent.OnTurnEnds.Add(15, new NaturalPercentRegenEvent(12, 0, -60));
             universalEvent.ZoneSteps.Add(new ScriptZoneStep("SpawnRescueNote"));
             universalEvent.ZoneSteps.Add(new ScriptZoneStep("SpawnMissionNpcFromSV"));
             //UniversalEvent.OnWalks.Add(-5, new RevealFrontTrapEvent());

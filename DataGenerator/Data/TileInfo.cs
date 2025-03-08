@@ -110,7 +110,7 @@ namespace DataGenerator.Data
                 newData.Element = "none";
                 newData.HitRate = -1;
                 newData.OnHits.Add(0, new StatusBattleEvent("poison", true, false, true));
-                tile.InteractWithTiles.Add(0, new InvokeTrapEvent(altAction, altExplosion, newData, new StringKey("MSG_TILE_CHECK"),  false));
+                tile.InteractWithTiles.Add(0, new InvokeTrapEvent(altAction, altExplosion, newData, new StringKey("MSG_TILE_CHECK"), false));
             }
             else if (ii == 4)
             {
@@ -1046,7 +1046,7 @@ namespace DataGenerator.Data
                 openEvent.Emitter = overlay;
                 openEvent.Warning = new StringKey("MSG_TIME_WARNING_1");
                 openEvent.WarningSE = "DUN_Wind";
-                openEvent.WarningBGM = "C04. Wind.ogg";
+                openEvent.WarningBGM = "Wind.ogg";
                 tile.InteractWithTiles.Add(0, openEvent);
             }
             else if (ii == 40)
@@ -1090,7 +1090,7 @@ namespace DataGenerator.Data
                 openEvent.Emitter = overlay;
                 openEvent.Warning = new StringKey("MSG_TIME_WARNING_1");
                 openEvent.WarningSE = "DUN_Wind";
-                openEvent.WarningBGM = "C04. Wind.ogg";
+                openEvent.WarningBGM = "Wind.ogg";
                 tile.InteractWithTiles.Add(0, openEvent);
             }
             else if (ii == 42)
@@ -1122,7 +1122,7 @@ namespace DataGenerator.Data
                 openEvent.Emitter = overlay;
                 openEvent.Warning = new StringKey("MSG_TIME_WARNING_1");
                 openEvent.WarningSE = "DUN_Wind";
-                openEvent.WarningBGM = "C04. Wind.ogg";
+                openEvent.WarningBGM = "Wind.ogg";
                 tile.InteractWithTiles.Add(0, openEvent);
             }
             else if (ii == 43)
@@ -1293,7 +1293,7 @@ namespace DataGenerator.Data
                 tile.MinimapIcon = new Loc(4, 1);
                 tile.MinimapColor = Color.Cyan;
                 tile.LandedOnTiles.Add(0, new SingleCharScriptEvent("GuildBlock"));//need a scripted event to check for story completion
-                tile.InteractWithTiles.Add(0, new OpenSelfEvent(new BattleFX(new SingleEmitter(new AnimData("Seven_Treasures", 3)), "EVT_Seven_Treasures", 156), false, false));
+                tile.InteractWithTiles.Add(0, new OpenSelfEvent(new BattleFX(new SingleEmitter(new AnimData("Seven_Treasures", 3)), "EVT_Seven_Treasures", 156, true), false, false));
             }
             else if (ii == 55)
             {
@@ -1329,6 +1329,21 @@ namespace DataGenerator.Data
                 tile.MinimapColor = Color.Cyan;
                 tile.LandedOnTiles.Add(0, new AskLeaderEvent());
                 tile.InteractWithTiles.Add(0, new ResetFloorEvent());
+            }
+            else if (ii == 57)
+            {
+                tile.Name = new LocalText("Sea Cradle");
+                fileName = "tile_cradle";
+                tile.Desc = new LocalText("A cold sea current gently swirls about...");
+                tile.BlockItem = true;
+                tile.StepType = TileData.TriggerType.Site;
+                tile.Anim = new ObjAnimData("Sea_Cradle", 3);
+                tile.Offset = new Loc(0, -4);
+                tile.Layer = DrawLayer.Front;
+                tile.MinimapIcon = new Loc(4, 1);
+                tile.MinimapColor = Color.Cyan;
+                tile.LandedOnTiles.Add(0, new TriggerUnderfootEvent());
+                tile.InteractWithTiles.Add(0, new SingleCharScriptEvent("SeaCradle", "{ ActionScript = \"AllyInteract\" }"));
             }
 
             if (tile.Name.DefaultText.StartsWith("**"))

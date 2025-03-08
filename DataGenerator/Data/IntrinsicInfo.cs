@@ -200,7 +200,7 @@ namespace DataGenerator.Data
             {
                 ability.Name = new LocalText("Shadow Tag");
                 ability.Desc = new LocalText("This Pokémon steps on the opposing Pokémon's shadow to prevent it from escaping.");
-                ability.AfterBeingHits.Add(0, new HitCounterEvent(Alignment.Foe, false, false, false, 100, new StatusBattleEvent("immobilized", false, true, false, new StringKey("MSG_SHADOW_TAG"),
+                ability.AfterBeingHits.Add(0, new HitCounterEvent(Alignment.Foe, false, false, false, 100, new StatusBattleEvent("immobilized", false, true, false, new StringKey("MSG_ARENA_TRAP"),
                     new BattleAnimEvent(new SingleEmitter(new AnimData("Dark_Pulse_Ranger", 3)), "DUN_Night_Shade", false, 0))));
                 //ability.AfterHittings.Add(0, new OnHitEvent(false, false, 100, new StatusBattleEvent("immobilized", true, true, false, new StringKey("MSG_SHADOW_TAG"),
                 //    new BattleAnimEvent(new SingleEmitter(new AnimData("Dark_Pulse_Ranger", 3)), "DUN_Night_Shade", true, 0))));
@@ -517,6 +517,7 @@ namespace DataGenerator.Data
                     weather.Add("rain", 2);
                     weather.Add("sunny", 1);
                     weather.Add("hail", 3);
+                    weather.Add("snow", 3);
                     ability.OnMapStatusAdds.Add(0, new WeatherFormeChangeEvent("castform", 0, weather));
                 }
                 {
@@ -524,6 +525,7 @@ namespace DataGenerator.Data
                     weather.Add("rain", 2);
                     weather.Add("sunny", 1);
                     weather.Add("hail", 3);
+                    weather.Add("snow", 3);
                     ability.OnMapStatusRemoves.Add(0, new WeatherFormeChangeEvent("castform", 0, weather));
                 }
                 {
@@ -531,6 +533,7 @@ namespace DataGenerator.Data
                     weather.Add("rain", 2);
                     weather.Add("sunny", 1);
                     weather.Add("hail", 3);
+                    weather.Add("snow", 3);
                     ability.OnMapStarts.Add(-11, new WeatherFormeEvent("castform", 0, weather));
                 }
             }
@@ -680,6 +683,7 @@ namespace DataGenerator.Data
                 ability.Desc = new LocalText("Avoids attacks from a distance when in a hailstorm.");
                 ability.OnRefresh.Add(0, new MiscEvent(new HailState()));
                 ability.BeforeBeingHits.Add(0, new WeatherNeededEvent("hail", new EvadeDistanceEvent()));
+                ability.BeforeBeingHits.Add(0, new WeatherNeededEvent("snow", new EvadeDistanceEvent()));
             }
             else if (ii == 82)
             {
@@ -687,7 +691,13 @@ namespace DataGenerator.Data
                 ability.Desc = new LocalText("Steals and eats a food item from an attacker that made direct contact.");
                 HashSet<FlagType> eligibles = new HashSet<FlagType>();
                 eligibles.Add(new FlagType(typeof(EdibleState)));
-                ability.AfterBeingHits.Add(0, new HitCounterEvent(Alignment.Foe, true, true, true, 100, new UseFoeItemEvent(true, false, "seed_decoy", eligibles, false, true)));
+
+                Dictionary<ItemData.UseType, StringKey> useMsgs = new Dictionary<ItemData.UseType, StringKey>();
+                useMsgs[ItemData.UseType.Eat] = new StringKey("MSG_STEAL_EAT");
+                useMsgs[ItemData.UseType.Drink] = new StringKey("MSG_STEAL_DRINK");
+                useMsgs[ItemData.UseType.Learn] = new StringKey("MSG_STEAL_OPERATE");
+                useMsgs[ItemData.UseType.Use] = new StringKey("MSG_STEAL_USE");
+                ability.AfterBeingHits.Add(0, new HitCounterEvent(Alignment.Foe, true, true, true, 100, new UseFoeItemEvent(true, false, "seed_decoy", eligibles, false, true, useMsgs)));
             }
             else if (ii == 83)
             {
@@ -926,6 +936,7 @@ namespace DataGenerator.Data
                 ability.Desc = new LocalText("The Pokémon gradually regains HP when battling in a hailstorm.");
                 ability.OnRefresh.Add(0, new MiscEvent(new HailState()));
                 ability.AfterActions.Add(0, new WeatherNeededEvent("hail", new OnMoveUseEvent(new RestoreHPEvent(1, 8, false))));
+                ability.AfterActions.Add(0, new WeatherNeededEvent("snow", new OnMoveUseEvent(new RestoreHPEvent(1, 8, false))));
             }
             else if (ii == 116)
             {
@@ -1596,6 +1607,7 @@ namespace DataGenerator.Data
                 ability.Desc = new LocalText("Boosts the Pokémon's Speed stat in a hailstorm.");
                 ability.OnRefresh.Add(0, new MiscEvent(new HailState()));
                 ability.OnRefresh.Add(0, new WeatherSpeedEvent("hail"));
+                ability.OnRefresh.Add(0, new WeatherSpeedEvent("snow"));
             }
             else if (ii == 203)
             {
@@ -1686,8 +1698,11 @@ namespace DataGenerator.Data
             }
             else if (ii == 217)
             {
-                ability.Name = new LocalText("**Battery");
+                ability.Name = new LocalText("Battery");
                 ability.Desc = new LocalText("Powers up ally Pokémon's special moves.");
+                ability.ProximityEvent.Radius = 1;
+                ability.ProximityEvent.TargetAlignments = Alignment.Friend;
+                ability.ProximityEvent.OnActions.Add(0, new MultiplyCategoryEvent(BattleData.SkillCategory.Magical, 4, 3));
             }
             else if (ii == 218)
             {
@@ -1854,8 +1869,9 @@ namespace DataGenerator.Data
             }
             else if (ii == 245)
             {
-                ability.Name = new LocalText("**Sand Spit");
+                ability.Name = new LocalText("Sand Spit");
                 ability.Desc = new LocalText("The Pokémon creates a sandstorm when it's hit by an attack.");
+                ability.AfterBeingHits.Add(0, new HitCounterEvent(Alignment.Foe, false, false, false, 100, new GiveMapStatusEvent("sandstorm", 10, new StringKey("MSG_SAND_STREAM"), typeof(ExtendWeatherState))));
             }
             else if (ii == 246)
             {
@@ -1885,6 +1901,7 @@ namespace DataGenerator.Data
                 {
                     Dictionary<string, int> weather = new Dictionary<string, int>();
                     weather.Add("hail", 0);
+                    weather.Add("snow", 0);
                     ability.OnTurnEnds.Add(0, new WeatherFormeSingleEvent("eiscue", -1, weather, new AnimEvent(new SingleEmitter(new AnimData("Circle_Small_Blue_In", 1)), "DUN_Wonder_Tile", 10)));
                 }
             }
@@ -2047,7 +2064,7 @@ namespace DataGenerator.Data
             {
                 ability.Name = new LocalText("Zero to Hero");
                 ability.Desc = new LocalText("The Pokémon switches between Zero Form and Hero Form when entering a new floor.");
-                ability.OnMapStarts.Add(-10, new RevolvingFormeEvent("palfin", 0, 1));
+                ability.OnMapStarts.Add(-15, new RevolvingFormeEvent("palafin", 0, 1));
             }
             else if (ii == 279)
             {
@@ -2124,8 +2141,9 @@ namespace DataGenerator.Data
             }
             else if (ii == 291)
             {
-                ability.Name = new LocalText("**Cud Chew");
-                ability.Desc = new LocalText("");
+                ability.Name = new LocalText("Cud Chew");
+                ability.Desc = new LocalText("When the Pokémon eats a berry, it will regurgitate that berry several turns later and eat it one more time.");
+                ability.AfterBeingHits.Add(0, new BerryNeededEvent(new StatusItemBattleEvent("cud_chew", true, false)));
             }
             else if (ii == 292)
             {

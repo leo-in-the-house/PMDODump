@@ -105,7 +105,7 @@ namespace DataGenerator.Data
                 status.OnMapStatusAdds.Add(0, new MapStatusBattleLogEvent(new StringKey("MSG_SAND_START"), true));
                 status.OnMapStatusAdds.Add(-5, new ReplaceStatusGroupEvent(typeof(MapWeatherState)));
                 status.OnMapStatusRemoves.Add(0, new MapStatusBattleLogEvent(new StringKey("MSG_SAND_END"), true));
-                status.BeforeBeingHits.Add(0, new MultiplyCategoryEvent(BattleData.SkillCategory.Magical, 2, 3));
+                status.BeforeBeingHits.Add(0, new CharElementNeededEvent("rock", new MultiplyCategoryEvent(BattleData.SkillCategory.Magical, 2, 3)));
                 status.OnMapTurnEnds.Add(0, new WeatherDamageEvent(new System.Type[] { typeof(MagicGuardState), typeof(SandState) }, "rock", "ground", "steel"));
                 status.StatusStates.Set(new MapCountDownState(50));
                 status.StatusStates.Set(new MapTickState(0));
@@ -175,11 +175,20 @@ namespace DataGenerator.Data
             else if (ii == 7)
             {
                 status.Name = new LocalText("Snow");
+                status.Desc = new LocalText("The Defense of Ice-types is boosted.");
                 OverlayEmitter overlay = new OverlayEmitter();
                 overlay.Anim = new BGAnimData("Snow", 4);
                 overlay.Layer = DrawLayer.Top;
                 status.Emitter = overlay;
                 status.RepeatMethod = new MapStatusRefreshEvent();
+                status.StatusStates.Set(new MapWeatherState());
+                status.OnMapStatusAdds.Add(0, new MapStatusSoundEvent("DUN_Snowy_Weather"));
+                status.OnMapStatusAdds.Add(0, new MapStatusBattleLogEvent(new StringKey("MSG_SNOW_START"), true));
+                status.OnMapStatusAdds.Add(-5, new ReplaceStatusGroupEvent(typeof(MapWeatherState)));
+                status.OnMapStatusRemoves.Add(0, new MapStatusBattleLogEvent(new StringKey("MSG_SNOW_END"), true));
+                status.BeforeBeingHits.Add(0, new CharElementNeededEvent("ice", new MultiplyCategoryEvent(BattleData.SkillCategory.Physical, 2, 3)));
+                status.StatusStates.Set(new MapCountDownState(50));
+                status.OnMapTurnEnds.Add(5, new MapStatusCountDownEvent());
             }
             else if (ii == 8)
             {
@@ -466,7 +475,7 @@ namespace DataGenerator.Data
                 timeLimit.WarningSE2 = "DUN_Wind";
                 timeLimit.WarningSE3 = "DUN_Wind";
                 timeLimit.TimeOutSE = "DUN_Wind_2";
-                timeLimit.BGM = "C04. Wind.ogg";
+                timeLimit.BGM = "Wind.ogg";
                 status.OnMapTurnEnds.Add(7, timeLimit);
             }
             else if (ii == 23)
@@ -538,7 +547,7 @@ namespace DataGenerator.Data
                 //prevent rescue
                 status.OnMapRefresh.Add(0, new MapNoRescueEvent());
                 //constantly spawn a mon near the exit
-                status.OnMapStatusAdds.Add(0, new MapStatusBGMEvent("C07. Outlaw.ogg"));
+                status.OnMapStatusAdds.Add(0, new MapStatusBGMEvent("Outlaw.ogg"));
                 status.OnMapStatusAdds.Add(0, new MapStatusScriptEvent("SetShopkeeperHostile"));
                 status.OnMapStatusAdds.Add(0, new MapStatusSpawnStartGuardsEvent("shopkeeper"));
                 status.OnMapTurnEnds.Add(10, new PeriodicSpawnEntranceGuards(10, 40, "shopkeeper"));
@@ -590,7 +599,7 @@ namespace DataGenerator.Data
                 status.RepeatMethod = new MapStatusIgnoreEvent();
                 //prevent leaderswitch
                 status.OnMapRefresh.Add(0, new MapNoSwitchEvent());
-                status.OnMapStatusAdds.Add(0, new MapStatusBGMEvent("A11. Shop.ogg"));
+                status.OnMapStatusAdds.Add(0, new MapStatusBGMEvent("Shop.ogg"));
                 status.OnMapStatusAdds.Add(0, new MapStatusScriptEvent("ShopGreeting"));
                 status.OnTurnEnds.Add(0, new EndShopEvent("area_shop"));
                 status.OnTurnEnds.Add(0, new SingleCharScriptEvent("ShopCheckout"));

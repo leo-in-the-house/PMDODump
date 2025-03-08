@@ -8,6 +8,7 @@ using PMDC.Dungeon;
 using PMDC;
 using PMDC.Data;
 using RogueEssence.Ground;
+using RogueEssence.Script;
 
 namespace DataGenerator.Data
 {
@@ -81,7 +82,7 @@ namespace DataGenerator.Data
                 item.Name = new LocalText("Golden Apple");
                 item.Desc = new LocalText("A miraculous apple that glows with an alluring golden aura. It's far too precious and beautiful to even consider eating! If eaten, however, it would completely fill and greatly enlarge the Pokémon's belly.");
                 item.Sprite = "Apple_Gold";
-                item.Price = 3000;
+                item.Price = 30000;
                 item.UseEvent.OnHits.Add(0, new RestoreBellyEvent(200, true, 50, false, new BattleAnimEvent(new SingleEmitter(new AnimData("Circle_Small_Green_In", 2)), "DUN_Growth", true)));
             }
             else if (ii == 5)
@@ -113,7 +114,7 @@ namespace DataGenerator.Data
                 item.Name = new LocalText("Golden Banana");
                 item.Desc = new LocalText("An alluring banana that gives off a golden glow. It's valued far more as a treasure than as a food. If eaten, however, it would completely fill and enlarge the entire team's belly.");
                 item.Sprite = "Banana_Yellow";
-                item.Price = 4000;
+                item.Price = 40000;
                 item.UseEvent.OnHits.Add(0, new RestoreBellyEvent(100, true, 20, false, new BattleAnimEvent(new SingleEmitter(new AnimData("Circle_Small_Green_In", 2)), "DUN_Growth", true)));
             }
             else if (ii == 9)
@@ -772,7 +773,7 @@ namespace DataGenerator.Data
                 fileName = "medicine_" + Text.Sanitize(item.Name.DefaultText).ToLower();
                 item.Desc = new LocalText("An amber liquid that sparkles like crystal-clear tears, rumored to be the most precious of even the rarest treasures. It raises chances of recruiting other Pokémon to the team on the floor it's used.");
                 item.Sprite = "Bottle_Gold";
-                item.Price = 2500;
+                item.Price = 1500;
                 item.MaxStack = 3;
                 item.UseEvent.OnHits.Add(0, new StatusBattleEvent("recruit_boost", true, false));
             }
@@ -2201,7 +2202,7 @@ namespace DataGenerator.Data
                 item.Desc = new LocalText("A held item that makes it easier for team members to recruit wild Pokémon.");
                 item.Sprite = "Bow_Pink";
                 item.Price = 2000;
-                item.OnActions.Add(0, new FlatRecruitmentEvent(30));
+                item.BeforeHittings.Add(0, new FlatRecruitmentEvent(30));
             }
             else if (ii == 301)
             {
@@ -2217,7 +2218,7 @@ namespace DataGenerator.Data
                 item.Desc = new LocalText("A held item that makes it easier for team members to recruit lower-leveled wild Pokémon.");
                 item.Sprite = "Mask_Gold";
                 item.Price = 4000;
-                item.OnActions.Add(0, new LevelRecruitmentEvent());
+                item.BeforeHittings.Add(0, new LevelRecruitmentEvent());
             }
             else if (ii == 303)
             {
@@ -3272,7 +3273,7 @@ namespace DataGenerator.Data
                 item.Name = new LocalText("Heart Scale");
                 item.Desc = new LocalText("A pretty, heart-shaped scale that is extremely rare. It glows faintly with all of the colors of the rainbow.");
                 item.Sprite = "Heart_Pink";
-                item.Price = 50;
+                item.Price = 100;
                 item.MaxStack = 9;
             }
             else if (ii == 482)
@@ -3287,7 +3288,7 @@ namespace DataGenerator.Data
             }
             else if (ii == 484)
             {
-                item.Name = new LocalText("**Green Orb");
+                item.Name = new LocalText("**Jade Orb");
                 item.Price = 700000;
             }
             else if (ii == 485)
@@ -3295,7 +3296,7 @@ namespace DataGenerator.Data
                 item.Name = new LocalText("Comet Shard");
                 item.Desc = new LocalText("A shard that fell to the ground when a comet passed nearby. It sells for an extremely high price.");
                 item.Sprite = "Crystal_Blue";
-                item.Price = 60000;
+                item.Price = 30000;
             }
             else if (ii == 486)
             {
@@ -3303,7 +3304,7 @@ namespace DataGenerator.Data
                 item.Desc = new LocalText("A meteorite that fell from space long ago. It can be used on Deoxys once per floor to cause a Forme change.");
                 item.Sprite = "Rock_Blue";
                 item.UsageType = ItemData.UseType.UseOther;
-                item.Price = 400000;
+                item.Price = 40000;
                 item.MaxStack = -1;
                 item.UseEvent.BeforeTryActions.Add(0, new CheckItemActiveEvent());
                 item.UseEvent.BeforeTryActions.Add(1, new FormChoiceEvent("deoxys"));
@@ -3339,7 +3340,7 @@ namespace DataGenerator.Data
                 item.Desc = new LocalText("A glowing orb can be used on Giratina once per floor to cause a Forme change.");
                 item.Sprite = "Orb_Tan";
                 item.UsageType = ItemData.UseType.UseOther;
-                item.Price = 800000;
+                item.Price = 80000;
                 item.MaxStack = -1;
                 item.UseEvent.BeforeTryActions.Add(0, new CheckItemActiveEvent());
                 item.UseEvent.BeforeTryActions.Add(1, new FormChoiceEvent("giratina"));
@@ -3400,19 +3401,23 @@ namespace DataGenerator.Data
             else if (ii == 493)
             {
                 item.Name = new LocalText("Secret Slab");
-                item.Desc = new LocalText("An ancient stone slab inscribed with what seems to be prehistoric legend. It is said to draw something special to it when kept close by.");
+                item.Desc = new LocalText("An ancient stone slab inscribed with what seems to be prehistoric legend. Its writings change depending on where it's read.");
                 item.Sprite = "Slab_Gold";
+                item.UsageType = ItemData.UseType.Use;
                 item.Price = 30000;
+                item.MaxStack = -1;
+                item.GroundUseActions.Add(new ScriptItemEvent("GroundSlabEvent"));
+                item.GroundUseActions[0].Selection = SelectionType.Self;
+                item.GroundUseActions[0].GroundUsageType = ItemData.UseType.Use;
+                item.UseEvent.BeforeTryActions.Add(1, new BattleScriptEvent("SecretSlab"));
             }
             else if (ii == 494)
             {
-                item.Name = new LocalText("**Music Box");
+                item.Name = new LocalText("Music Box");
                 item.Desc = new LocalText("An enchanting music box that plays a beautiful melody. It is said to draw something special to it when it is kept close by.");
                 item.Sprite = "Box_Blue";
                 // This will trigger legendaries to appear.
                 // when they do appear, the music will change to a music box tune.
-                // they will never spawn at the start of the dungeon, or when the wind timer is visible.
-                // they have a chance to spawn at 100 turns into the floor and no more
                 item.Price = 80000;
             }
             else if (ii == 495)
@@ -3422,6 +3427,21 @@ namespace DataGenerator.Data
                 // This will prevent mysterious distortions from occurring, and cause them to flood out when taken away
                 item.Sprite = "Piece_Yellow";
                 item.Price = 40000;
+            }
+            else if (ii == 496)
+            {
+                item.Name = new LocalText("Star Piece");
+                item.Desc = new LocalText("A shard of a pretty gem that sparkles in a red color. It can be sold at a high price.");
+                item.Sprite = "Crystal_Red";
+                item.Price = 2500;
+            }
+            else if (ii == 497)
+            {
+                //item.Name = new LocalText("Stardust");
+                //item.Desc = new LocalText("Lovely, red-colored sand with a loose, silky feel. It can be sold at a high price.");
+                //item.Sprite = "Sack_Red";
+                //item.Price = 1000;
+                //item.MaxStack = 9;
             }
             else if (ii == 545)
             {
@@ -4488,6 +4508,10 @@ namespace DataGenerator.Data
                     fileName = AutoItemInfo.FillExclusiveTestData(item, "", ExclusiveItemEffect.TypeBecomesCategory, new object[] { "grass", BattleData.SkillCategory.Physical }, translate);
                 else if (ii == 892)
                     fileName = AutoItemInfo.FillExclusiveTestData(item, "", ExclusiveItemEffect.WeaknessDodge, new object[] { "fire" }, translate);
+                else if (ii == 893)
+                    fileName = AutoItemInfo.FillExclusiveTestData(item, "", ExclusiveItemEffect.HeartFinder, new object[] { }, translate);
+                else if (ii == 894)
+                    fileName = AutoItemInfo.FillExclusiveTestData(item, "", ExclusiveItemEffect.CelebrateStatus, new object[] { "electrified" }, translate);
 
                 if (ii >= 800 && ii < 900)
                     item.Comment = "Test item, do not translate";

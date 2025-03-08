@@ -131,17 +131,43 @@ namespace DataGenerator.Data
             floorSegment.ZoneSteps.Add(zoneStep);
         }
 
+        public enum EvoRoomType
+        {
+            Normal,
+            Small,
+            Diamond
+        }
 
-        public static void AddEvoZoneStep(ZoneSegmentBase floorSegment, SpreadPlanBase spreadPlan, bool small)
+        public static void AddEvoZoneStep(ZoneSegmentBase floorSegment, SpreadPlanBase spreadPlan, EvoRoomType roomType)
         {
             SpreadRoomZoneStep evoZoneStep = new SpreadRoomZoneStep(PR_GRID_GEN_EXTRA, PR_ROOMS_GEN_EXTRA, spreadPlan);
             List<BaseRoomFilter> evoFilters = new List<BaseRoomFilter>();
             evoFilters.Add(new RoomFilterComponent(true, new ImmutableRoom()));
             evoFilters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
-            if (small)
-                evoZoneStep.Spawns.Add(new RoomGenOption(new RoomGenEvoSmall<MapGenContext>(), new RoomGenEvoSmall<ListMapGenContext>(), evoFilters), 10);
-            else
-                evoZoneStep.Spawns.Add(new RoomGenOption(new RoomGenEvo<MapGenContext>(), new RoomGenEvo<ListMapGenContext>(), evoFilters), 10);
+
+            string room_string = "";
+            switch(roomType)
+            {
+                case EvoRoomType.Normal:
+                    room_string = "room_evo_altar_normal";
+                    break;
+                case EvoRoomType.Small:
+                    room_string = "room_evo_altar_small";
+                    break;
+                case EvoRoomType.Diamond:
+                    room_string = "room_evo_altar_diamond";
+                    break;
+            }
+
+            RoomGenLoadEvo<MapGenContext> gridRoom = new RoomGenLoadEvo<MapGenContext>();
+            gridRoom.TriggerTile = "tile_evo";
+            gridRoom.MapID = room_string;
+            gridRoom.PreventChanges = PostProcType.Panel | PostProcType.Terrain;
+            RoomGenLoadEvo<ListMapGenContext> listRoom = new RoomGenLoadEvo<ListMapGenContext>();
+            listRoom.TriggerTile = "tile_evo";
+            listRoom.MapID = room_string;
+            listRoom.PreventChanges = PostProcType.Panel | PostProcType.Terrain;
+            evoZoneStep.Spawns.Add(new RoomGenOption(gridRoom, listRoom, evoFilters), 10);
             floorSegment.ZoneSteps.Add(evoZoneStep);
         }
 
@@ -163,6 +189,18 @@ namespace DataGenerator.Data
             exitZoneSpawns.Add(new ScriptGenStep<ListMapGenContext>("Mysteriosity", "{BaseChance="+baseChance+", SegDiff="+segDiff+"}"), spreadPlan.FloorRange, 10);
             SpreadStepRangeZoneStep exitZoneStep = new SpreadStepRangeZoneStep(spreadPlan, PR_SPAWN_TRAPS, exitZoneSpawns);
             floorSegment.ZoneSteps.Add(exitZoneStep);
+        }
+
+        public static void AddRoamingLegendZoneStep(ZoneSegmentBase floorSegment, int floorNum, string saveVar, string species, string move1, string move2, string move3, string move4, string item)
+        {
+            SpawnRangeList<IGenStep> roamingZoneSpawns = new SpawnRangeList<IGenStep>();
+            floorSegment.ZoneSteps.Add(new ScriptZoneStep("RoamingLegend", "{ FloorNum=" + floorNum + ", SaveVar=\"" + saveVar + "\", ActionScript=\"AllyInteract\", Species=\"" + species + "\", Move1=\"" + move1 + "\", Move2=\"" + move2 + "\", Move3=\"" + move3 + "\", Move4=\"" + move4 + "\", BoostItem=\"" + item + "\" }"));
+        }
+
+        public static void AddHiddenLegendZoneStep(ZoneSegmentBase floorSegment, int floorNum, string saveVar, string species)
+        {
+            SpawnRangeList<IGenStep> roamingZoneSpawns = new SpawnRangeList<IGenStep>();
+            floorSegment.ZoneSteps.Add(new ScriptZoneStep("HiddenLegend", "{ FloorNum=" + floorNum + ", SaveVar=\"" + saveVar + "\", ActionScript=\"AllyInteract\", Species=\"" + species + "\" }"));
         }
 
         public static void AddTutorZoneStep(ZoneSegmentBase floorSegment, SpreadPlanBase spreadPlan, IntRange cost, List<string> tutorElements)
@@ -395,19 +433,26 @@ namespace DataGenerator.Data
             layout.GenSteps.Add(PR_WATER_DIAG, new DropDiagonalBlockStep<T>(new Tile(terrain)));
         }
 
-        public static void AddTerrainPatternSteps<T>(MapGen<T> layout, string terrain, RandRange amount, SpawnList<PatternPlan> planSpawns, ConnectivityRoom.Connectivity connectivity = ConnectivityRoom.Connectivity.Main) where T : ListMapGenContext
+        public static void AddTerrainPatternSteps<T>(MapGen<T> layout, string terrain, RandRange amount, SpawnList<PatternPlan> planSpawns,
+            bool chokepoint = true, ConnectivityRoom.Connectivity connectivity = ConnectivityRoom.Connectivity.Main, bool includeHalls = false) where T : ListMapGenContext
         {
             PatternTerrainStep<T> trapStep = new PatternTerrainStep<T>(new Tile(terrain));
             trapStep.Amount = amount;
             trapStep.Maps = planSpawns;
             trapStep.AllowTerminal = true;
+            trapStep.IncludeHalls = includeHalls;
             if (connectivity != ConnectivityRoom.Connectivity.None)
                 trapStep.Filters.Add(new RoomFilterConnectivity(connectivity));
 
             MapTerrainStencil<T> terrainStencil = new MapTerrainStencil<T>(true, false, false, false);
-            NoChokepointTerrainStencil<T> roomStencil = new NoChokepointTerrainStencil<T>(new MapTerrainStencil<T>(true, false, false, false));
             TileEffectStencil<T> noTile = new TileEffectStencil<T>(true);
-            trapStep.TerrainStencil = new MultiTerrainStencil<T>(false, terrainStencil, roomStencil, noTile);
+            MultiTerrainStencil<T> multiStencil = new MultiTerrainStencil<T>(false, terrainStencil, noTile);
+            if (chokepoint)
+            {
+                NoChokepointTerrainStencil<T> roomStencil = new NoChokepointTerrainStencil<T>(new MapTerrainStencil<T>(true, false, false, false));
+                multiStencil.List.Add(roomStencil);
+            }
+            trapStep.TerrainStencil = multiStencil;
 
             layout.GenSteps.Add(PR_WATER, trapStep);
         }
@@ -494,10 +539,10 @@ namespace DataGenerator.Data
             layout.GenSteps.Add(PR_SPAWN_TRAPS, trapStep);
         }
 
-        static void AddStairStep<T>(MapGen<T> layout, bool goDown)
+        static void AddStairStep<T>(MapGen<T> layout, bool goDown, int minDistance = 3)
             where T : class, IFloorPlanGenContext, IPlaceableGenContext<MapGenEntrance>, IPlaceableGenContext<MapGenExit>
         {
-            var step = new FloorStairsStep<T, MapGenEntrance, MapGenExit>(new MapGenEntrance(Dir8.Down), new MapGenExit(new EffectTile(goDown ? "stairs_go_down" : "stairs_go_up", true)));
+            var step = new FloorStairsStep<T, MapGenEntrance, MapGenExit>(minDistance, new MapGenEntrance(Dir8.Down), new MapGenExit(new EffectTile(goDown ? "stairs_go_down" : "stairs_go_up", true)));
             step.Filters.Add(new RoomFilterConnectivity(ConnectivityRoom.Connectivity.Main));
             step.Filters.Add(new RoomFilterComponent(true, new BossRoom()));
             layout.GenSteps.Add(PR_EXITS, step);
@@ -528,6 +573,22 @@ namespace DataGenerator.Data
             for (int ii = 0; ii < items.Count; ii++)
             {
                 picker.ToSpawn.Add(new RandBag<TSpawnable>(items[ii].items));
+                spawnLocs.Add(items[ii].loc);
+            }
+            PickerSpawner<TGenContext, TSpawnable> spawn = new PickerSpawner<TGenContext, TSpawnable>(picker);
+            layout.GenSteps.Add(priority, new SpecificSpawnStep<TGenContext, TSpawnable>(spawn, spawnLocs));
+        }
+
+
+        static void AddSpecificSpawnPool<TGenContext, TSpawnable>(MapGen<TGenContext> layout, List<(SpawnList<TSpawnable> items, Loc loc)> items, Priority priority)
+            where TGenContext : class, IPlaceableGenContext<TSpawnable>
+            where TSpawnable : ISpawnable
+        {
+            PresetMultiRand<TSpawnable> picker = new PresetMultiRand<TSpawnable>();
+            List<Loc> spawnLocs = new List<Loc>();
+            for (int ii = 0; ii < items.Count; ii++)
+            {
+                picker.ToSpawn.Add(items[ii].items);
                 spawnLocs.Add(items[ii].loc);
             }
             PickerSpawner<TGenContext, TSpawnable> spawn = new PickerSpawner<TGenContext, TSpawnable>(picker);
@@ -585,9 +646,9 @@ namespace DataGenerator.Data
             return detours;
         }
 
-        public static RoomGenSpecific<T> CreateRoomGenSpecificBoss<T>(string[] level, Loc trigger, List<MobSpawn> mobs, bool severe) where T : ListMapGenContext
+        public static RoomGenSpecific<T> CreateRoomGenSpecificBoss<T>(string id, string[] level, Loc trigger, List<MobSpawn> mobs, bool severe) where T : ListMapGenContext
         {
-            RoomGenSpecificBoss<T> roomGen = new RoomGenSpecificBoss<T>(level[0].Length, level.Length, new Tile(DataManager.Instance.GenFloor), "tile_boss", trigger, severe ? "C02. Boss Battle 2.ogg" : "C01. Boss Battle.ogg");
+            RoomGenSpecificBoss<T> roomGen = new RoomGenSpecificBoss<T>(level[0].Length, level.Length, new Tile(DataManager.Instance.GenFloor), "tile_boss", trigger, severe ? "Boss Battle 2.ogg" : "Boss Battle.ogg");
             roomGen.Bosses = mobs;
             roomGen.Tiles = new Tile[level[0].Length][];
             for (int xx = 0; xx < level[0].Length; xx++)
@@ -609,6 +670,7 @@ namespace DataGenerator.Data
                         roomGen.Tiles[xx][yy] = new Tile(DataManager.Instance.GenFloor);
                 }
             }
+            roomGen.Dump("boss_" + id);
             return roomGen;
         }
 
@@ -802,6 +864,32 @@ namespace DataGenerator.Data
             return post_mob;
         }
 
+        static MobSpawn GetChaserMob(string species, string ability, string move1, string move2, string move3, string move4, RandRange level,
+            string tactic = "wander_normal")
+        {
+            MobSpawn mob = new MobSpawn();
+            mob.BaseForm = new MonsterID(species, 0, "", Gender.Unknown);
+            mob.Intrinsic = ability;
+            if (!String.IsNullOrEmpty(move1))
+                mob.SpecifiedSkills.Add(move1);
+            if (!String.IsNullOrEmpty(move2))
+                mob.SpecifiedSkills.Add(move2);
+            if (!String.IsNullOrEmpty(move3))
+                mob.SpecifiedSkills.Add(move3);
+            if (!String.IsNullOrEmpty(move4))
+                mob.SpecifiedSkills.Add(move4);
+            mob.Level = level;
+            mob.Tactic = tactic;
+            mob.SpawnFeatures.Add(new MobSpawnMovesOff(mob.SpecifiedSkills.Count));
+            MobSpawnStatus keySpawn = new MobSpawnStatus();
+            keySpawn.Statuses.Add(new StatusEffect("veiled"), 10);
+            mob.SpawnFeatures.Add(keySpawn);
+            keySpawn = new MobSpawnStatus();
+            keySpawn.Statuses.Add(new StatusEffect("friendly_fire"), 10);
+            mob.SpawnFeatures.Add(keySpawn);
+            return mob;
+        }
+
         static MobSpawn GetFOEMob(string species, string ability, string move1, string move2, string move3, string move4, int baseLv, int scaleNum = 5, int scaleDen = 3)
         {
             MobSpawn post_mob = new MobSpawn();
@@ -816,8 +904,8 @@ namespace DataGenerator.Data
             if (!String.IsNullOrEmpty(move4))
                 post_mob.SpecifiedSkills.Add(move4);
             post_mob.Tactic = "loot_guard";
-            post_mob.Level = new RandRange(baseLv);
-            post_mob.SpawnFeatures.Add(new MobSpawnLevelScale(scaleNum, scaleDen));
+            post_mob.Level = new RandRange(1);
+            post_mob.SpawnFeatures.Add(new MobSpawnLevelScale(baseLv, scaleNum, scaleDen, false));
             post_mob.SpawnFeatures.Add(new MobSpawnMovesOff(post_mob.SpecifiedSkills.Count));
             return post_mob;
         }
@@ -830,7 +918,7 @@ namespace DataGenerator.Data
             post_mob.Tactic = tactic;
             post_mob.Level = new RandRange(1);
             post_mob.SpawnFeatures.Add(new MobSpawnWeak());
-            post_mob.SpawnFeatures.Add(new MobSpawnLevelScale(4, 3));
+            post_mob.SpawnFeatures.Add(new MobSpawnLevelScale(1, 4, 3, true));
             return post_mob;
         }
 
@@ -853,11 +941,11 @@ namespace DataGenerator.Data
             if (!String.IsNullOrEmpty(move4))
                 post_mob.SpecifiedSkills.Add(move4);
             post_mob.Tactic = "boss";
-            post_mob.Level = new RandRange(baseLv);
+            post_mob.Level = new RandRange(1);
             post_mob.SpawnFeatures.Add(new MobSpawnLoc(loc));
             post_mob.SpawnFeatures.Add(new MobSpawnItem(true, item));
             post_mob.SpawnFeatures.Add(new MobSpawnUnrecruitable());
-            post_mob.SpawnFeatures.Add(new MobSpawnLevelScale(scaleNum, scaleDen));
+            post_mob.SpawnFeatures.Add(new MobSpawnLevelScale(baseLv, scaleNum, scaleDen, false));
             MobSpawnScaledBoost boost = new MobSpawnScaledBoost(new IntRange(1, 50));
             boost.MaxHPBonus = new IntRange(15, MonsterFormData.MAX_STAT_BOOST);
             post_mob.SpawnFeatures.Add(boost);
@@ -883,8 +971,8 @@ namespace DataGenerator.Data
             spawnBoost.SpDefBonus = MonsterFormData.MAX_STAT_BOOST;
             spawnBoost.SpeedBonus = MonsterFormData.MAX_STAT_BOOST;
             spawnBoost.MaxHPBonus = MonsterFormData.MAX_STAT_BOOST;
-            post_mob.SpawnFeatures.Add(new MobSpawnInv(false, items));
             post_mob.SpawnFeatures.Add(spawnBoost);
+            post_mob.SpawnFeatures.Add(new MobSpawnInv(false, items));
             if (keeperId > -1)
             {
                 post_mob.SpawnFeatures.Add(new MobSpawnDiscriminator(keeperId));
