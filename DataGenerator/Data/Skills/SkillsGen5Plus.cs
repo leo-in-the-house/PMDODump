@@ -2103,14 +2103,16 @@ namespace DataGenerator.Data
             }
             else if (ii == 560)
             {
-                skill.Name = new LocalText("**Flying Press");
+                skill.Name = new LocalText("Flying Press");
                 skill.Desc = new LocalText("The user dives down onto the target from the sky. This move is Fighting and Flying type simultaneously.");
-                skill.BaseCharges = 10;
+                skill.BaseCharges = 15;
                 skill.Data.Element = "fighting";
                 skill.Data.Category = BattleData.SkillCategory.Physical;
-                skill.Data.HitRate = 95;
+                skill.Data.HitRate = 100;
                 skill.Data.SkillStates.Set(new BasePowerState(100));
+                skill.Data.SkillStates.Set(new ContactState());
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
+                skill.Data.ElementEffects.Add(0, new TypeAddEvent("flying"));
                 skill.Strikes = 1;
                 skill.HitboxAction = new AttackAction();
                 ((AttackAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(05);//Attack
@@ -7513,17 +7515,24 @@ namespace DataGenerator.Data
             }
             else if (ii == 864)
             {
-                skill.Name = new LocalText("**Salt Cure");
-                skill.Desc = new LocalText("");
-                skill.BaseCharges = 15;
+                skill.Name = new LocalText("=Salt Cure");
+                skill.Desc = new LocalText("The user salt cures the target, inflicting damage every turn. This move is super effective on Steel and Water types.");
+                skill.BaseCharges = 14;
                 skill.Data.Element = "rock";
                 skill.Data.Category = BattleData.SkillCategory.Physical;
                 skill.Data.HitRate = 100;
-                skill.Data.SkillStates.Set(new BasePowerState(40));
+                skill.Data.SkillStates.Set(new BasePowerState(20));
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
+                skill.Data.ElementEffects.Add(0, new TypeSuperEvent("water"));
+                skill.Data.ElementEffects.Add(0, new TypeSuperEvent("steel"));
+                skill.Data.OnHits.Add(0, new GiveContinuousDamageEvent("salt_cure", true, true, false));
                 skill.Strikes = 1;
-                skill.HitboxAction = new AttackAction();
-                ((AttackAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(05);//Attack
+                skill.HitboxAction = new AreaAction();
+                ((AreaAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(07);//Shoot
+                ((AreaAction)skill.HitboxAction).HitArea = Hitbox.AreaLimit.Cone;
+                ((AreaAction)skill.HitboxAction).Range = 2;
+                ((AreaAction)skill.HitboxAction).Speed = 10;
+                ((AreaAction)skill.HitboxAction).HitTiles = true;
                 skill.HitboxAction.TargetAlignments = Alignment.Foe;
                 skill.Explosion.TargetAlignments = Alignment.Foe;
             }
@@ -7634,17 +7643,20 @@ namespace DataGenerator.Data
             }
             else if (ii == 870)
             {
-                skill.Name = new LocalText("**Flower Trick");
-                skill.Desc = new LocalText("");
-                skill.BaseCharges = 10;
+                skill.Name = new LocalText("Flower Trick");
+                skill.Desc = new LocalText("The user throws a rigged bouquet of flowers at the target. This attack never misses and always lands a critical hit.");
+                skill.BaseCharges = 11;
                 skill.Data.Element = "grass";
                 skill.Data.Category = BattleData.SkillCategory.Physical;
                 skill.Data.HitRate = -1;
-                skill.Data.SkillStates.Set(new BasePowerState(70));
+                skill.Data.SkillStates.Set(new BasePowerState(50));
+                skill.Data.OnActions.Add(0, new BoostCriticalEvent(4));
                 skill.Data.OnHits.Add(-1, new DamageFormulaEvent());
                 skill.Strikes = 1;
-                skill.HitboxAction = new AttackAction();
-                ((AttackAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(05);//Attack
+                skill.HitboxAction = new ThrowAction();
+                ((ThrowAction)skill.HitboxAction).CharAnimData = new CharAnimFrameType(05);//Attack
+                ((ThrowAction)skill.HitboxAction).Coverage = ThrowAction.ArcCoverage.WideAngle;
+                ((ThrowAction)skill.HitboxAction).Range = 3;
                 skill.HitboxAction.TargetAlignments = Alignment.Foe;
                 skill.Explosion.TargetAlignments = Alignment.Foe;
             }
